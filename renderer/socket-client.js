@@ -1,0 +1,9 @@
+"use strict";
+window.BtcPetSocketClient = class SocketClient {
+  constructor(getSource,onPrice){this.getSource=getSource;this.onPrice=onPrice;this.sock=null;this.generation=0;this.pingTimer=null;this.reconnectTimer=null;this.attempt=0;}
+  clearTimers(){clearInterval(this.pingTimer);clearTimeout(this.reconnectTimer);this.pingTimer=this.reconnectTimer=null;}
+  disconnect(){this.generation+=1;this.clearTimers();const old=this.sock;this.sock=null;if(old){old.onopen=old.onmessage=old.onerror=old.onclose=null;try{old.close();}catch(_){}}}
+  schedule(gen){if(gen!==this.generation||this.reconnectTimer)return;const delay=Math.min(1000*(2**this.attempt),window.BtcPetConfig.MAX_RECONNECT_MS)+Math.floor(Math.random()*500);this.attempt+=1;this.reconnectTimer=setTimeout(()=>{this.reconnectTimer=null;if(gen===this.generation)this.connect();},delay);}
+  connect(){this.disconnect();const gen=this.generation,src=this.getSource(),ws=new WebSocket(src.ws);this.sock=ws;ws.onopen=()=>{if(gen!==this.generation||this.sock!==ws)return;this.attempt=0;try{src.onOpen(ws);}catch(e){console.warn("WebSocket subscribe failed",e);}this.pingTimer=setInterval(()=>{if(this.sock===ws&&ws.readyState===WebSocket.OPEN)try{src.ping(ws);}catch(e){console.warn("WebSocket ping failed",e);}},25000);};ws.onmessage=(event)=>{if(gen!==this.generation||this.sock!==ws)return;try{const result=src.parse(event.data);if(result&&Number.isFinite(result.price)&&result.price>0)this.onPrice(result.price,Number.isFinite(result.changePct)?result.changePct:0);}catch(e){console.warn("WebSocket message ignored",e);}};ws.onerror=()=>{if(this.sock===ws)try{ws.close();}catch(_){}};ws.onclose=()=>{if(gen!==this.generation||this.sock!==ws)return;this.sock=null;clearInterval(this.pingTimer);this.pingTimer=null;this.schedule(gen);};}
+  restart(){this.attempt=0;this.connect();}
+};

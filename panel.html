@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<style>
+  :root {
+    --bg: #12151c;
+    --panel: #1a1f2a;
+    --text: #e8eaf0;
+    --dim: #6b7385;
+    --up: #0ecb81;
+    --down: #f6465d;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+html { background: transparent; }
+  body {
+    border-radius: 14px;
+    border: 1px solid #2c3444;
+    overflow: hidden;
+    width: 280px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, "Malgun Gothic", sans-serif;
+    padding: 12px 14px;
+  }
+  .num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+  .label { font-size: 11px; color: var(--dim); letter-spacing: 0.4px; }
+  #price {
+    font-size: 25px;
+    font-weight: 700;
+    margin-top: 2px;
+    letter-spacing: -0.5px;
+  }
+  #change { font-size: 13px; font-weight: 600; margin-top: 2px; }
+  .up { color: var(--up); }
+  .down { color: var(--down); }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    background: var(--panel);
+    border-radius: 8px;
+    padding: 6px 11px;
+    margin-top: 6px;
+    font-size: 12px;
+  }
+  .row .v { font-weight: 600; }
+  
+  #live {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--up);
+    margin-right: 5px;
+    animation: pulse 1.6s infinite;
+  }
+  @keyframes pulse { 50% { opacity: 0.3; } }
+  .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; inset: 0; background: #3a4152; border-radius: 999px; transition: 0.15s; cursor: pointer; }
+  .slider::before { content: ""; position: absolute; width: 14px; height: 14px; left: 2px; top: 2px; background: #fff; border-radius: 50%; transition: 0.15s; }
+  input:checked + .slider { background: #0ecb81; }
+  input:checked + .slider::before { transform: translateX(16px); }
+  .top { display: flex; justify-content: space-between; align-items: center; }
+  #src {
+    background: #232a38; color: var(--text);
+    border: none; border-radius: 6px;
+    padding: 4px 6px; font-size: 11px; cursor: pointer;
+  }
+  #ctf {
+    background: #232a38; color: var(--text);
+    border: none; border-radius: 6px;
+    padding: 4px 6px; font-size: 11px; cursor: pointer;
+  }
+  .chartbox { margin-top: 9px; }
+  #chart { width: 100%; height: 90px; display: block; background: var(--panel); border-radius: 8px; cursor: pointer; }
+  .tfs { display: flex; gap: 4px; margin-top: 5px; }
+  .tf {
+    flex: 1; background: #232a38; color: var(--dim); border: none;
+    border-radius: 6px; padding: 3px 0; font-size: 11px; cursor: pointer;
+  }
+  .tf.active { background: #2c3444; color: var(--text); font-weight: 600; }
+  .label small { font-size: 9px; color: #4a5164; }
+  .meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--dim); margin-top: 7px; }
+  #ostyle {
+    background: #232a38; color: var(--text); border: none;
+    border-radius: 6px; padding: 4px 6px; font-size: 11px; cursor: pointer;
+  }
+  body { -webkit-app-region: no-drag; }
+  .titlebar { display: flex; justify-content: space-between; align-items: center;
+    -webkit-app-region: drag; margin: -4px -4px 6px; padding: 2px 2px 6px;
+    font-size: 12px; color: var(--dim); font-weight: 600; }
+  .titlebar button { -webkit-app-region: no-drag; background: none; border: none;
+    color: var(--dim); font-size: 13px; cursor: pointer; padding: 2px 6px; }
+  .titlebar button:hover { color: var(--text); }
+  .titlebar button { margin-left: 2px; }
+  #help {
+    position: absolute; inset: 0; background: var(--bg);
+    border-radius: 14px; padding: 16px; z-index: 10;
+    display: flex; flex-direction: column; gap: 9px;
+  }
+  #help[hidden] { display: none; }
+  .h-title { font-size: 14px; font-weight: 700; }
+  .h-item { font-size: 11.5px; line-height: 1.5; color: #b8bece; }
+  .h-item b { color: var(--text); }
+  #helpClose {
+    margin-top: auto; background: #232a38; color: var(--text); border: none;
+    border-radius: 8px; padding: 8px; font-size: 12px; cursor: pointer;
+  }
+  #helpClose:hover { background: #2c3444; }
+  #opac { -webkit-app-region: no-drag; width: 64px; height: 3px; cursor: pointer;
+    accent-color: #3b82f6; background: #232a38; appearance: none; border-radius: 2px; outline: none; }
+  #opac::-webkit-slider-thumb { appearance: none; width: 11px; height: 11px;
+    border-radius: 50%; background: #8a93a8; border: none; }
+  #opac:hover::-webkit-slider-thumb { background: #b8bece; }
+
+
+  .detect-box { margin-top: 9px; padding: 9px; border: 1px solid #2c3444; border-radius: 9px; background: #161b25; }
+  .detect-title { display:flex; justify-content:space-between; align-items:center; margin-bottom:7px; font-size:11px; font-weight:700; color:#cbd5e1; }
+  .detect-grid { display:grid; grid-template-columns:1fr 92px; gap:6px 8px; align-items:center; }
+  .preset-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:4px; margin-bottom:8px; }
+  .preset-btn { border:1px solid #343d50; background:#232a38; color:#8f98aa; border-radius:6px; padding:6px 2px; font-size:9px; cursor:pointer; }
+  .preset-btn:hover { color:#fff; background:#2d3648; }
+  .preset-btn.active { color:#fff; border-color:#3b82f6; background:#243b63; }
+  .advanced-toggle { width:100%; margin-top:7px; border:0; background:transparent; color:#7f8aa3; font-size:10px; cursor:pointer; text-align:left; padding:2px 0; }
+  .advanced-toggle:hover { color:#cbd5e1; }
+  #detectAdvanced[hidden] { display:none; }
+  #detectAdvanced { margin-top:7px; }
+  .detect-grid label { font-size:10.5px; color:#8f98aa; }
+  .detect-input { width:92px; background:#232a38; color:var(--text); border:1px solid #343d50; border-radius:6px; padding:4px 6px; font-size:11px; text-align:right; outline:none; }
+  .detect-input:focus { border-color:#3b82f6; }
+  .detect-note { margin-top:7px; font-size:9.5px; line-height:1.4; color:#697386; }
+  #detectStatus { font-size:9.5px; color:#0ecb81; font-weight:500; }
+
+  #devTools { margin-top: 9px; padding: 9px; border: 1px solid #35405a; border-radius: 9px; background: #161c28; }
+  #devTools[hidden] { display: none; }
+  .dev-title { display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:700; color:#cbd5e1; margin-bottom:7px; }
+  .dev-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; }
+  .dev-grid.fx { grid-template-columns:repeat(3,1fr); margin-top:6px; }
+  .dev-btn { border:1px solid #364055; background:#232a38; color:#aeb6c8; border-radius:6px; padding:6px 2px; font-size:10px; cursor:pointer; }
+  .dev-btn:hover { background:#2d3648; color:#fff; }
+  .dev-btn.active { border-color:#3b82f6; color:#fff; background:#243b63; }
+  #devStatus { color:#7f8aa3; font-weight:500; }
+
+  .view[hidden] { display: none; }
+  .title-actions { display:flex; align-items:center; }
+  #settingsBtn { font-size:15px; line-height:1; }
+  .settings-head { display:flex; align-items:center; justify-content:space-between; margin:2px 0 10px; }
+  .settings-head-left { display:flex; align-items:center; gap:7px; }
+  .settings-title { font-size:14px; font-weight:700; color:var(--text); }
+  .icon-btn { background:#232a38; color:#aeb6c8; border:1px solid #30394b; border-radius:7px; padding:5px 8px; font-size:12px; cursor:pointer; }
+  .icon-btn:hover { background:#2d3648; color:#fff; }
+  .settings-section { margin-top:9px; }
+  .settings-section:first-of-type { margin-top:0; }
+  .settings-caption { font-size:10px; color:#697386; margin:0 2px 5px; }
+</style>
+</head>
+<body>
+  <div class="titlebar">
+    <span style="display:flex; align-items:center; gap:8px;">BTC Pet
+      <input type="range" id="opac" min="40" max="100" value="100" title="패널 투명도"></span>
+    <span class="title-actions"><button id="settingsBtn" title="설정">⚙</button><button id="helpBtn" title="기능 설명">?</button><button id="closeBtn">✕</button></span></div>
+
+  <div id="help" hidden>
+    <div class="h-title">기능 안내</div>
+    <div class="h-item"><b>펫</b> — 최근 1분 흐름에 따라 표정이 변합니다. 초록 점프 = 급등, 빨강 시무룩 = 급락. 드래그로 이동, 클릭하면 이 패널이 열립니다.</div>
+    <div class="h-item"><b>봉 마감</b> — 설정한 봉이 넘어가는 시각에 펫이 주황색으로 코인 플립을 합니다.</div>
+    <div class="h-item"><b>가격 클릭</b> — 선택한 거래소의 BTC 선물 페이지로 이동합니다.</div>
+    <div class="h-item"><b>차트</b> — 실시간 미니 캔들. 클릭하면 트레이딩뷰가 열립니다.</div>
+    <div class="h-item"><b>김치 프리미엄</b> — 업비트 KRW 대비 해외 현물가 (실시간 시장환율 기준). <b>테더 김프</b>는 KRW-USDT vs 환율.</div>
+    <div class="h-item"><b>트레이 아이콘</b> — 가격 뱃지 상시 표시. 우클릭으로 펫 숨기기 / 클릭 통과 / 종료.</div>
+    <button id="helpClose">닫기</button>
+  </div>
+  <main id="marketView" class="view">
+  <div class="top">
+    <div class="label"><span id="live"></span><span id="srcLabel">BTC · Bitget Futures</span></div>
+    <select id="src">
+      <option value="bitget">Bitget</option>
+      <option value="binance">Binance</option>
+      <option value="hyperliquid">Hyperliquid</option>
+    </select>
+  </div>
+  <div id="price" class="num">—</div>
+  <div id="change" class="num"></div>
+
+  <div class="chartbox">
+    <canvas id="chart" width="252" height="90"></canvas>
+    <div class="tfs">
+      <button class="tf" data-tf="15m">15분</button>
+      <button class="tf active" data-tf="1h">1시간</button>
+      <button class="tf" data-tf="4h">4시간</button>
+      <button class="tf" data-tf="1d">1일</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <span class="label">업비트 KRW</span>
+    <span id="krw" class="v num">—</span>
+  </div>
+  <div class="row">
+    <span class="label">업비트 USDT</span>
+    <span id="usdt" class="v num">—</span>
+  </div>
+  <div class="row">
+    <span class="label">김치 프리미엄</span>
+    <span id="premium" class="v num">—</span>
+  </div>
+  <div class="row">
+    <span class="label">테더 김프</span>
+    <span id="tetherPrem" class="v num">—</span>
+  </div>
+  </main>
+
+  <section id="settingsView" class="view" hidden>
+    <div class="settings-head">
+      <div class="settings-head-left"><button id="settingsBack" class="icon-btn" title="시세 화면으로">←</button><span class="settings-title">설정</span></div>
+    </div>
+    <div class="settings-caption">애니메이션과 봉 마감 동작을 설정합니다.</div>
+
+  <div class="row">
+    <span class="label">봉 마감 강조</span>
+    <select id="ctf">
+      <option value="off">끄기</option>
+      <option value="15m">15분봉</option>
+      <option value="1h">1시간봉</option>
+      <option value="4h">4시간봉</option>
+    </select>
+  </div>
+
+
+
+  <section class="detect-box">
+    <div class="detect-title"><span>애니메이션 감지</span><span id="detectStatus"></span></div>
+    <div class="preset-grid" aria-label="감지 민감도 프리셋">
+      <button class="preset-btn" data-preset="verySensitive">매우 민감</button>
+      <button class="preset-btn" data-preset="sensitive">민감</button>
+      <button class="preset-btn" data-preset="normal">보통</button>
+      <button class="preset-btn" data-preset="calm">둔감</button>
+      <button class="preset-btn" data-preset="veryCalm">매우 둔감</button>
+    </div>
+    <div id="presetSummary" class="detect-note" style="margin-top:0;"></div>
+    <button id="advancedToggle" class="advanced-toggle" type="button">▸ 고급 설정 직접 조절</button>
+    <div id="detectAdvanced" hidden>
+      <div class="detect-grid">
+        <label for="moodWindowSec">기준 시간</label>
+        <select id="moodWindowSec" class="detect-input">
+          <option value="15">15초</option>
+          <option value="30">30초</option>
+          <option value="60">60초</option>
+          <option value="65">65초</option>
+          <option value="120">2분</option>
+          <option value="300">5분</option>
+        </select>
+        <label for="moodPumpPct">상승 감지</label>
+        <input id="moodPumpPct" class="detect-input" type="number" min="0.01" max="5" step="0.01" inputmode="decimal" />
+        <label for="moodDumpPct">하락 감지</label>
+        <input id="moodDumpPct" class="detect-input" type="number" min="0.01" max="5" step="0.01" inputmode="decimal" />
+        <label for="moodExitPct">Idle 복귀 기준</label>
+        <input id="moodExitPct" class="detect-input" type="number" min="0" max="4.99" step="0.01" inputmode="decimal" />
+      </div>
+      <div class="detect-note">복귀 기준은 상승·하락 감지값보다 작게 저장됩니다.</div>
+    </div>
+  </section>
+
+  <section id="devTools" hidden>
+    <div class="dev-title"><span>개발자 이펙트 테스트</span><span id="devStatus">대기</span></div>
+    <div class="dev-grid">
+      <button class="dev-btn mood-test" data-action="idle">Idle</button>
+      <button class="dev-btn mood-test" data-action="pump">Pump</button>
+      <button class="dev-btn mood-test" data-action="dump">Dump</button>
+      <button class="dev-btn mood-test" data-action="candle">봉 갱신</button>
+    </div>
+    <div class="dev-grid fx">
+      <button class="dev-btn fx-test" data-fx="loop">캔들 3개</button>
+      <button class="dev-btn fx-test" data-fx="once">단일 캔들</button>
+      <button class="dev-btn fx-test" data-fx="v3">로켓/번개</button>
+    </div>
+  </section>
+  </section>
+
+  <div class="meta"><span id="fxinfo" class="num"></span><span id="ts" class="num"></span></div>
+  <div class="label" style="margin-top:3px; text-align:right;">desktop v0.17.15</div>
+  <script src="panel.js"></script>
+</body>
+</html>

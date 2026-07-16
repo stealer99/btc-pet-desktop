@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/legacy-characters.css">
+<link rel="stylesheet" href="styles/effects.css">
+<link rel="stylesheet" href="styles/illustrated-characters.css">
+</head>
+<body>
+  <div id="wrap" class="m-idle">
+    <div class="bubble"><span class="p">—</span><span class="c"></span></div>
+    <div class="pet-stage">
+      <div class="pet">
+        <div class="body">
+          <div class="eye left"></div><div class="eye right"></div>
+          <div class="cheek left"></div><div class="cheek right"></div>
+          <div class="mouth"></div>
+        </div>
+        <div class="foot left"></div><div class="foot right"></div>
+      </div>
+    </div>
+    <div class="fx up"><span class="bar b1"></span><span class="bar b2"></span><span class="bar b3"></span></div>
+    <div class="fx down"><span class="bar b1"></span><span class="bar b2"></span><span class="bar b3"></span></div>
+    <div class="fx3 flash"></div>
+    <div class="fx3 bolt"></div>
+    <div class="fx3 rocket"><span class="r-body"></span><span class="r-flame"></span></div>
+  </div>
+  <div id="pill">
+    <div class="top"><span class="sym">₿</span><span class="p">—</span></div>
+    <span class="c"></span>
+    <span class="sub">BTC FUTURES</span>
+  </div>
+  <script src="renderer/config.js"></script>
+  <script src="renderer/sources/bitget.js"></script>
+  <script src="renderer/sources/binance.js"></script>
+  <script src="renderer/sources/hyperliquid.js"></script>
+  <script src="renderer/sources/index.js"></script>
+  <script src="renderer/mood-controller.js"></script>
+  <script src="renderer/price-view.js"></script>
+  <script src="renderer/socket-client.js"></script>
+  <script src="renderer/candle-scheduler.js"></script>
+  <script src="renderer/drag-controller.js"></script>
+  <script src="renderer/overlay-app.js"></script>
+</body>
+</html>

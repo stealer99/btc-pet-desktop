@@ -1,0 +1,43 @@
+{
+  "name": "btc-pet-desktop",
+  "productName": "BTC Pet",
+  "version": "0.17.21",
+  "description": "BTC Pet",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win",
+    "dist:store": "electron-builder --win appx"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.shin.btcpet",
+    "productName": "BTC Pet",
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "icon.ico"
+    },
+    "appx": {
+      "identityName": "여기에-파트너센터-Identity-Name",
+      "publisher": "여기에-파트너센터-Publisher-CN",
+      "publisherDisplayName": "여기에-게시자-표시명",
+      "applicationId": "BTCPet"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "stealer99",
+        "repo": "btc-pet-desktop"
+      }
+    ]
+  },
+  "author": "stealer",
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  }
+}

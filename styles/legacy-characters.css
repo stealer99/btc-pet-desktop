@@ -1,0 +1,52 @@
+/* Extracted from overlay.html without animation-value changes. */
+  /* ===== 캐릭터 변형 ===== */
+  /* 공통: .m-* 무드(오라/모션)는 그대로, 형태/색만 캐릭터별 */
+
+  /* 슬라임: 젤리 초록, 발 없음, 물방울 하이라이트 */
+  .c-slime .body { background: radial-gradient(circle at 35% 28%, #b6f0a8, #6fd35f 60%, #4aa83e);
+    border-color: #3d8f33; border-radius: 48% 48% 40% 40%; }
+  .c-slime .body::before { content: ""; }
+  .c-slime .foot { display: none; }
+  .c-slime .body::after { content: ""; position: absolute; left: 10px; top: 8px;
+    width: 14px; height: 9px; background: rgba(255,255,255,0.55); border-radius: 50%; transform: rotate(-20deg); }
+  .c-slime .cheek { background: #58b34a; }
+
+  /* 로봇: 메탈 사각 몸통 + 안테나 + LED 눈 */
+  .c-robot .body { background: linear-gradient(145deg, #b9c3d9, #8d99b5 70%, #6f7c99);
+    border-color: #5a6579; border-radius: 16px; }
+  .c-robot .body::before { content: ""; position: absolute; left: 50%; top: -14px; margin-left: -2px;
+    width: 4px; height: 12px; background: #5a6579; border-radius: 2px; }
+  .c-robot .body::after { content: ""; position: absolute; left: 50%; top: -20px; margin-left: -5px;
+    width: 10px; height: 10px; background: #ff5964; border-radius: 50%;
+    animation: antenna 1.4s ease-in-out infinite; }
+  @keyframes antenna { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+  .c-robot .eye { background: #35e0ff; border-radius: 2px; width: 9px; height: 7px;
+    box-shadow: 0 0 6px rgba(53,224,255,0.8); }
+  .c-robot .cheek { display: none; }
+  .c-robot .mouth { border-color: #4a5468; border-radius: 0; width: 14px; margin-left: -7px; }
+  .c-robot .foot { background: #5a6579; border-radius: 3px; }
+
+  /* 고스트: 연보라 반투명, 물결 밑단, 둥둥 */
+  .c-ghost .body { background: radial-gradient(circle at 35% 28%, #f3efff, #cfc4f5 65%, #a99ae0);
+    border-color: #8f7fd0; border-radius: 50% 50% 12% 12%; }
+  .c-ghost .body::before { content: ""; }
+  .c-ghost .body::after { content: ""; position: absolute; left: -3px; bottom: -7px; width: 56px; height: 12px;
+    background: radial-gradient(circle at 8px 0, #cfc4f5 7px, transparent 8px) 0 0/18px 12px repeat-x; }
+  .c-ghost .foot { display: none; }
+  .c-ghost .cheek { background: #c9a6e8; }
+  .c-ghost .pet { bottom: 14px; }
+
+  /* 핑키: 분홍 퍼프볼 + 팔 + 진분홍 발 */
+  .c-pinky .body { background: radial-gradient(circle at 35% 28%, #ffdce9, #ffaec9 60%, #f78fb0);
+    border-color: #e26d96; border-radius: 50%; }
+  .c-pinky .body::before { content: ""; position: absolute; left: -9px; top: 22px;
+    width: 16px; height: 14px; background: #ffaec9; border: 2px solid #e26d96;
+    border-radius: 50%; }
+  .c-pinky .body::after { content: ""; position: absolute; right: -9px; top: 22px;
+    width: 16px; height: 14px; background: #ffaec9; border: 2px solid #e26d96;
+    border-radius: 50%; }
+  .c-pinky .cheek { background: #ff7fa5; width: 10px; height: 6px; }
+  .c-pinky .foot { background: #e8446a; width: 20px; height: 12px;
+    border-radius: 55% 55% 50% 50%; }
+  .c-pinky .foot.left { left: 8px; } .c-pinky .foot.right { right: 8px; }
+  .c-pinky .mouth { width: 8px; height: 5px; margin-left: -4px; }

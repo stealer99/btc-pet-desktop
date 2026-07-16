@@ -1,0 +1,325 @@
+/* Extracted from overlay.html without animation-value changes. */
+  /* 뚠뚠이(개미): 갈색 몸통 + 더듬이 + 다리 4개 */
+  .c-ant .body { background: radial-gradient(circle at 35% 28%, #9c7a5c, #6b4e3d 60%, #513a2c);
+    border-color: #3f2d22; border-radius: 50% 50% 46% 46%; }
+  .c-ant .body::before { content: ""; position: absolute; left: 13px; top: -13px;
+    width: 3px; height: 15px; background: #3f2d22; border-radius: 2px;
+    transform: rotate(-20deg); transform-origin: bottom center; }
+  .c-ant .body::after { content: ""; position: absolute; right: 13px; top: -13px;
+    width: 3px; height: 15px; background: #3f2d22; border-radius: 2px;
+    transform: rotate(20deg); transform-origin: bottom center; }
+  .c-ant .eye { width: 8px; height: 9px; background: #241812; }
+  .c-ant .cheek { background: #c98f6a; }
+  .c-ant .mouth { border-color: #241812; }
+  .c-ant .foot { width: 8px; height: 8px; background: #3f2d22; border-radius: 50%;
+    box-shadow: 13px 2px 0 -1px #3f2d22; }
+  .c-ant .foot.left { left: 10px; } .c-ant .foot.right { right: 23px; }
+
+  /* 물타기(비버): SVG 렌더 - 잔망 감성 */
+  .c-beaver .body {
+    left: -2px; width: 68px; height: 62px; bottom: 6px;
+    border: none; box-shadow: none; background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2068%2062%22%3E%20%20%20%3C%21--%20%EA%B7%80%3A%20%EC%9E%91%EA%B2%8C%2C%20%EC%83%81%EB%8B%A8%20%EB%AA%A8%EC%84%9C%EB%A6%AC%20--%3E%20%20%20%3Ccircle%20cx%3D%2216%22%20cy%3D%2210%22%20r%3D%227%22%20fill%3D%22%23F2A0B5%22%20stroke%3D%22%23D97C95%22%20stroke-width%3D%222%22/%3E%20%20%20%3Ccircle%20cx%3D%2216%22%20cy%3D%2210.5%22%20r%3D%223.2%22%20fill%3D%22%23FFE3D0%22/%3E%20%20%20%3Ccircle%20cx%3D%2252%22%20cy%3D%2210%22%20r%3D%227%22%20fill%3D%22%23F2A0B5%22%20stroke%3D%22%23D97C95%22%20stroke-width%3D%222%22/%3E%20%20%20%3Ccircle%20cx%3D%2252%22%20cy%3D%2210.5%22%20r%3D%223.2%22%20fill%3D%22%23FFE3D0%22/%3E%20%20%20%3C%21--%20%EC%83%88%EC%8B%B9%ED%84%B8%20--%3E%20%20%20%3Cpath%20d%3D%22M32%208%20Q29%203.5%2025.5%201.5%22%20fill%3D%22none%22%20stroke%3D%22%23D9534B%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22/%3E%20%20%20%3Cpath%20d%3D%22M35%208%20Q37.5%202.5%2041%200.8%22%20fill%3D%22none%22%20stroke%3D%22%23E8703F%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22/%3E%20%20%20%3C%21--%20%EC%96%BC%EA%B5%B4%3A%20%EC%95%84%EB%9E%98%EA%B0%80%20%EB%84%93%EC%9D%80%20%ED%98%95%ED%83%9C%20--%3E%20%20%20%3Cpath%20d%3D%22M34%205%20%20%20%20%20%20%20%20%20%20%20%20C%2016%205%2C%206%2016%2C%206%2033%20%20%20%20%20%20%20%20%20%20%20%20C%206%2050%2C%2017%2058%2C%2034%2058%20%20%20%20%20%20%20%20%20%20%20%20C%2051%2058%2C%2062%2050%2C%2062%2033%20%20%20%20%20%20%20%20%20%20%20%20C%2062%2016%2C%2052%205%2C%2034%205%20Z%22%20%20%20%20%20%20%20%20%20fill%3D%22%23F2A0B5%22%20stroke%3D%22%23D97C95%22%20stroke-width%3D%222.4%22/%3E%20%20%20%3Cellipse%20cx%3D%2222%22%20cy%3D%2218%22%20rx%3D%228%22%20ry%3D%225%22%20fill%3D%22%23F9C3D0%22%20opacity%3D%220.6%22/%3E%20%20%20%3C%21--%20%EC%A3%BC%EB%91%A5%EC%9D%B4%3A%20%ED%81%AC%EB%A6%BC%2C%20%ED%95%98%EB%B6%80%20%EC%A0%88%EB%B0%98%20%ED%8F%AD%EB%84%93%EA%B2%8C%20--%3E%20%20%20%3Cellipse%20cx%3D%2234%22%20cy%3D%2242%22%20rx%3D%2220%22%20ry%3D%2215%22%20fill%3D%22%23FFEBD8%22/%3E%20%20%20%3C%21--%20%EB%88%88%3A%20%EC%9E%91%EC%9D%80%20%EC%A0%90%2C%20%EB%84%93%EA%B2%8C%20--%3E%20%20%20%3Ccircle%20cx%3D%2219%22%20cy%3D%2227%22%20r%3D%223%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3Ccircle%20cx%3D%2218%22%20cy%3D%2226%22%20r%3D%221%22%20fill%3D%22%23FFF%22/%3E%20%20%20%3Ccircle%20cx%3D%2249%22%20cy%3D%2227%22%20r%3D%223%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3Ccircle%20cx%3D%2248%22%20cy%3D%2226%22%20r%3D%221%22%20fill%3D%22%23FFF%22/%3E%20%20%20%3C%21--%20%EC%99%95%EC%BD%94%3A%20%EA%B1%B0%EB%8C%80%20%EC%9E%90%EB%91%90%20--%3E%20%20%20%3Cellipse%20cx%3D%2234%22%20cy%3D%2237%22%20rx%3D%2211.5%22%20ry%3D%228.5%22%20fill%3D%22%237E3B58%22/%3E%20%20%20%3Cellipse%20cx%3D%2230%22%20cy%3D%2234%22%20rx%3D%223.6%22%20ry%3D%222.4%22%20fill%3D%22%23A5688A%22/%3E%20%20%20%3C%21--%20%EC%95%9E%EB%8B%88%20--%3E%20%20%20%3Cpath%20d%3D%22M28.5%2045.5%20h11%20a2%202%200%200%201%202%202%20v4.5%20a2%202%200%200%201%20-2%202%20h-11%20a2%202%200%200%201%20-2%20-2%20v-4.5%20a2%202%200%200%201%202%20-2%20Z%22%20fill%3D%22%23FFF%22%20stroke%3D%22%23E3D2BC%22%20stroke-width%3D%221%22/%3E%20%20%20%3Cline%20x1%3D%2234%22%20y1%3D%2245.5%22%20x2%3D%2234%22%20y2%3D%2254%22%20stroke%3D%22%23E3D2BC%22%20stroke-width%3D%221.2%22/%3E%20%20%20%3C%21--%20%EB%B3%BC%ED%84%B0%EC%B9%98%20--%3E%20%20%20%3Cellipse%20cx%3D%2212%22%20cy%3D%2237%22%20rx%3D%224%22%20ry%3D%222.6%22%20fill%3D%22%23FF9DB4%22%20opacity%3D%220.8%22/%3E%20%20%20%3Cellipse%20cx%3D%2256%22%20cy%3D%2237%22%20rx%3D%224%22%20ry%3D%222.6%22%20fill%3D%22%23FF9DB4%22%20opacity%3D%220.8%22/%3E%20%3C/svg%3E") no-repeat center / contain;
+  }
+  .c-beaver .body::before, .c-beaver .body::after { content: none; }
+  .c-beaver .eye, .c-beaver .cheek, .c-beaver .mouth { display: none; }
+  .c-beaver .foot { background: #c25a75; }
+  /* 급락: 눈물 뚝뚝 (SVG 눈 위치에 맞춤) */
+  .c-beaver.m-dump .pet::before { content: ""; position: absolute; left: 14.5px; top: 45px;
+    width: 5px; height: 8px; border-radius: 45% 45% 55% 55%;
+    background: linear-gradient(#9fd4ff, #4a9be8); animation: __tear 1.1s ease-in infinite; }
+  .c-beaver.m-dump .pet::after { content: ""; position: absolute; right: 14.5px; top: 45px;
+    width: 5px; height: 8px; border-radius: 45% 45% 55% 55%;
+    background: linear-gradient(#9fd4ff, #4a9be8); animation: __tear 1.1s ease-in 0.4s infinite; }
+  @keyframes __tear {
+    0% { opacity: 0; transform: translateY(0) scale(0.6); }
+    25% { opacity: 1; transform: translateY(2px) scale(1); }
+    100% { opacity: 0; transform: translateY(14px) scale(0.9); }
+  }
+
+  /* 가즈아(공룡): SVG 렌더 - 크롱 감성 초록 아기공룡 */
+  .c-dino .body {
+    left: -2px; width: 68px; height: 66px; bottom: 6px;
+    border: none; box-shadow: none; background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2068%2066%22%3E%20%20%20%3C%21--%20%EB%A8%B8%EB%A6%AC%28%EB%92%A4%ED%86%B5%EC%88%98%29%20--%3E%20%20%20%3Cellipse%20cx%3D%2234%22%20cy%3D%2234%22%20rx%3D%2226%22%20ry%3D%2222%22%20fill%3D%22%238CCB4A%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%222.4%22/%3E%20%20%20%3C%21--%20%EA%B2%B9%EC%B9%9C%20%EB%88%88%EC%95%8C%3A%20%EC%99%BC%EC%AA%BD%20%EB%A8%BC%EC%A0%80%2C%20%EC%98%A4%EB%A5%B8%EC%AA%BD%EC%9D%B4%20%EC%9C%84%EB%A1%9C%20%EA%B2%B9%EC%B9%A8%20--%3E%20%20%20%3Ccircle%20cx%3D%2228%22%20cy%3D%2215%22%20r%3D%2210.5%22%20fill%3D%22%23FFF%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%222.2%22/%3E%20%20%20%3Ccircle%20cx%3D%2241%22%20cy%3D%2215%22%20r%3D%2210.5%22%20fill%3D%22%23FFF%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%222.2%22/%3E%20%20%20%3C%21--%20%EB%B0%98%EA%B0%90%EA%B8%B4%20%EB%88%88%EA%BA%BC%ED%92%80%20--%3E%20%20%20%3Cpath%20d%3D%22M18%2012%20A10.5%2010.5%200%200%201%2038%2012%20L38%2013.5%20A%2060%2060%200%200%200%2018%2013.5%20Z%22%20fill%3D%22%238CCB4A%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%221.6%22/%3E%20%20%20%3Cpath%20d%3D%22M31%2012%20A10.5%2010.5%200%200%201%2051%2012%20L51%2013.5%20A%2060%2060%200%200%200%2031%2013.5%20Z%22%20fill%3D%22%238CCB4A%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%221.6%22/%3E%20%20%20%3C%21--%20%EC%9E%91%EC%9D%80%20%EB%88%88%EB%8F%99%EC%9E%90%3A%20%EC%82%B4%EC%A7%9D%20%EC%98%86%20%EB%B4%84%20--%3E%20%20%20%3Ccircle%20cx%3D%2226%22%20cy%3D%2217.5%22%20r%3D%222.6%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3Ccircle%20cx%3D%2239%22%20cy%3D%2217.5%22%20r%3D%222.6%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3C%21--%20%EC%A3%BC%EB%91%A5%EC%9D%B4%20--%3E%20%20%20%3Cellipse%20cx%3D%2234%22%20cy%3D%2244%22%20rx%3D%2224%22%20ry%3D%2217%22%20fill%3D%22%238CCB4A%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%222.4%22/%3E%20%20%20%3Cellipse%20cx%3D%2224%22%20cy%3D%2235%22%20rx%3D%228%22%20ry%3D%224.5%22%20fill%3D%22%23A8DD68%22%20opacity%3D%220.7%22/%3E%20%20%20%3Cellipse%20cx%3D%2226%22%20cy%3D%2235%22%20rx%3D%221.8%22%20ry%3D%222.4%22%20fill%3D%22%234C8228%22/%3E%20%20%20%3Cellipse%20cx%3D%2242%22%20cy%3D%2235%22%20rx%3D%221.8%22%20ry%3D%222.4%22%20fill%3D%22%234C8228%22/%3E%20%20%20%3C%21--%20%EB%8B%A4%EB%AC%B8%20%EC%9E%85%3A%20%EB%AC%B4%ED%91%9C%EC%A0%95%20--%3E%20%20%20%3Cpath%20d%3D%22M23%2047%20Q34%2051%2045%2047%22%20fill%3D%22none%22%20stroke%3D%22%234C8228%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22/%3E%20%3C/svg%3E") no-repeat center / contain;
+  }
+  .c-dino .body::before, .c-dino .body::after { content: none; }
+  .c-dino .eye, .c-dino .cheek, .c-dino .mouth { display: none; }
+  .c-dino .foot { background: #5FA032; }
+
+  /* 횡보(개구리): SVG 렌더 - 무기력 밈 감성 */
+  .c-frog .body {
+    left: -2px; width: 68px; height: 64px; bottom: 6px;
+    border: none; box-shadow: none; background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2068%2064%22%3E%20%20%20%3C%21--%20%EB%A8%B8%EB%A6%AC%20--%3E%20%20%20%3Cellipse%20cx%3D%2234%22%20cy%3D%2238%22%20rx%3D%2228%22%20ry%3D%2223%22%20fill%3D%22%235B9E4D%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%222.4%22/%3E%20%20%20%3Cellipse%20cx%3D%2222%22%20cy%3D%2228%22%20rx%3D%229%22%20ry%3D%225%22%20fill%3D%22%2371B160%22%20opacity%3D%220.6%22/%3E%20%20%20%3C%21--%20%EB%88%88%3A%20%EC%9C%84%EB%A1%9C%20%EB%B3%BC%EB%A1%9D%20%2B%202/3%20%EA%B0%90%EA%B8%B4%20%EB%AC%B4%EA%B1%B0%EC%9A%B4%20%EB%88%88%EA%BA%BC%ED%92%80%20--%3E%20%20%20%3Cellipse%20cx%3D%2221%22%20cy%3D%2216%22%20rx%3D%2211%22%20ry%3D%229.5%22%20fill%3D%22%23FFF%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%222.2%22/%3E%20%20%20%3Cellipse%20cx%3D%2247%22%20cy%3D%2216%22%20rx%3D%2211%22%20ry%3D%229.5%22%20fill%3D%22%23FFF%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%222.2%22/%3E%20%20%20%3Cpath%20d%3D%22M10%2013%20A%2011%209.5%200%200%201%2032%2013%20L32%2016%20A%2040%2040%200%200%200%2010%2016%20Z%22%20fill%3D%22%235B9E4D%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%221.8%22/%3E%20%20%20%3Cpath%20d%3D%22M36%2013%20A%2011%209.5%200%200%201%2058%2013%20L58%2016%20A%2040%2040%200%200%200%2036%2016%20Z%22%20fill%3D%22%235B9E4D%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%221.8%22/%3E%20%20%20%3Cellipse%20cx%3D%2223%22%20cy%3D%2219%22%20rx%3D%223.4%22%20ry%3D%223%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3Cellipse%20cx%3D%2245%22%20cy%3D%2219%22%20rx%3D%223.4%22%20ry%3D%223%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3C%21--%20%EB%91%90%EA%BA%BC%EC%9A%B4%20%EC%9E%85%EC%88%A0%20--%3E%20%20%20%3Cpath%20d%3D%22M12%2044%20Q34%2038%2056%2044%20Q55%2051%2034%2051%20Q13%2051%2012%2044%20Z%22%20fill%3D%22%23B0563F%22%20stroke%3D%22%238A3E2C%22%20stroke-width%3D%221.8%22/%3E%20%20%20%3Cpath%20d%3D%22M12%2044%20Q34%2040%2056%2044%22%20fill%3D%22none%22%20stroke%3D%22%238A3E2C%22%20stroke-width%3D%221.6%22/%3E%20%20%20%3C%21--%20%ED%84%B1%20%EC%9D%8C%EC%98%81%20--%3E%20%20%20%3Cellipse%20cx%3D%2234%22%20cy%3D%2256%22%20rx%3D%2214%22%20ry%3D%224%22%20fill%3D%22%234E8A42%22%20opacity%3D%220.5%22/%3E%20%3C/svg%3E") no-repeat center / contain;
+  }
+  .c-frog .body::before, .c-frog .body::after { content: none; }
+  .c-frog .eye, .c-frog .cheek, .c-frog .mouth { display: none; }
+  .c-frog .foot { background: #3F7A34; }
+
+  /* 존버(무표정 개미): SVG 렌더 */
+  .c-jonber .body {
+    left: -2px; width: 68px; height: 72px; bottom: 4px;
+    border: none; box-shadow: none; background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2068%2072%22%3E%20%20%20%3C%21--%20%EB%8B%AC%EA%B1%80%ED%98%95%20%EB%A8%B8%EB%A6%AC%20--%3E%20%20%20%3Cpath%20d%3D%22M34%2014%20%20%20%20%20%20%20%20%20%20%20%20C%2020%2014%2C%2012%2023%2C%2012%2035%20%20%20%20%20%20%20%20%20%20%20%20C%2012%2049%2C%2021%2060%2C%2034%2060%20%20%20%20%20%20%20%20%20%20%20%20C%2047%2060%2C%2056%2049%2C%2056%2035%20%20%20%20%20%20%20%20%20%20%20%20C%2056%2023%2C%2048%2014%2C%2034%2014%20Z%22%20%20%20%20%20%20%20%20%20fill%3D%22%238E8E92%22%20stroke%3D%22%235C5C60%22%20stroke-width%3D%222.4%22/%3E%20%20%20%3Cellipse%20cx%3D%2224%22%20cy%3D%2224%22%20rx%3D%228%22%20ry%3D%225%22%20fill%3D%22%23A5A5A9%22%20opacity%3D%220.55%22/%3E%20%20%20%3C%21--%20%EB%8D%94%EB%93%AC%EC%9D%B4%3A%20%EB%A8%B8%EB%A6%AC%20%EC%9C%84%EB%A1%9C%20%EA%B8%B8%EA%B2%8C%2C%20%ED%8C%94%EA%BF%88%EC%B9%98%20%EA%BA%BE%EC%9E%84%20%28%EB%A8%B8%EB%A6%AC%20%EC%9C%84%EC%97%90%20%EA%B7%B8%EB%A6%BC%29%20--%3E%20%20%20%3Cpath%20d%3D%22M27%2016%20Q26%208%2020%205%20Q15%202.5%2011%204.5%22%20fill%3D%22none%22%20stroke%3D%22%2317131C%22%20stroke-width%3D%222.8%22%20stroke-linecap%3D%22round%22/%3E%20%20%20%3Cpath%20d%3D%22M41%2016%20Q42%208%2048%205%20Q53%202.5%2057%204.5%22%20fill%3D%22none%22%20stroke%3D%22%2317131C%22%20stroke-width%3D%222.8%22%20stroke-linecap%3D%22round%22/%3E%20%20%20%3C%21--%20%ED%9D%AC%EB%AF%B8%ED%95%9C%20%EB%88%88%EC%8D%B9%20--%3E%20%20%20%3Cpath%20d%3D%22M22%2032%20Q25%2030.5%2028%2032%22%20fill%3D%22none%22%20stroke%3D%22%235C5C60%22%20stroke-width%3D%221.2%22/%3E%20%20%20%3Cpath%20d%3D%22M40%2032%20Q43%2030.5%2046%2032%22%20fill%3D%22none%22%20stroke%3D%22%235C5C60%22%20stroke-width%3D%221.2%22/%3E%20%20%20%3C%21--%20%EC%9E%91%EC%9D%80%20%EB%AC%B4%ED%91%9C%EC%A0%95%20%EB%88%88%20--%3E%20%20%20%3Ccircle%20cx%3D%2225%22%20cy%3D%2236%22%20r%3D%222%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3Ccircle%20cx%3D%2243%22%20cy%3D%2236%22%20r%3D%222%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3C%21--%20%EC%BD%94%20--%3E%20%20%20%3Cpath%20d%3D%22M34%2036%20L34%2044%20M31.5%2045%20Q34%2046.5%2036.5%2045%22%20fill%3D%22none%22%20stroke%3D%22%235C5C60%22%20stroke-width%3D%221.4%22%20stroke-linecap%3D%22round%22/%3E%20%20%20%3C%21--%20%EC%9D%BC%EC%9E%90%20%EC%9E%85%20--%3E%20%20%20%3Cline%20x1%3D%2229%22%20y1%3D%2251%22%20x2%3D%2239%22%20y2%3D%2251%22%20stroke%3D%22%233F3F44%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22/%3E%20%20%20%3C%21--%20%ED%81%AC%EB%A6%BC%20%EB%82%98%EC%8B%9C%20--%3E%20%20%20%3Cpath%20d%3D%22M18%2057%20Q34%2052%2050%2057%20L50%2068%20L18%2068%20Z%22%20fill%3D%22%23F2ECC8%22%20stroke%3D%22%23D9D2A8%22%20stroke-width%3D%221.6%22/%3E%20%3C/svg%3E") no-repeat center / contain;
+  }
+  .c-jonber .body::before, .c-jonber .body::after { content: none; }
+  .c-jonber .eye, .c-jonber .cheek, .c-jonber .mouth { display: none; }
+  .c-jonber .foot { background: #5C5C60; }
+
+  /* 무드별 표정 (가즈아/횡보) */
+  .c-dino.m-pump .body { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2068%2066%22%3E%20%20%20%3C%21--%20%EB%A8%B8%EB%A6%AC%28%EB%92%A4%ED%86%B5%EC%88%98%29%20--%3E%20%20%20%3Cellipse%20cx%3D%2234%22%20cy%3D%2234%22%20rx%3D%2226%22%20ry%3D%2222%22%20fill%3D%22%238CCB4A%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%222.4%22/%3E%20%20%20%3C%21--%20%EA%B2%B9%EC%B9%9C%20%EB%88%88%EC%95%8C%3A%20%EC%99%BC%EC%AA%BD%20%EB%A8%BC%EC%A0%80%2C%20%EC%98%A4%EB%A5%B8%EC%AA%BD%EC%9D%B4%20%EC%9C%84%EB%A1%9C%20%EA%B2%B9%EC%B9%A8%20--%3E%20%20%20%3Ccircle%20cx%3D%2228%22%20cy%3D%2215%22%20r%3D%2210.5%22%20fill%3D%22%23FFF%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%222.2%22/%3E%20%20%20%3Ccircle%20cx%3D%2241%22%20cy%3D%2215%22%20r%3D%2210.5%22%20fill%3D%22%23FFF%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%222.2%22/%3E%20%20%20%3C%21--%20%EB%B0%98%EA%B0%90%EA%B8%B4%20%EB%88%88%EA%BA%BC%ED%92%80%20--%3E%20%20%20%20%3C%21--%20%EC%9E%91%EC%9D%80%20%EB%88%88%EB%8F%99%EC%9E%90%3A%20%EC%82%B4%EC%A7%9D%20%EC%98%86%20%EB%B4%84%20--%3E%20%20%20%3Ccircle%20cx%3D%2227%22%20cy%3D%2215.5%22%20r%3D%223.6%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3Ccircle%20cx%3D%2225.8%22%20cy%3D%2214.2%22%20r%3D%221.2%22%20fill%3D%22%23FFF%22/%3E%20%20%20%3Ccircle%20cx%3D%2240%22%20cy%3D%2215.5%22%20r%3D%223.6%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3Ccircle%20cx%3D%2238.8%22%20cy%3D%2214.2%22%20r%3D%221.2%22%20fill%3D%22%23FFF%22/%3E%20%20%20%3C%21--%20%EC%A3%BC%EB%91%A5%EC%9D%B4%20--%3E%20%20%20%3Cellipse%20cx%3D%2234%22%20cy%3D%2244%22%20rx%3D%2224%22%20ry%3D%2217%22%20fill%3D%22%238CCB4A%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%222.4%22/%3E%20%20%20%3Cellipse%20cx%3D%2224%22%20cy%3D%2235%22%20rx%3D%228%22%20ry%3D%224.5%22%20fill%3D%22%23A8DD68%22%20opacity%3D%220.7%22/%3E%20%20%20%3Cellipse%20cx%3D%2226%22%20cy%3D%2235%22%20rx%3D%221.8%22%20ry%3D%222.4%22%20fill%3D%22%234C8228%22/%3E%20%20%20%3Cellipse%20cx%3D%2242%22%20cy%3D%2235%22%20rx%3D%221.8%22%20ry%3D%222.4%22%20fill%3D%22%234C8228%22/%3E%20%20%20%3C%21--%20%EB%8B%A4%EB%AC%B8%20%EC%9E%85%3A%20%EB%AC%B4%ED%91%9C%EC%A0%95%20--%3E%20%20%20%3Cpath%20d%3D%22M22%2044%20Q34%2041%2046%2044%20Q45%2055%2034%2055%20Q23%2055%2022%2044%20Z%22%20fill%3D%22%235B2B23%22/%3E%20%20%20%3Cpath%20d%3D%22M26%2050.5%20Q34%2055%2042%2050.5%20Q40%2054%2034%2054.4%20Q28%2054%2026%2050.5%20Z%22%20fill%3D%22%23C1443B%22/%3E%20%3C/svg%3E"); }
+  .c-dino.m-dump .body { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2068%2066%22%3E%20%20%20%3C%21--%20%EB%A8%B8%EB%A6%AC%28%EB%92%A4%ED%86%B5%EC%88%98%29%20--%3E%20%20%20%3Cellipse%20cx%3D%2234%22%20cy%3D%2234%22%20rx%3D%2226%22%20ry%3D%2222%22%20fill%3D%22%238CCB4A%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%222.4%22/%3E%20%20%20%3C%21--%20%EA%B2%B9%EC%B9%9C%20%EB%88%88%EC%95%8C%3A%20%EC%99%BC%EC%AA%BD%20%EB%A8%BC%EC%A0%80%2C%20%EC%98%A4%EB%A5%B8%EC%AA%BD%EC%9D%B4%20%EC%9C%84%EB%A1%9C%20%EA%B2%B9%EC%B9%A8%20--%3E%20%20%20%3Ccircle%20cx%3D%2228%22%20cy%3D%2215%22%20r%3D%2210.5%22%20fill%3D%22%23FFF%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%222.2%22/%3E%20%20%20%3Ccircle%20cx%3D%2241%22%20cy%3D%2215%22%20r%3D%2210.5%22%20fill%3D%22%23FFF%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%222.2%22/%3E%20%20%20%3C%21--%20%EB%B0%98%EA%B0%90%EA%B8%B4%20%EB%88%88%EA%BA%BC%ED%92%80%20--%3E%20%20%20%3Cpath%20d%3D%22M18%2012%20A10.5%2010.5%200%200%201%2038%2012%20L38%2016.5%20A%2060%2060%200%200%200%2018%2016.5%20Z%22%20fill%3D%22%238CCB4A%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%221.6%22/%3E%20%20%20%3Cpath%20d%3D%22M31%2012%20A10.5%2010.5%200%200%201%2051%2012%20L51%2016.5%20A%2060%2060%200%200%200%2031%2016.5%20Z%22%20fill%3D%22%238CCB4A%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%221.6%22/%3E%20%20%20%3C%21--%20%EC%9E%91%EC%9D%80%20%EB%88%88%EB%8F%99%EC%9E%90%3A%20%EC%82%B4%EC%A7%9D%20%EC%98%86%20%EB%B4%84%20--%3E%20%20%20%3Ccircle%20cx%3D%2226%22%20cy%3D%2219%22%20r%3D%222.4%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3Ccircle%20cx%3D%2239%22%20cy%3D%2219%22%20r%3D%222.4%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3C%21--%20%EC%A3%BC%EB%91%A5%EC%9D%B4%20--%3E%20%20%20%3Cellipse%20cx%3D%2234%22%20cy%3D%2244%22%20rx%3D%2224%22%20ry%3D%2217%22%20fill%3D%22%238CCB4A%22%20stroke%3D%22%235FA032%22%20stroke-width%3D%222.4%22/%3E%20%20%20%3Cellipse%20cx%3D%2224%22%20cy%3D%2235%22%20rx%3D%228%22%20ry%3D%224.5%22%20fill%3D%22%23A8DD68%22%20opacity%3D%220.7%22/%3E%20%20%20%3Cellipse%20cx%3D%2226%22%20cy%3D%2235%22%20rx%3D%221.8%22%20ry%3D%222.4%22%20fill%3D%22%234C8228%22/%3E%20%20%20%3Cellipse%20cx%3D%2242%22%20cy%3D%2235%22%20rx%3D%221.8%22%20ry%3D%222.4%22%20fill%3D%22%234C8228%22/%3E%20%20%20%3C%21--%20%EB%8B%A4%EB%AC%B8%20%EC%9E%85%3A%20%EB%AC%B4%ED%91%9C%EC%A0%95%20--%3E%20%20%20%3Cpath%20d%3D%22M24%2050%20Q34%2045.5%2044%2050%22%20fill%3D%22none%22%20stroke%3D%22%234C8228%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22/%3E%20%3C/svg%3E"); }
+  .c-frog.m-pump .body { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2068%2064%22%3E%20%20%20%3C%21--%20%EB%A8%B8%EB%A6%AC%20--%3E%20%20%20%3Cellipse%20cx%3D%2234%22%20cy%3D%2238%22%20rx%3D%2228%22%20ry%3D%2223%22%20fill%3D%22%235B9E4D%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%222.4%22/%3E%20%20%20%3Cellipse%20cx%3D%2222%22%20cy%3D%2228%22%20rx%3D%229%22%20ry%3D%225%22%20fill%3D%22%2371B160%22%20opacity%3D%220.6%22/%3E%20%20%20%3C%21--%20%EB%88%88%3A%20%EC%9C%84%EB%A1%9C%20%EB%B3%BC%EB%A1%9D%20%2B%202/3%20%EA%B0%90%EA%B8%B4%20%EB%AC%B4%EA%B1%B0%EC%9A%B4%20%EB%88%88%EA%BA%BC%ED%92%80%20--%3E%20%20%20%3Cellipse%20cx%3D%2221%22%20cy%3D%2216%22%20rx%3D%2211%22%20ry%3D%229.5%22%20fill%3D%22%23FFF%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%222.2%22/%3E%20%20%20%3Cellipse%20cx%3D%2247%22%20cy%3D%2216%22%20rx%3D%2211%22%20ry%3D%229.5%22%20fill%3D%22%23FFF%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%222.2%22/%3E%20%20%20%3Cpath%20d%3D%22M10%2013%20A%2011%209.5%200%200%201%2032%2013%20L32%2013.5%20A%2040%2040%200%200%200%2010%2013.5%20Z%22%20fill%3D%22%235B9E4D%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%221.8%22/%3E%20%20%20%3Cpath%20d%3D%22M36%2013%20A%2011%209.5%200%200%201%2058%2013%20L58%2013.5%20A%2040%2040%200%200%200%2036%2013.5%20Z%22%20fill%3D%22%235B9E4D%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%221.8%22/%3E%20%20%20%3Cellipse%20cx%3D%2223%22%20cy%3D%2219%22%20rx%3D%223.4%22%20ry%3D%223%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3Cellipse%20cx%3D%2245%22%20cy%3D%2219%22%20rx%3D%223.4%22%20ry%3D%223%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3C%21--%20%EB%91%90%EA%BA%BC%EC%9A%B4%20%EC%9E%85%EC%88%A0%20--%3E%20%20%20%3Cpath%20d%3D%22M13%2043%20Q34%2036%2055%2043%20Q53%2050%2034%2050%20Q15%2050%2013%2043%20Z%22%20fill%3D%22%23B0563F%22%20stroke%3D%22%238A3E2C%22%20stroke-width%3D%221.8%22/%3E%20%20%20%3Cpath%20d%3D%22M13%2043%20Q34%2038%2055%2043%22%20fill%3D%22none%22%20stroke%3D%22%238A3E2C%22%20stroke-width%3D%221.6%22/%3E%20%20%20%3C%21--%20%ED%84%B1%20%EC%9D%8C%EC%98%81%20--%3E%20%20%20%3Cellipse%20cx%3D%2234%22%20cy%3D%2256%22%20rx%3D%2214%22%20ry%3D%224%22%20fill%3D%22%234E8A42%22%20opacity%3D%220.5%22/%3E%20%3C/svg%3E"); }
+  .c-frog.m-dump .body { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2068%2064%22%3E%20%20%20%3C%21--%20%EB%A8%B8%EB%A6%AC%20--%3E%20%20%20%3Cellipse%20cx%3D%2234%22%20cy%3D%2238%22%20rx%3D%2228%22%20ry%3D%2223%22%20fill%3D%22%235B9E4D%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%222.4%22/%3E%20%20%20%3Cellipse%20cx%3D%2222%22%20cy%3D%2228%22%20rx%3D%229%22%20ry%3D%225%22%20fill%3D%22%2371B160%22%20opacity%3D%220.6%22/%3E%20%20%20%3C%21--%20%EB%88%88%3A%20%EC%9C%84%EB%A1%9C%20%EB%B3%BC%EB%A1%9D%20%2B%202/3%20%EA%B0%90%EA%B8%B4%20%EB%AC%B4%EA%B1%B0%EC%9A%B4%20%EB%88%88%EA%BA%BC%ED%92%80%20--%3E%20%20%20%3Cellipse%20cx%3D%2221%22%20cy%3D%2216%22%20rx%3D%2211%22%20ry%3D%229.5%22%20fill%3D%22%23FFF%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%222.2%22/%3E%20%20%20%3Cellipse%20cx%3D%2247%22%20cy%3D%2216%22%20rx%3D%2211%22%20ry%3D%229.5%22%20fill%3D%22%23FFF%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%222.2%22/%3E%20%20%20%3Cpath%20d%3D%22M10%2013%20A%2011%209.5%200%200%201%2032%2013%20L32%2019%20A%2040%2040%200%200%200%2010%2019%20Z%22%20fill%3D%22%235B9E4D%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%221.8%22/%3E%20%20%20%3Cpath%20d%3D%22M36%2013%20A%2011%209.5%200%200%201%2058%2013%20L58%2019%20A%2040%2040%200%200%200%2036%2019%20Z%22%20fill%3D%22%235B9E4D%22%20stroke%3D%22%233F7A34%22%20stroke-width%3D%221.8%22/%3E%20%20%20%3Cellipse%20cx%3D%2223%22%20cy%3D%2220.5%22%20rx%3D%223.2%22%20ry%3D%222.4%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3Cellipse%20cx%3D%2245%22%20cy%3D%2220.5%22%20rx%3D%223.2%22%20ry%3D%222.4%22%20fill%3D%22%2317131C%22/%3E%20%20%20%3C%21--%20%EB%91%90%EA%BA%BC%EC%9A%B4%20%EC%9E%85%EC%88%A0%20--%3E%20%20%20%3Cpath%20d%3D%22M14%2047%20Q34%2042%2054%2047%20Q52%2052%2034%2052.5%20Q16%2052%2014%2047%20Z%22%20fill%3D%22%23B0563F%22%20stroke%3D%22%238A3E2C%22%20stroke-width%3D%221.8%22/%3E%20%20%20%3Cpath%20d%3D%22M14%2047%20Q34%2043.5%2054%2047%22%20fill%3D%22none%22%20stroke%3D%22%238A3E2C%22%20stroke-width%3D%221.6%22/%3E%20%20%20%3C%21--%20%ED%84%B1%20%EC%9D%8C%EC%98%81%20--%3E%20%20%20%3Cellipse%20cx%3D%2234%22%20cy%3D%2256%22%20rx%3D%2214%22%20ry%3D%224%22%20fill%3D%22%234E8A42%22%20opacity%3D%220.5%22/%3E%20%3C/svg%3E"); }
+
+  /* 기본형(필) 표시 */
+  #pill { position: absolute; right: 4px; bottom: 16px; display: none;
+    flex-direction: column; align-items: center; gap: 5px;
+    background: rgba(14,17,23,0.92); border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 16px; padding: 16px 20px;
+    font-family: -apple-system,'Segoe UI',Roboto,sans-serif;
+    font-variant-numeric: tabular-nums; line-height: 1;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.4); }
+  #pill .top { display: flex; align-items: baseline; gap: 8px; }
+  #pill .sym { color: #f7931a; font-weight: 800; font-size: 20px; }
+  #pill .p { color: #fff; font-weight: 800; font-size: 27px; letter-spacing: -0.6px; }
+  #pill .c { font-weight: 600; font-size: 14px; }
+  #pill .sub { font-size: 10px; color: #6b7385; letter-spacing: 0.4px; }
+  body.style-pill #wrap { display: none; }
+  body.style-pill #pill { display: flex; }
+  @keyframes pillflash {
+    0%, 100% { box-shadow: 0 4px 16px rgba(0,0,0,0.35); }
+    50% { box-shadow: 0 0 0 4px rgba(247,147,26,0.85), 0 0 24px rgba(247,147,26,0.6); }
+  }
+
+  /* 원금이+ (일러스트 테스트): 이미지 렌더 */
+  .c-coin2 .body {
+    left: -4px; width: 72px; height: 72px; bottom: 4px;
+    border: none; box-shadow: none;
+    background: url("../img/coin2_base.png") no-repeat center bottom / contain;
+  }
+  .c-coin2 .body::before, .c-coin2 .body::after { content: none; }
+  .c-coin2 .eye, .c-coin2 .cheek, .c-coin2 .mouth, .c-coin2 .foot { display: none; }
+  .c-coin2.m-pump .body { background-image: url("../img/coin2_pump.png"); }
+  .c-coin2.m-dump .body { background-image: url("../img/coin2_dump.png"); }
+
+  /* ===== 일러스트 캐릭터 18종 ===== */
+  [class*="c-il-"] .pet { width: var(--ilsize, 90px); height: var(--ilsize, 90px);
+    margin-left: calc((var(--ilsize, 90px) / -2) + var(--ilshift-x, 0px)); }
+
+  /* PNG 캔버스가 아니라 실제 불투명 캐릭터 영역을 기준으로 크기와 중심을 통일 */
+  .c-il-algo     { --ilsize: 102px; --ilshift-x: 0px; }
+  .c-il-buljang  { --ilsize: 85px;  --ilshift-x: 0px; }
+  .c-il-cheongsan{ --ilsize: 102px; --ilshift-x: -1px; }
+  .c-il-gazua    { --ilsize: 76px;  --ilshift-x: 0px; }
+  .c-il-hoengbo  { --ilsize: 76px;  --ilshift-x: -5px; }
+  .c-il-hojae    { --ilsize: 102px; --ilshift-x: 0px; }
+  .c-il-ikjeol   { --ilsize: 76px;  --ilshift-x: 0px; }
+  .c-il-jonber   { --ilsize: 102px; --ilshift-x: 0px; }
+  .c-il-kimp     { --ilsize: 76px;  --ilshift-x: 0px; }
+  .c-il-longy    { --ilsize: 102px; --ilshift-x: -2px; }
+  .c-il-multagi  { --ilsize: 81px;  --ilshift-x: 0px; }
+  .c-il-ppongsik { --ilsize: 88px;  --ilshift-x: 0px; }
+  .c-il-shorty   { --ilsize: 102px; --ilshift-x: 0px; }
+  .c-il-sonjeol  { --ilsize: 102px; --ilshift-x: 0px; }
+  .c-il-ttun     { --ilsize: 96px;  --ilshift-x: 0px; }
+  .c-il-wongeum  { --ilsize: 84px;  --ilshift-x: 0px; }
+  .c-il-yakson   { --ilsize: 76px;  --ilshift-x: 0px; }
+  .c-il-yudong   { --ilsize: 102px; --ilshift-x: -1px; }
+  [class*="c-il-"] .body { left: 0; top: 0; width: 100%; height: 100%;
+    border: none; box-shadow: none; border-radius: 0;
+    background: none no-repeat center bottom / contain; transform-origin: bottom center; }
+  [class*="c-il-"] .body::before, [class*="c-il-"] .body::after { content: none; }
+  [class*="c-il-"] .eye, [class*="c-il-"] .cheek,
+  [class*="c-il-"] .mouth, [class*="c-il-"] .foot { display: none; }
+
+  /* 표준 액티브 모션 */
+  [class*="c-il-"].m-idle .pet { animation: il-hop 1.6s ease-in-out infinite; }
+  [class*="c-il-"].m-idle .body { animation: il-breathe 3.2s ease-in-out infinite; }
+  [class*="c-il-"].m-pump .pet { animation: il-jump 0.55s cubic-bezier(0.34,1.4,0.64,1) infinite;
+    filter: drop-shadow(0 0 10px rgba(14,203,129,0.55)); }
+  [class*="c-il-"].m-dump .pet { animation: il-sob 1.1s ease-in-out infinite;
+    filter: drop-shadow(0 0 9px rgba(246,70,93,0.5)); }
+  [class*="c-il-"].m-dump .body { transform: scaleY(0.95); }
+  [class*="c-il-"].m-candle .body { animation: il-flip 1.2s ease-in-out infinite; }
+  @keyframes il-breathe { 0%,100% { transform:scale(1,1); } 50% { transform:scale(1.022,0.978); } }
+  @keyframes il-hop { 0%,100% { transform:translateY(0) rotate(-1.5deg); } 50% { transform:translateY(-6px) rotate(1.5deg); } }
+  @keyframes il-jump { 0% { transform:translateY(0) rotate(-5deg) scale(1.04,0.94); }
+    35% { transform:translateY(-20px) rotate(3deg) scale(0.97,1.05); }
+    70% { transform:translateY(0) rotate(5deg) scale(1.06,0.92); }
+    100% { transform:translateY(0) rotate(-5deg) scale(1.04,0.94); } }
+  @keyframes il-sob { 0%,100% { transform:translateY(0.5px) rotate(-1deg); }
+    12% { transform:translateY(-1.5px) rotate(-1.5deg); } 24% { transform:translateY(0.5px) rotate(-0.5deg); }
+    36% { transform:translateY(-1px) rotate(-1.2deg); } 50% { transform:translateY(0.5px) rotate(0deg); } }
+  @keyframes il-flip { 0%,100% { transform: rotateY(0); } 50% { transform: rotateY(180deg); } }
+  .c-il-wongeum .body { background-image: url("../img/il/wongeum_base.png"); }
+  .c-il-wongeum.m-pump .body { background-image: url("../img/il/wongeum_pump.png"); }
+  .c-il-wongeum.m-dump .body { background-image: url("../img/il/wongeum_dump.png"); }
+  .c-il-yudong .body { background-image: url("../img/il/yudong_base.png"); }
+  .c-il-yudong.m-pump .body { background-image: url("../img/il/yudong_pump.png"); }
+  .c-il-yudong.m-dump .body { background-image: url("../img/il/yudong_dump.png"); }
+  .c-il-algo .body { background-image: url("../img/il/algo_base.png"); }
+  .c-il-algo.m-pump .body { background-image: url("../img/il/algo_pump.png"); }
+  .c-il-algo.m-dump .body { background-image: url("../img/il/algo_dump.png"); }
+  .c-il-cheongsan .body { background-image: url("../img/il/cheongsan_base.png"); }
+  .c-il-cheongsan.m-pump .body { background-image: url("../img/il/cheongsan_pump.png"); }
+  .c-il-cheongsan.m-dump .body { background-image: url("../img/il/cheongsan_dump.png"); }
+  .c-il-hojae .body { background-image: url("../img/il/hojae_base.png"); }
+  .c-il-hojae.m-pump .body { background-image: url("../img/il/hojae_pump.png"); }
+  .c-il-hojae.m-dump .body { background-image: url("../img/il/hojae_dump.png"); }
+  .c-il-ttun .body { background-image: url("../img/il/ttun_base.png"); }
+  .c-il-ttun.m-pump .body { background-image: url("../img/il/ttun_pump.png"); }
+  .c-il-ttun.m-dump .body { background-image: url("../img/il/ttun_dump.png"); }
+  .c-il-ikjeol .body { background-image: url("../img/il/ikjeol_base.png"); }
+  .c-il-ikjeol.m-pump .body { background-image: url("../img/il/ikjeol_pump.png"); }
+  .c-il-ikjeol.m-dump .body { background-image: url("../img/il/ikjeol_dump.png"); }
+  .c-il-sonjeol .body { background-image: url("../img/il/sonjeol_base.png"); }
+  .c-il-sonjeol.m-pump .body { background-image: url("../img/il/sonjeol_pump.png"); }
+  .c-il-sonjeol.m-dump .body { background-image: url("../img/il/sonjeol_dump.png"); }
+  .c-il-shorty .body { background-image: url("../img/il/shorty_base.png"); }
+  .c-il-shorty.m-pump .body { background-image: url("../img/il/shorty_pump.png"); }
+  .c-il-shorty.m-dump .body { background-image: url("../img/il/shorty_dump.png"); }
+  .c-il-longy .body { background-image: url("../img/il/longy_base.png"); }
+  .c-il-longy.m-pump .body { background-image: url("../img/il/longy_pump.png"); }
+  .c-il-longy.m-dump .body { background-image: url("../img/il/longy_dump.png"); }
+  .c-il-multagi .body { background-image: url("../img/il/multagi_base.png"); }
+  .c-il-multagi.m-pump .body { background-image: url("../img/il/multagi_pump.png"); }
+  .c-il-multagi.m-dump .body { background-image: url("../img/il/multagi_dump.png"); }
+  .c-il-kimp .body { background-image: url("../img/il/kimp_base.png"); }
+  .c-il-kimp.m-pump .body { background-image: url("../img/il/kimp_pump.png"); }
+  .c-il-kimp.m-dump .body { background-image: url("../img/il/kimp_dump.png"); }
+  .c-il-buljang .body { background-image: url("../img/il/buljang_base.png"); }
+  .c-il-buljang.m-pump .body { background-image: url("../img/il/buljang_pump.png"); }
+  .c-il-buljang.m-dump .body { background-image: url("../img/il/buljang_dump.png"); }
+  .c-il-yakson .body { background-image: url("../img/il/yakson_base.png"); }
+  .c-il-yakson.m-pump .body { background-image: url("../img/il/yakson_pump.png"); }
+  .c-il-yakson.m-dump .body { background-image: url("../img/il/yakson_dump.png"); }
+  .c-il-gazua .body { background-image: url("../img/il/gazua_base.png"); }
+  .c-il-gazua.m-pump .body { background-image: url("../img/il/gazua_pump.png"); }
+  .c-il-gazua.m-dump .body { background-image: url("../img/il/gazua_dump.png"); }
+  .c-il-hoengbo .body { background-image: url("../img/il/hoengbo_base.png"); }
+  .c-il-hoengbo.m-pump .body { background-image: url("../img/il/hoengbo_pump.png"); }
+  /* 컨테이너 좌표는 유지하고 dump PNG 배경만 오른쪽으로 보정 */
+  .c-il-hoengbo.m-dump .body {
+    background-image: url("../img/il/hoengbo_dump.png");
+    background-position: calc(50% + 7px) center;
+  }
+  .c-il-ppongsik .body { background-image: url("../img/il/ppongsik_base.png"); }
+  .c-il-jonber .body { background-image: url("../img/il/jonber_base.png"); }
+
+  /* 컨셉 모션 */
+  .c-il-wongeum.m-dump .body { animation: il-fade 1.4s ease-in-out infinite; }
+  @keyframes il-fade { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
+  .c-il-yudong.m-dump .body { animation: il-melt 2s ease-in-out infinite; }
+  .c-il-yudong.m-dump .pet { animation: none; }
+  @keyframes il-melt { 0%,100% { transform:scale(1.14,0.8); } 50% { transform:scale(1.2,0.74); } }
+  .c-il-algo.m-pump .pet { animation: il-jump 0.55s steps(4,end) infinite; }
+  .c-il-algo.m-dump .pet { animation: il-glitch 0.5s steps(2,end) infinite; }
+  @keyframes il-glitch { 0%,100% { transform:translate(0,2px); } 25% { transform:translate(-2px,2px); }
+    50% { transform:translate(2px,3px); } 75% { transform:translate(-1px,2px); } }
+  .c-il-cheongsan.m-dump .pet { animation: il-ascend 2.4s ease-in infinite; filter:none; }
+  @keyframes il-ascend { 0% { transform:translateY(4px); opacity:1; }
+    70% { transform:translateY(-26px); opacity:0.25; } 71% { transform:translateY(6px); opacity:0; }
+    100% { transform:translateY(4px); opacity:1; } }
+  .c-il-hojae.m-pump .pet { animation: il-jumphi 0.55s cubic-bezier(0.34,1.4,0.64,1) infinite; }
+  @keyframes il-jumphi { 0% { transform:translateY(0) rotate(-6deg) scale(1.05,0.93); }
+    35% { transform:translateY(-30px) rotate(4deg) scale(0.95,1.07); }
+    70% { transform:translateY(0) rotate(6deg) scale(1.07,0.91); }
+    100% { transform:translateY(0) rotate(-6deg) scale(1.05,0.93); } }
+  .c-il-ttun.m-idle .pet { animation: il-busy 0.9s ease-in-out infinite; }
+  @keyframes il-busy { 0%,100% { transform:translate(-4px,0) rotate(-2deg); }
+    25% { transform:translate(0,-5px); } 50% { transform:translate(4px,0) rotate(2deg); }
+    75% { transform:translate(0,-5px); } }
+  .c-il-ikjeol.m-pump .pet { animation: il-hesit 1.4s ease-in-out infinite; }
+  @keyframes il-hesit { 0% { transform:translateY(0) rotate(-4deg) scale(1.03,0.95); }
+    18% { transform:translateY(-18px) rotate(2deg); } 30% { transform:translateY(0) scale(1.05,0.93); }
+    40%,58% { transform:translateY(-2px) scale(1,1); } 70% { transform:translateY(-14px) rotate(3deg); }
+    82%,100% { transform:translateY(0) rotate(-2deg) scale(1.02,0.97); } }
+  .c-il-sonjeol.m-dump .pet { animation: il-ouch 0.8s ease-in-out infinite; }
+  @keyframes il-ouch { 0%,100% { transform:translateY(3px); }
+    8% { transform:translateY(0) scale(0.97,1.04); } 16% { transform:translateY(3px) scale(1.02,0.97); }
+    60% { transform:translateY(3px); } }
+  .c-il-shorty.m-pump .pet { animation: il-sob 1.1s ease-in-out infinite; }
+  .c-il-shorty.m-dump .pet { animation: il-jump 0.55s cubic-bezier(0.34,1.4,0.64,1) infinite; }
+  .c-il-shorty.m-dump .body { transform: none; }
+  .c-il-longy.m-dump .pet { animation: il-freeze 0.15s linear infinite; }
+  .c-il-longy.m-dump .body { transform: none; }
+  @keyframes il-freeze { 0%,100% { transform:translateX(0); } 50% { transform:translateX(1.2px); } }
+  .c-il-multagi.m-dump .pet { animation: il-sob 0.75s ease-in-out infinite; }
+  .c-il-kimp.m-pump .body { animation: il-inflate 0.9s cubic-bezier(0.34,1.5,0.64,1) infinite; }
+  .c-il-kimp.m-pump .pet { animation: none; }
+  @keyframes il-inflate { 0% { transform:scale(1,1); } 40% { transform:scale(1.24,1.2) translateY(-4px); }
+    55% { transform:scale(1.17,1.24) translateY(-5px); } 70% { transform:scale(1.23,1.19) translateY(-4px); }
+    100% { transform:scale(1,1); } }
+  .c-il-kimp.m-dump .body { animation: il-deflate 2.6s ease-out infinite; }
+  .c-il-kimp.m-dump .pet { animation: none; }
+  @keyframes il-deflate { 0% { transform:scale(1.02,1); } 18% { transform:scale(0.97,0.95) rotate(-1deg); }
+    26% { transform:scale(0.99,0.96) rotate(1deg); } 46% { transform:scale(0.92,0.89) rotate(-1.5deg); }
+    54% { transform:scale(0.94,0.9) rotate(0.5deg); } 76% { transform:scale(0.87,0.83) rotate(-1deg); }
+    84% { transform:scale(0.88,0.84); } 92% { transform:scale(0.86,0.82); } 100% { transform:scale(1.02,1); } }
+  .c-il-buljang.m-pump .pet { filter: drop-shadow(0 0 14px rgba(255,120,30,0.75)); }
+  .c-il-buljang.m-pump .body { animation: il-blaze 0.5s ease-in-out infinite; }
+  @keyframes il-blaze { 0%,100% { transform:scale(1.1,1.14); filter:brightness(1.06); }
+    30% { transform:scale(1.13,1.1); filter:brightness(1.14); }
+    60% { transform:scale(1.09,1.16); filter:brightness(1.02); } }
+  .c-il-buljang.m-dump .body { filter: brightness(0.72) saturate(0.8); transform: scaleY(0.93); }
+  .c-il-yakson.m-dump .pet { animation: il-pat 1.6s ease-in-out infinite; }
+  .c-il-yakson.m-dump .body { transform: none; }
+  @keyframes il-pat { 0%,100% { transform:translateY(2px) rotate(-3deg); } 50% { transform:translateY(2px) rotate(3deg); } }
+  .c-il-gazua.m-pump .pet { animation: il-jumphi 0.5s cubic-bezier(0.34,1.4,0.64,1) infinite; }
+  .c-il-hoengbo.m-pump .pet { animation: il-meh 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 6px rgba(14,203,129,0.35)); }
+  @keyframes il-meh { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-4px); } }
+  /* 뽕식: 역베팅 말풍선 + 심박/버티기 */
+  .c-il-ppongsik.m-pump .pet { animation: il-hop 1.6s ease-in-out infinite;
+    filter: drop-shadow(0 0 6px rgba(14,203,129,0.28)); }
+  .c-il-ppongsik.m-pump .body { animation: il-breathe 1.4s ease-in-out infinite; }
+  .c-il-ppongsik.m-dump .pet { animation: il-endure 3s linear infinite;
+    filter: drop-shadow(0 0 6px rgba(246,70,93,0.25)); }
+  .c-il-ppongsik.m-dump .body { animation: il-breathe 3.2s ease-in-out infinite; transform: none; }
+  .c-il-ppongsik.m-pump .pet::after, .c-il-ppongsik.m-dump .pet::after {
+    position: absolute; left: 50%; bottom: calc(100% + 6px); padding: 3px 8px; border-radius: 9px;
+    font-size: 11px; font-weight: 700; white-space: nowrap;
+    background: #1b202c; border: 1px solid #2c3444; transform-origin: center bottom;
+    animation: il-sayit-head 3.2s ease-in-out infinite; pointer-events: none; z-index: 6; }
+  .c-il-ppongsik.m-pump .pet::after { content: "숏 가즈아~"; color: #f6465d; }
+  .c-il-ppongsik.m-dump .pet::after { content: "롱 가즈아~"; color: #0ecb81; }
+  @keyframes il-sayit-head {
+    0%,8% { opacity:0; transform:translate(-50%, 5px) scale(0.6); }
+    14%,72% { opacity:1; transform:translate(-50%, 0) scale(1); }
+    82%,100% { opacity:0; transform:translate(-50%, 3px) scale(0.9); } }
+  @keyframes il-endure { 0%,86% { transform:translateX(0); } 88% { transform:translateX(-1.4px); }
+    90% { transform:translateX(1.4px); } 92% { transform:translateX(-1px); }
+    94% { transform:translateX(0.8px); } 96%,100% { transform:translateX(0); } }
+  /* 존버(바위): 완전 정지 */
+  .c-il-jonber.m-idle .pet { animation: none; }
+  .c-il-jonber.m-idle .body { animation: none; }
+  .c-il-jonber.m-pump .pet { animation: none;
+    filter: drop-shadow(0 0 6px rgba(14,203,129,0.25)); }
+  .c-il-jonber.m-pump .body { animation: none; }
+  .c-il-jonber.m-dump .pet { animation: il-endure 3s linear infinite;
+    filter: drop-shadow(0 0 6px rgba(246,70,93,0.22)); }
+  .c-il-jonber.m-dump .body { animation: none; transform: none; }
+
+  /* 매집이 (세력볼) */
+  .c-il-maejip .body { background-image: url("../img/il/maejip_base.png"); }
+  .c-il-maejip.m-pump .body { background-image: url("../img/il/maejip_pump.png"); }
+  .c-il-maejip.m-dump .body { background-image: url("../img/il/maejip_dump.png"); }
+  .c-il-maejip { --ilsize: 90px; --ilshift-x: 0px; }
+  /* pump: 물량 뱉기 - 얄미운 통통 + 입에서 금색 입자 */
+  .c-il-maejip.m-pump .pet { animation: il-hop 0.8s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(14,203,129,0.45)); }
+  .c-il-maejip.m-pump .pet::before, .c-il-maejip.m-pump .pet::after {
+    content: ""; position: absolute; width: 7px; height: 7px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffe9a8, #f7c531 65%, #c8920a);
+    left: 50%; top: 46%; pointer-events: none; z-index: 2; }
+  .c-il-maejip.m-pump .pet::before { animation: il-spit1 0.9s ease-out infinite; }
+  .c-il-maejip.m-pump .pet::after { animation: il-spit2 0.9s ease-out 0.45s infinite; }
+  @keyframes il-spit1 { 0% { transform: translate(0,0) scale(0.5); opacity: 0; }
+    12% { opacity: 1; } 100% { transform: translate(30px,-22px) scale(1); opacity: 0; } }
+  @keyframes il-spit2 { 0% { transform: translate(0,0) scale(0.5); opacity: 0; }
+    12% { opacity: 1; } 100% { transform: translate(-28px,-26px) scale(0.9); opacity: 0; } }
+  /* dump: 전량 흡입 - 몸이 커지며 들이킴, 금색 중립 오라 */
+  .c-il-maejip.m-dump .pet { animation: none;
+    filter: drop-shadow(0 0 10px rgba(247,197,49,0.4)); }
+  .c-il-maejip.m-dump .body { animation: il-suck 1.3s ease-in-out infinite; transform: none; }
+  @keyframes il-suck { 0%,100% { transform: scale(1.0,1.0); }
+    45% { transform: scale(1.09,1.06) translateY(-2px); }
+    60% { transform: scale(1.05,1.08) translateY(-1px); } }

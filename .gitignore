@@ -1,0 +1,31 @@
+# 의존성
+node_modules/
+
+# 빌드 산출물 (릴리스는 GitHub Releases로만)
+dist/
+out/
+*.exe
+*.blockmap
+
+# electron-builder 캐시
+.cache/
+
+# 로그
+npm-debug.log*
+yarn-error.log*
+*.log
+
+# 환경/비밀 (토큰 절대 커밋 금지)
+.env
+.env.*
+*.pem
+*.p12
+
+# OS 부스러기
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# 에디터
+.vscode/
+.idea/

@@ -1,0 +1,7 @@
+"use strict";
+window.BtcPetPriceView = class PriceView {
+  constructor({pill,mood}) { this.pill=pill; this.mood=mood; this.lastRender=0; this.canvas=document.createElement("canvas"); this.canvas.width=32; this.canvas.height=32; this.ctx=this.canvas.getContext("2d"); this.targets=[{p:document.querySelector(".bubble .p"),c:document.querySelector(".bubble .c")},{p:document.querySelector("#pill .p"),c:document.querySelector("#pill .c")}]; }
+  applyStyle(cfg){document.body.classList.toggle("style-pill",cfg.displayStyle==="pill");}
+  render(price,changePct){const now=Date.now();window.btcpet.sendPrice({price,changePct,ts:now});if(now-this.lastRender<window.BtcPetConfig.RENDER_INTERVAL_MS)return;this.lastRender=now;const txt=`$${price.toLocaleString("en-US",{maximumFractionDigits:0})}`,up=changePct>=0,pct=`${up?"+":""}${changePct.toFixed(2)}%`,color=up?"#0ecb81":"#f6465d";for(const t of this.targets){t.p.textContent=txt;t.c.textContent=pct;t.c.style.color=color;}this.mood.update(price);this.drawTray(price,up);}
+  drawTray(price,up){const c=this.ctx;if(!c)return;c.clearRect(0,0,32,32);c.fillStyle=up?"#0ecb81":"#f6465d";c.beginPath();c.roundRect(0,4,32,24,6);c.fill();c.fillStyle="#fff";c.font="bold 13px sans-serif";c.textAlign="center";c.textBaseline="middle";const k=price/1000;c.fillText(k>=100?`${Math.round(k)}K`:k.toFixed(1),16,17);window.btcpet.setTrayIcon(this.canvas.toDataURL("image/png"),`BTC $${price.toLocaleString("en-US",{maximumFractionDigits:0})}`);}
+};
