@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.22-manual-update-check)
+// BTC Pet Desktop - main process (v0.17.23-update-release-notes)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");
@@ -306,6 +306,22 @@ if (!gotLock) {
   });
 }
 
+// GitHub 릴리스 본문(info.releaseNotes)을 다이얼로그용 평문으로 정리.
+// 문자열/배열({version,note}) 모두 대응, HTML 태그·엔티티 제거, 길이 제한.
+function formatReleaseNotes(info) {
+  let notes = info && info.releaseNotes;
+  if (Array.isArray(notes)) notes = notes.map((n) => (n && n.note) || "").join("\n");
+  if (typeof notes !== "string") return "";
+  const text = notes
+    .replace(/<[^>]+>/g, "")          // HTML 태그 제거
+    .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/\r/g, "").replace(/\n{3,}/g, "\n\n")
+    .trim();
+  const MAX = 800; // 다이얼로그가 지나치게 길어지지 않게
+  return text.length > MAX ? text.slice(0, MAX) + "…" : text;
+}
+
 // ── 자동 업데이트 (GitHub Releases: stealer99/btc-pet-desktop) ──
 function setupAutoUpdate() {
   try {
@@ -318,11 +334,13 @@ function setupAutoUpdate() {
     // 자동 체크에서 이미 "나중에" 누른 버전이면 조용히 (수동 확인은 항상 물어봄)
     if (!manualUpdateCheck && declinedVersion === info.version) return;
     manualUpdateCheck = false;
+    const notes = formatReleaseNotes(info);
     dialog.showMessageBox({
       type: "info",
       title: "BTC Pet 업데이트",
       message: `새 버전 ${info.version} 이 있습니다`,
-      detail: "지금 업데이트하시겠습니까? 내려받은 뒤 재시작 시점은 다시 확인합니다.",
+      detail: (notes ? `[이번 변경 내용]\n${notes}\n\n` : "") +
+        "지금 업데이트하시겠습니까? 내려받은 뒤 재시작 시점은 다시 확인합니다.",
       buttons: ["업데이트", "나중에"],
       defaultId: 0,
       cancelId: 1,
@@ -351,11 +369,13 @@ function setupAutoUpdate() {
 
   // 다운로드 완료 -> 재시작(설치) 시점을 다시 물어본다.
   autoUpdater.on("update-downloaded", (info) => {
+    const notes = formatReleaseNotes(info);
     dialog.showMessageBox({
       type: "info",
       title: "BTC Pet 업데이트",
       message: `새 버전 ${info.version} 이 준비됐습니다`,
-      detail: "지금 재시작하면 바로 적용됩니다.",
+      detail: (notes ? `[이번 변경 내용]\n${notes}\n\n` : "") +
+        "지금 재시작하면 바로 적용됩니다.",
       buttons: ["지금 재시작", "나중에 (종료 시 자동 적용)"],
       defaultId: 0,
     }).then(({ response }) => {

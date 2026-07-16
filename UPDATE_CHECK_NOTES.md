@@ -32,3 +32,29 @@
   피드백 다이얼로그가 중복/오귀속되지 않게.
 - dev 환경에서 `autoUpdater` 는 `null`. 메뉴 항목은 항상 보이되 눌러도 안전(안내만).
 - 배포 시 **버전 증가 필수**(같은 버전 재배포는 업데이트 미동작) — 이번 커밋에서 0.17.21 → 0.17.22.
+
+---
+
+## 후속: draft 릴리스 함정 + 릴리스 노트 표시 (v0.17.23)
+
+### draft 함정 (배포됐는데 감지 안 되던 원인)
+
+- `--publish always` 로 올려도 electron-builder GitHub publisher의 **기본 `releaseType` 이 `draft`** 라
+  릴리스가 **초안 상태**로만 생성된다. **electron-updater 는 draft 를 못 본다**(정식 published 릴리스만 감지).
+  → 파일은 올라갔는데도 구버전이 "새 버전 없음"으로 침묵.
+- 조치: `package.json` build.publish 에 **`"releaseType": "release"`** 추가 → 다음 배포부터 정식 릴리스로 올림.
+  이미 올라간 draft 는 GitHub 웹에서 "Publish release" 로 전환하거나, draft 삭제 후 재배포해야 한다
+  (같은 버전 재배포는 기존 릴리스를 재사용해 draft 상태를 유지할 수 있음 — 웹 전환이 확실).
+
+### 릴리스 노트 표시
+
+- `update-available` / `update-downloaded` 이벤트의 `info.releaseNotes`(= GitHub 릴리스 본문)를
+  다이얼로그 `detail` 에 함께 노출.
+- `formatReleaseNotes(info)` 헬퍼: 문자열/배열({version,note}) 모두 처리, **HTML 태그·엔티티 제거**,
+  800자 제한. GitHub 본문이 HTML 로 올 수 있어 평문화 필수.
+- 표시 위치: "업데이트하시겠습니까?"(다운로드 전 결정 시점) + "지금 재시작?"(설치 직전) 두 다이얼로그 모두.
+
+### 불변사항
+
+- 릴리스 노트가 비면(구버전 릴리스 등) `detail` 앞부분을 생략하고 기존 문구만 노출 — 항상 안전.
+- 이 표시는 **0.17.23 이상 사용자부터** 적용(체크는 설치된 버전 코드가 수행하므로).
