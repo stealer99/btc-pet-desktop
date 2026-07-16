@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.24-panel-version-auto)
+// BTC Pet Desktop - main process (v0.17.25-ddeoksang)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");
@@ -244,6 +244,8 @@ function buildMenu() {
         click: () => { settings.character = "il-ppongsik"; saveSettings(); broadcast("setting-changed", "character", "il-ppongsik"); } },
       { label: "매집이 (세력볼)", type: "radio", checked: (settings.character) === "il-maejip",
         click: () => { settings.character = "il-maejip"; saveSettings(); broadcast("setting-changed", "character", "il-maejip"); } },
+      { label: "떡상이 (아기용)", type: "radio", checked: (settings.character) === "il-ddeoksang",
+        click: () => { settings.character = "il-ddeoksang"; saveSettings(); broadcast("setting-changed", "character", "il-ddeoksang"); } },
       { label: "존버 (바위)", type: "radio", checked: (settings.character) === "il-jonber",
         click: () => { settings.character = "il-jonber"; saveSettings(); broadcast("setting-changed", "character", "il-jonber"); } },
     ]},

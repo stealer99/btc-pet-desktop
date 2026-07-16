@@ -100,7 +100,7 @@
   .c-coin2.m-pump .body { background-image: url("../img/coin2_pump.png"); }
   .c-coin2.m-dump .body { background-image: url("../img/coin2_dump.png"); }
 
-  /* ===== 일러스트 캐릭터 18종 ===== */
+  /* ===== 일러스트 캐릭터 20종 ===== */
   [class*="c-il-"] .pet { width: var(--ilsize, 90px); height: var(--ilsize, 90px);
     margin-left: calc((var(--ilsize, 90px) / -2) + var(--ilshift-x, 0px)); }
 
@@ -108,6 +108,7 @@
   .c-il-algo     { --ilsize: 102px; --ilshift-x: 0px; }
   .c-il-buljang  { --ilsize: 85px;  --ilshift-x: 0px; }
   .c-il-cheongsan{ --ilsize: 102px; --ilshift-x: -1px; }
+  .c-il-ddeoksang{ --ilsize: 96px;  --ilshift-x: 0px; }
   .c-il-gazua    { --ilsize: 76px;  --ilshift-x: 0px; }
   .c-il-hoengbo  { --ilsize: 76px;  --ilshift-x: -5px; }
   .c-il-hojae    { --ilsize: 102px; --ilshift-x: 0px; }
@@ -323,3 +324,30 @@
   @keyframes il-suck { 0%,100% { transform: scale(1.0,1.0); }
     45% { transform: scale(1.09,1.06) translateY(-2px); }
     60% { transform: scale(1.05,1.08) translateY(-1px); } }
+
+  /* 떡상이 (아기용): "여의주만 얻으면 승천" — pump 승천 / dump 2단 입수 */
+  .c-il-ddeoksang .body { background-image: url("../img/il/ddeoksang_base.png"); }
+  .c-il-ddeoksang.m-pump .body { background-image: url("../img/il/ddeoksang_pump.png"); }
+  .c-il-ddeoksang.m-dump .body { background-image: url("../img/il/ddeoksang_dump.png"); }
+  /* pump 승천: 금색 여의주 오라와 함께 부유 상승 */
+  .c-il-ddeoksang.m-pump .pet { animation: dg-rise 2.6s ease-in-out infinite;
+    filter: drop-shadow(0 0 12px rgba(247,197,49,0.55)); }
+  @keyframes dg-rise {
+    0%,100% { transform: translateY(-14px) rotate(-2.5deg); }
+    25% { transform: translateY(-20px); }
+    50% { transform: translateY(-14px) rotate(2.5deg); }
+    75% { transform: translateY(-19px); } }
+  /* dump 입수(2단): 수면(가격 HUD) 아래로 잠겼다가 물속에서 부유
+     ※ HUD(z-index 30) 뒤로 잠기는 의도적 연출 — 컨벤션 5번의 예외 (DDEOKSANG_NOTES 참조) */
+  .c-il-ddeoksang.m-dump .pet {
+    animation: dg-sink 1.4s ease-in forwards, dg-bob 3s ease-in-out 1.4s infinite;
+    filter: drop-shadow(0 0 9px rgba(90,160,210,0.45)); }
+  .c-il-ddeoksang.m-dump .body { transform: none; }
+  @keyframes dg-sink {
+    0% { transform: translateY(0); }
+    55% { transform: translateY(26px) rotate(-2deg); }
+    75% { transform: translateY(40px) rotate(-1deg); }
+    100% { transform: translateY(36px) rotate(-1.5deg); } }
+  @keyframes dg-bob {
+    0%,100% { transform: translateY(36px) rotate(-1.5deg); }
+    50% { transform: translateY(41px) rotate(1.5deg); } }
