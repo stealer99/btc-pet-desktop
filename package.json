@@ -32,7 +32,8 @@
       {
         "provider": "github",
         "owner": "stealer99",
-        "repo": "btc-pet-desktop"
+        "repo": "btc-pet-desktop",
+        "releaseType": "release"
       }
     ]
   },
