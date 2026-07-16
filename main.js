@@ -1,11 +1,14 @@
-// BTC Pet Desktop - main process (v0.17.13-sensitivity-settings)
-const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell } = require("electron");
+// BTC Pet Desktop - main process (v0.17.22-manual-update-check)
+const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");
 
 let overlayWin = null;
 let panelWin = null;
 let tray = null;
+let autoUpdater = null;      // electron-updater 인스턴스 (dev/모듈 미설치면 null)
+let manualUpdateCheck = false; // 수동 "업데이트 확인" 진행 중 -> 결과 다이얼로그 표시 게이트
+let declinedVersion = null;    // 자동 프롬프트에서 "나중에" 누른 버전 (자동 재알림 억제)
 
 // ---- 설정 저장 (JSON) ----
 const settingsPath = () => path.join(app.getPath("userData"), "settings.json");
@@ -271,6 +274,9 @@ function buildMenu() {
     { label: "부팅 시 자동 실행", type: "checkbox", checked: app.getLoginItemSettings().openAtLogin,
       click: (item) => app.setLoginItemSettings({ openAtLogin: item.checked }) },
     { type: "separator" },
+    { label: "업데이트 확인", click: checkForUpdatesManual },
+    { label: `버전 ${app.getVersion()}`, enabled: false },
+    { type: "separator" },
     { label: "종료", click: () => { app.isQuitting = true; app.quit(); } },
   ]);
 }
@@ -302,13 +308,49 @@ if (!gotLock) {
 
 // ── 자동 업데이트 (GitHub Releases: stealer99/btc-pet-desktop) ──
 function setupAutoUpdate() {
-  let autoUpdater;
   try {
     ({ autoUpdater } = require("electron-updater"));
-  } catch (e) { return; } // 모듈 미설치(dev 등)면 조용히 스킵
-  autoUpdater.autoDownload = true;
+  } catch (e) { autoUpdater = null; return; } // 모듈 미설치(dev 등)면 조용히 스킵
+  autoUpdater.autoDownload = false; // 사용자 동의 후에만 다운로드 (묻고 받기)
+
+  // 새 버전 발견 -> 다운로드 전에 사용자에게 물어본다.
+  autoUpdater.on("update-available", (info) => {
+    // 자동 체크에서 이미 "나중에" 누른 버전이면 조용히 (수동 확인은 항상 물어봄)
+    if (!manualUpdateCheck && declinedVersion === info.version) return;
+    manualUpdateCheck = false;
+    dialog.showMessageBox({
+      type: "info",
+      title: "BTC Pet 업데이트",
+      message: `새 버전 ${info.version} 이 있습니다`,
+      detail: "지금 업데이트하시겠습니까? 내려받은 뒤 재시작 시점은 다시 확인합니다.",
+      buttons: ["업데이트", "나중에"],
+      defaultId: 0,
+      cancelId: 1,
+    }).then(({ response }) => {
+      if (response === 0) {
+        declinedVersion = null;
+        autoUpdater.downloadUpdate().catch(() => {}); // 실패는 error 이벤트에서 안내
+      } else {
+        declinedVersion = info.version; // 이 버전은 자동 재알림 억제
+      }
+    });
+  });
+
+  // 최신 상태: 자동 체크는 침묵, 수동 체크만 "이미 최신" 안내.
+  autoUpdater.on("update-not-available", () => {
+    if (!manualUpdateCheck) return;
+    manualUpdateCheck = false;
+    dialog.showMessageBox({
+      type: "info",
+      title: "BTC Pet 업데이트",
+      message: "이미 최신 버전입니다",
+      detail: `현재 버전 ${app.getVersion()}`,
+      buttons: ["확인"],
+    });
+  });
+
+  // 다운로드 완료 -> 재시작(설치) 시점을 다시 물어본다.
   autoUpdater.on("update-downloaded", (info) => {
-    const { dialog } = require("electron");
     dialog.showMessageBox({
       type: "info",
       title: "BTC Pet 업데이트",
@@ -320,10 +362,39 @@ function setupAutoUpdate() {
       if (response === 0) { app.isQuitting = true; autoUpdater.quitAndInstall(); }
     });
   });
-  autoUpdater.on("error", () => {}); // 네트워크 실패 등은 침묵
-  const check = () => autoUpdater.checkForUpdatesAndNotify().catch(() => {});
+
+  // 네트워크 실패 등: 자동 체크는 침묵, 수동 체크만 실패 안내.
+  autoUpdater.on("error", () => {
+    if (!manualUpdateCheck) return;
+    manualUpdateCheck = false;
+    dialog.showMessageBox({
+      type: "warning",
+      title: "BTC Pet 업데이트",
+      message: "업데이트 확인에 실패했습니다",
+      detail: "네트워크 상태를 확인한 뒤 잠시 후 다시 시도해 주세요.",
+      buttons: ["확인"],
+    });
+  });
+
+  const check = () => autoUpdater.checkForUpdates().catch(() => {});
   setTimeout(check, 15000);               // 시작 15초 후 (부팅 부하 회피)
   setInterval(check, 4 * 60 * 60 * 1000); // 이후 4시간마다
+}
+
+// 메뉴에서 호출하는 수동 업데이트 확인. 결과는 위 이벤트 핸들러가 다이얼로그로 안내.
+function checkForUpdatesManual() {
+  if (!autoUpdater) { // dev/모듈 미설치 환경
+    dialog.showMessageBox({
+      type: "info",
+      title: "BTC Pet 업데이트",
+      message: "개발 환경에서는 업데이트를 확인할 수 없습니다",
+      detail: `현재 버전 ${app.getVersion()}`,
+      buttons: ["확인"],
+    });
+    return;
+  }
+  manualUpdateCheck = true;
+  autoUpdater.checkForUpdates().catch(() => {}); // 실패는 error 이벤트에서 안내
 }
 
 app.whenReady().then(() => {
