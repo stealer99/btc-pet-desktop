@@ -96,8 +96,8 @@ img/il/                  # 캐릭터 이미지 256px PNG (키_base/pump/dump.png
 1. **버전은 수정마다 반드시 올린다** (patch 단위). package.json은 JSON 파서로
    수정·검증 — sed 침묵 실패 전력 있음
 2. **package.json author는 "stealer"** (Shin으로 되돌리지 말 것)
-3. 수정마다 **원인-수정-불변사항을 노트 md**로 남긴다 (기존 *_NOTES.md 형식 참조,
-   특히 MAINTENANCE_NOTES.md의 원칙)
+3. 수정마다 **원인-수정-불변사항을 노트 md**로 남긴다 — **`notes/` 폴더**에 저장
+   (기존 `notes/*_NOTES.md` 형식 참조, 특히 `notes/MAINTENANCE_NOTES.md`의 원칙)
 4. 무대 기준선(58px)·가격 HUD 위치·z-index 층위는 함부로 바꾸지 않는다 —
    이펙트/캐릭터 겹침 수정은 해당 요소의 키프레임/오프셋 쪽에서 해결
 5. 애니메이션에 "하강 성분"을 넣을 때 주의: 무대와 HUD 사이 여유가 7px뿐이라
@@ -122,4 +122,4 @@ img/il/                  # 캐릭터 이미지 256px PNG (키_base/pump/dump.png
 - 24h 변동률은 거래소 롤링 24h (업비트식 9시 일봉 기준이 아님 — 의도된 사양)
 - Bitget 티커에는 changeUtc24h(9시 기준) 필드도 옴 (기준 전환 시 사용)
 - background-position의 세로 기준을 bottom으로 바꾸면 정렬이 깨진다
-  (HOENGBO_DUMP_* 노트 참조)
+  (notes/HOENGBO_DUMP_* 참조)

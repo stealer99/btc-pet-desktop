@@ -338,7 +338,7 @@
     50% { transform: translateY(-14px) rotate(2.5deg); }
     75% { transform: translateY(-19px); } }
   /* dump 입수(2단): 수면(가격 HUD) 아래로 잠겼다가 물속에서 부유
-     ※ HUD(z-index 30) 뒤로 잠기는 의도적 연출 — 컨벤션 5번의 예외 (DDEOKSANG_NOTES 참조) */
+     ※ HUD(z-index 30) 뒤로 잠기는 의도적 연출 — 컨벤션 5번의 예외 (notes/DDEOKSANG_NOTES 참조) */
   .c-il-ddeoksang.m-dump .pet {
     animation: dg-sink 1.4s ease-in forwards, dg-bob 3s ease-in-out 1.4s infinite;
     filter: drop-shadow(0 0 9px rgba(90,160,210,0.45)); }
