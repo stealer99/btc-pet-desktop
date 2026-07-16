@@ -58,3 +58,18 @@
 
 - 릴리스 노트가 비면(구버전 릴리스 등) `detail` 앞부분을 생략하고 기존 문구만 노출 — 항상 안전.
 - 이 표시는 **0.17.23 이상 사용자부터** 적용(체크는 설치된 버전 코드가 수행하므로).
+
+### 릴리스 노트 채우는 법 (release-notes.md)
+
+- `package.json` build.releaseInfo.releaseNotesFile = `release-notes.md`. electron-builder 가 빌드 시
+  이 파일을 읽어 릴리스 본문으로 업로드 → 다이얼로그에 표시. 경로는 `build/` 없으면 **프로젝트 루트**에서 탐색.
+- 배포 절차: 코드 수정 → 버전 up → **release-notes.md 내용 갱신** → `--publish always`.
+  파일을 안 바꾸면 이전 내용이 그대로 올라가니 주의.
+
+## 패널 버전 하드코딩 제거 (v0.17.24)
+
+- panel.html 하단 버전이 `desktop v0.17.15` 로 하드코딩돼 실제 버전(package.json)과 어긋나 있었다.
+  → 배포마다 두 곳을 고쳐야 하는 이중 관리 + 누락 위험.
+- 수정: main `ipcMain.handle("get-version", () => app.getVersion())` → preload `getVersion()` 노출
+  → panel.html 은 `id="appver"` 폴백 `desktop` → panel.js 로드 시 실제 버전으로 `desktop v<ver>` 채움.
+- 불변사항: 이제 **버전은 package.json 만** 올리면 패널도 자동 반영. IPC 실패 시 폴백 `desktop` 로 안전.

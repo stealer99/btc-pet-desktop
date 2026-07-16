@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.23-update-release-notes)
+// BTC Pet Desktop - main process (v0.17.24-panel-version-auto)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");
@@ -34,6 +34,7 @@ function broadcast(channel, ...args) {
 }
 
 ipcMain.handle("get-settings", () => settings);
+ipcMain.handle("get-version", () => app.getVersion()); // 패널 버전 표시용 (하드코딩 방지)
 ipcMain.on("set-setting", (_e, key, value) => {
   if (typeof key !== "string" || key.length > 64) return;
   settings[key] = value;

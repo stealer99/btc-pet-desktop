@@ -1,5 +1,12 @@
 const $ = (id) => document.getElementById(id);
 
+// 앱 버전 표시 (하드코딩 방지: 실제 패키지 버전을 main에서 받아온다)
+if (window.btcpet.getVersion) {
+  window.btcpet.getVersion()
+    .then((v) => { const el = $("appver"); if (el && v) el.textContent = "desktop v" + v; })
+    .catch(() => {});
+}
+
 function render(price, changePct, ts) {
   $("price").textContent = "$" + price.toLocaleString("en-US", { maximumFractionDigits: 0 });
   const up = changePct >= 0;

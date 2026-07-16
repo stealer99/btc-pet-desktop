@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer } = require("electron");
 contextBridge.exposeInMainWorld("btcpet", {
   setTrayIcon: (dataUrl, tooltip) => ipcRenderer.send("tray-icon", dataUrl, tooltip),
   getSettings: () => ipcRenderer.invoke("get-settings"),
+  getVersion: () => ipcRenderer.invoke("get-version"),
   setSetting: (key, value) => ipcRenderer.send("set-setting", key, value),
   onSettingChanged: (cb) => ipcRenderer.on("setting-changed", (_e, k, v) => cb(k, v)),
   sendPrice: (data) => ipcRenderer.send("price", data),
