@@ -69,7 +69,7 @@ img/il/                  # 캐릭터 이미지 256px PNG (키_base/pump/dump.png
 | sonjeol | 손절이(선인장) | dump: 움찔 |
 | shorty | 숏충이(박쥐) | **모션·표정 반전** (pump 통곡 / dump 환희) |
 | longy | 롱충이(시바견) | dump: 얼어붙어 미세 떨림 |
-| multagi | 물타기(비버) | dump: 흐느낌 증폭 |
+| multagi | 물타기(피치핑크 비버) | dump: 2레이어 — 앉은 미니(선명, 정지) + 속마음 대성통곡(제자리 페이드 82%) + 분홍 무드 글로우 |
 | kimp | 김프(풍선복어) | pump: il-inflate 부풀기 / dump: il-deflate 피식피식 |
 | buljang | 불장(도깨비) | pump: il-blaze 화력(확대+주황 글로우) / dump: 어두워짐 |
 | yakson | 약손이(문어) | dump: 좌우 토닥(위로) |

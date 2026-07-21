@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.25-ddeoksang)
+// BTC Pet Desktop - main process (v0.17.26-multagi-jangmang)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");

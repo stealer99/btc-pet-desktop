@@ -116,7 +116,7 @@
   .c-il-jonber   { --ilsize: 102px; --ilshift-x: 0px; }
   .c-il-kimp     { --ilsize: 76px;  --ilshift-x: 0px; }
   .c-il-longy    { --ilsize: 102px; --ilshift-x: -2px; }
-  .c-il-multagi  { --ilsize: 81px;  --ilshift-x: 0px; }
+  .c-il-multagi  { --ilsize: 90px;  --ilshift-x: 0px; }
   .c-il-ppongsik { --ilsize: 88px;  --ilshift-x: 0px; }
   .c-il-shorty   { --ilsize: 102px; --ilshift-x: 0px; }
   .c-il-sonjeol  { --ilsize: 102px; --ilshift-x: 0px; }
@@ -182,7 +182,11 @@
   .c-il-longy.m-dump .body { background-image: url("../img/il/longy_dump.png"); }
   .c-il-multagi .body { background-image: url("../img/il/multagi_base.png"); }
   .c-il-multagi.m-pump .body { background-image: url("../img/il/multagi_pump.png"); }
-  .c-il-multagi.m-dump .body { background-image: url("../img/il/multagi_dump.png"); }
+  /* dump: 겉모습 = 앉은 미니만 왼쪽 하단에 작게 (선명, 정지) */
+  .c-il-multagi.m-dump .body {
+    background-image: url("../img/il/multagi_dump_mini.png");
+    background-size: 52% auto; background-position: -10px bottom;
+    transform: none; }
   .c-il-kimp .body { background-image: url("../img/il/kimp_base.png"); }
   .c-il-kimp.m-pump .body { background-image: url("../img/il/kimp_pump.png"); }
   .c-il-kimp.m-dump .body { background-image: url("../img/il/kimp_dump.png"); }
@@ -243,7 +247,29 @@
   .c-il-longy.m-dump .pet { animation: il-freeze 0.15s linear infinite; }
   .c-il-longy.m-dump .body { transform: none; }
   @keyframes il-freeze { 0%,100% { transform:translateX(0); } 50% { transform:translateX(1.2px); } }
-  .c-il-multagi.m-dump .pet { animation: il-sob 0.75s ease-in-out infinite; }
+  /* 물타기 dump: 2레이어 — 겉은 태연(앉은 미니), 속은 대참사(속마음 페이드).
+     미니는 미동 없이 앉아있고, 붉은 오라는 분홍 무드 글로우로 대체 */
+  .c-il-multagi.m-dump .pet { animation: none; filter: none; }
+  /* 속마음(대성통곡 본체): 미니 뒤에서 제자리 순수 페이드로만 드러남 (이동/스케일 금지).
+     ::before 는 자동 z-index → 트리 순서상 .body(미니)보다 뒤에 그려짐 */
+  .c-il-multagi.m-dump .pet::before {
+    content: ""; position: absolute; left: 6%; bottom: 0;
+    width: 110%; height: 110%; pointer-events: none;
+    background: url("../img/il/multagi_dump_soul.png") no-repeat center bottom / contain;
+    opacity: 0; transform-origin: bottom center;
+    animation: mt-reveal 2s ease-in forwards, mt-linger 3.4s ease-in-out 2s infinite; }
+  @keyframes mt-reveal { 0% { opacity: 0; } 100% { opacity: 0.82; } }
+  @keyframes mt-linger { 0%,100% { opacity: 0.82; } 50% { opacity: 0.75; } }
+  /* 분홍 무드 글로우: 속마음보다 더 뒤(z-index:-1) */
+  .c-il-multagi.m-dump .pet::after {
+    content: ""; position: absolute; left: 50%; bottom: -6px;
+    width: 150%; height: 150%; margin-left: -75%; border-radius: 50%;
+    pointer-events: none; z-index: -1; filter: blur(6px);
+    background: radial-gradient(circle at 50% 60%,
+      rgba(246,168,180,0.42) 0%, rgba(230,150,190,0.25) 45%,
+      rgba(190,120,180,0) 72%);
+    opacity: 0; animation: mt-mood 0.8s ease forwards; }
+  @keyframes mt-mood { to { opacity: 1; } }
   .c-il-kimp.m-pump .body { animation: il-inflate 0.9s cubic-bezier(0.34,1.5,0.64,1) infinite; }
   .c-il-kimp.m-pump .pet { animation: none; }
   @keyframes il-inflate { 0% { transform:scale(1,1); } 40% { transform:scale(1.24,1.2) translateY(-4px); }
