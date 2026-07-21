@@ -1,5 +1,5 @@
-// BTC Pet Desktop - main process (v0.17.26-multagi-jangmang)
-const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog } = require("electron");
+// BTC Pet Desktop - main process (v0.17.27-multagi-jangmang + overlay-repaint)
+const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");
 
@@ -73,6 +73,23 @@ ipcMain.on("panel-size", (_e, h) => {
 });
 // 펫 창 드래그 (렌더러 마우스 좌표 기반)
 let dragOffset = null;
+let overlayProgramMove = false; // repaintOverlay 넛지에 의한 moved 이벤트 무시용
+
+// 투명 always-on-top 창은 절전 복귀·해상도/배율 변경·전체화면 게임 종료 후
+// DWM이 컴포지팅한 픽셀을 잃어 "빈 창"으로 남을 수 있다(그림/좌표는 정상).
+// 위치 1px 넛지 + 최상위 재선언으로 강제 재컴포지팅한다. 사용자가 수동으로
+// "펫 숨기기→보이기"로 복구하던 동작을 자동화한 것. 넛지는 보이지 않고
+// 포커스도 뺏지 않는다(setPosition은 활성화를 유발하지 않음).
+function repaintOverlay() {
+  if (!overlayWin || overlayWin.isDestroyed() || !overlayWin.isVisible()) return;
+  if (dragOffset) return; // 드래그 중이면 건드리지 않음 (좌표 충돌 방지)
+  overlayWin.setAlwaysOnTop(true, "screen-saver"); // 최상위 레벨 재선언
+  const [x, y] = overlayWin.getPosition();
+  overlayProgramMove = true;
+  overlayWin.setPosition(x + 1, y);
+  overlayWin.setPosition(x, y);
+  setTimeout(() => { overlayProgramMove = false; }, 50);
+}
 ipcMain.on("drag-start", (_e, x, y) => {
   if (!overlayWin || overlayWin.isDestroyed()) return;
   const [wx, wy] = overlayWin.getPosition();
@@ -107,6 +124,7 @@ function createOverlay() {
   overlayWin.loadFile("overlay.html");
   overlayWin.on("closed", () => { overlayWin = null; dragOffset = null; });
   overlayWin.on("moved", () => {
+    if (overlayProgramMove) return; // 리페인트 넛지에 의한 moved는 무시 (좌표 덮어쓰기 방지)
     const [x, y] = overlayWin.getPosition();
     settings.overlayBounds = { x, y };
     saveSettings();
@@ -428,5 +446,12 @@ app.whenReady().then(() => {
   createTray();
   applyClickThrough();
   if (settings.panelPinned) setTimeout(() => togglePanel(), 900);
+
+  // 투명 펫 창 컴포지팅 소실 복구: 시스템이 알려주는 시점에 강제 리페인트
+  powerMonitor.on("resume", repaintOverlay);        // 절전에서 복귀
+  powerMonitor.on("unlock-screen", repaintOverlay); // 화면 잠금 해제
+  screen.on("display-metrics-changed", repaintOverlay); // 해상도/배율/모니터 변경
+  // 킵얼라이브: 전체화면 게임 등 이벤트가 오지 않는 경우 대비 (조용한 넛지)
+  setInterval(repaintOverlay, 3 * 60 * 1000);
 });
 app.on("window-all-closed", (e) => e.preventDefault());
