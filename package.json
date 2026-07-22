@@ -41,6 +41,7 @@
     ]
   },
   "author": "stealer",
+  "license": "MIT",
   "dependencies": {
     "electron-updater": "^6.3.9"
   }

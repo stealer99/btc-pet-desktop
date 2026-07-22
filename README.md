@@ -51,3 +51,9 @@
 
 [Releases](https://github.com/stealer99/btc-pet-desktop/releases)에서 최신 `BTC Pet Setup x.x.x.exe`를 내려받아 실행하세요.
 설치 후에는 새 버전이 나올 때마다 앱이 알아서 알려줍니다.
+
+## 제작 · 라이선스
+
+**BTC Pet Desktop** — 캐릭터 디자인 · 개발 by **stealer** ([@stealer99](https://github.com/stealer99))
+
+© 2026 stealer · [MIT License](LICENSE) — 자유롭게 사용·수정·배포할 수 있으나, 저작권 표시(위 문구)는 유지해 주세요.
