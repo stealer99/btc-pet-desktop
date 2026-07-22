@@ -31,7 +31,7 @@
 *급락장: 우는 놈, 녹는 놈, 승천하는 놈, 혼자 신난 놈(숏충이), 물에 빠지는 용*
 
 ## 캐릭터 20종
-![라인업](docs/btc-pet-lineup.png)
+![라인업](docs/btc-pet-lineup.png?v=2)
 
 ## 🎮 [라이브 데모 (인터랙티브)](https://stealer99.github.io/btc-pet-desktop/)
 
