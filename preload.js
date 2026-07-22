@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld("btcpet", {
   dragMove: (x, y) => ipcRenderer.send("drag-move", x, y),
   reportSize: (h) => ipcRenderer.send("panel-size", h),
   petContextMenu: () => ipcRenderer.send("pet-context-menu"),
+  setInteractive: (on) => ipcRenderer.send("set-interactive", on),
   triggerPetTest: (action, fxStyle) => ipcRenderer.send("pet-test", { action, fxStyle }),
   onPetTest: (cb) => ipcRenderer.on("pet-test", (_e, payload) => cb(payload)),
 });

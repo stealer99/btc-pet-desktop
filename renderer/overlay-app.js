@@ -7,7 +7,9 @@
   const socket=new window.BtcPetSocketClient(()=>window.BtcPetSources[cfg.priceSource]||window.BtcPetSources.bitget,(p,c)=>view.render(p,c));
   const candle=new window.BtcPetCandleScheduler(cfg,pill,()=>mood.hold("candle",6000));
   new window.BtcPetDragController([wrap,pill]);
+  const hover=new window.BtcPetHoverActivate([wrap.querySelector(".pet"),pill]);
   const settings=await window.btcpet.getSettings();
+  hover.setClickThrough(!!settings.clickThrough);
   if(window.BtcPetSources[settings.priceSource])cfg.priceSource=settings.priceSource;
   if(window.BtcPetConfig.TF_MS[settings.candleTf])cfg.candleTf=settings.candleTf;
   if(typeof settings.character==="string")cfg.character=settings.character;
@@ -32,6 +34,7 @@
     if(key==="fxStyle"&&["loop","once","v3"].includes(value)){cfg.fxStyle=value;mood.set(mood.current,{force:true});}
     if(key==="displayStyle"&&["pet","pill"].includes(value)){cfg.displayStyle=value;view.applyStyle(cfg);}
     if(key==="petSize")applyPetSize(value);
+    if(key==="clickThrough")hover.setClickThrough(value);
     if(key==="moodWindowSec"){cfg.moodWindowMs=clampNumber(value,10,600,65)*1000;mood.resetPrices();}
     if(key==="moodPumpPct"){cfg.moodPumpPct=clampNumber(value,0.01,5,0.12);mood.resetPrices();}
     if(key==="moodDumpPct"){cfg.moodDumpPct=clampNumber(value,0.01,5,0.12);mood.resetPrices();}

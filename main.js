@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.27-multagi-jangmang + overlay-repaint)
+// BTC Pet Desktop - main process (v0.17.28-clickthrough-hover + tray-sync)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");
@@ -204,6 +204,13 @@ function applyClickThrough() {
   overlayWin.setIgnoreMouseEvents(!!settings.clickThrough, { forward: true });
 }
 
+// 클릭 통과 중 렌더러의 dwell 판정으로 펫을 잠깐 상호작용 가능하게 깨우기.
+// 통과 모드가 아닐 때의 늦은 메시지는 무시(항상 상호작용 유지).
+ipcMain.on("set-interactive", (_e, on) => {
+  if (!overlayWin || overlayWin.isDestroyed() || !settings.clickThrough) return;
+  overlayWin.setIgnoreMouseEvents(!on, { forward: true });
+});
+
 function buildMenu() {
   return Menu.buildFromTemplate([
     { label: "패널 열기/닫기", click: togglePanel },
@@ -290,8 +297,8 @@ function buildMenu() {
         if (item.checked && panelWin && !panelWin.isDestroyed() && !panelWin.isVisible()) togglePanel();
       } },
     { label: "펫 보이기/숨기기", click: () => { if (overlayWin && !overlayWin.isDestroyed()) (overlayWin.isVisible() ? overlayWin.hide() : overlayWin.show()); } },
-    { label: "클릭 통과 켜기", type: "checkbox", checked: !!settings.clickThrough,
-      click: (item) => { settings.clickThrough = item.checked; saveSettings(); applyClickThrough(); } },
+    { label: "클릭 통과 켜기 (펫에 잠깐 올리면 조작 가능)", type: "checkbox", checked: !!settings.clickThrough,
+      click: (item) => { settings.clickThrough = item.checked; saveSettings(); applyClickThrough(); broadcast("setting-changed", "clickThrough", item.checked); } },
     { label: "부팅 시 자동 실행", type: "checkbox", checked: app.getLoginItemSettings().openAtLogin,
       click: (item) => app.setLoginItemSettings({ openAtLogin: item.checked }) },
     { type: "separator" },
@@ -310,7 +317,8 @@ function createTray() {
   tray = new Tray(nativeImage.createEmpty());
   tray.setToolTip("BTC Pet");
   tray.on("click", togglePanel);
-  tray.setContextMenu(buildMenu());
+  // setContextMenu(고정 스냅샷)는 쓰지 않는다 — 우클릭마다 새로 빌드해야
+  // 펫 우클릭 메뉴와 체크/라디오 상태가 항상 동기화된다.
   tray.on("right-click", () => tray.popUpContextMenu(buildMenu()));
 }
 
