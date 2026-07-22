@@ -5,6 +5,21 @@
 
   #wrap { position: relative; width: 180px; height: 210px; }
 
+  /* 클릭 통과 중 펫이 "깨어난"(조작 가능) 상태 표시.
+     무드 글로우(초록/빨강/금)와 구분되는 시안-블루 + 커서 grab.
+     펫 뒤(z-index 5 < 무대 10)에 은은히 떠서 무대 기준선/HUD 층위는 건드리지 않는다. */
+  body.ct-awake { cursor: grab; }
+  body.ct-awake:active { cursor: grabbing; }
+  #wrap::after {
+    content: ""; position: absolute; left: 50%; bottom: 52px;
+    width: 116px; height: 116px; margin-left: -58px;
+    border-radius: 50%; z-index: 5; pointer-events: none;
+    background: radial-gradient(circle, rgba(120,190,255,0.34) 0%, rgba(120,190,255,0.14) 46%, rgba(120,190,255,0) 70%);
+    opacity: 0; transition: opacity 0.22s ease; will-change: opacity;
+  }
+  body.ct-awake #wrap::after { opacity: 1; animation: ct-awake-pulse 1.8s ease-in-out infinite; }
+  @keyframes ct-awake-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
   /* 하단 무대형 가격 표시: 캐릭터/차트 이펙트와 독립된 고정 HUD */
   .bubble {
     position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);

@@ -35,6 +35,7 @@ window.BtcPetHoverActivate = class HoverActivate {
     this._clearTimer();
     this.active = false;
     this.held = false;
+    document.body.classList.remove("ct-awake"); // 통과 토글 시 표시 정리
   }
 
   _overAny(x, y) {
@@ -60,6 +61,14 @@ window.BtcPetHoverActivate = class HoverActivate {
 
   _leave() { if (!this.clickThrough || this.held) return; this._clearTimer(); if (this.active) this._deactivate(); }
   _clearTimer() { if (this.timer) { clearTimeout(this.timer); this.timer = null; } }
-  _activate() { this.active = true; window.btcpet.setInteractive(true); }
-  _deactivate() { this.active = false; window.btcpet.setInteractive(false); }
+  _activate() {
+    this.active = true;
+    window.btcpet.setInteractive(true);
+    document.body.classList.add("ct-awake"); // 활성 상태 시각 표시
+  }
+  _deactivate() {
+    this.active = false;
+    window.btcpet.setInteractive(false);
+    document.body.classList.remove("ct-awake");
+  }
 };

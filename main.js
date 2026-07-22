@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.29-clickthrough-hover-drag-fix)
+// BTC Pet Desktop - main process (v0.17.30-clickthrough-awake-cue)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");
