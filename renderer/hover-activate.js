@@ -10,12 +10,21 @@ window.BtcPetHoverActivate = class HoverActivate {
     this.dwellMs = dwellMs;
     this.clickThrough = false; // 클릭 통과 모드일 때만 동작
     this.active = false;       // 우리가 깨워둔(상호작용) 상태인지
+    this.held = false;         // 마우스 버튼 눌림(드래그) 중 -> 비활성화 보류
     this.timer = null;
     this._move = this._move.bind(this);
     this._leave = this._leave.bind(this);
     window.addEventListener("mousemove", this._move);
+    // 드래그 중에는 커서가 펫 rect를 잠깐 벗어나도 통과로 되돌리지 않는다
+    // (창이 커서를 따라오는 지연 때문에 드래그가 끊기는 것을 방지).
+    window.addEventListener("mousedown", () => { if (this.clickThrough) this.held = true; });
+    window.addEventListener("mouseup", (e) => {
+      this.held = false;
+      if (this.clickThrough && this.active && !this._overAny(e.clientX, e.clientY)) this._deactivate();
+    });
     // 상호작용 중 창을 벗어나면 즉시 다시 통과로 복귀 (직사각형 잔류 방지)
     document.addEventListener("mouseleave", this._leave);
+    window.addEventListener("blur", () => { this.held = false; });
   }
 
   setClickThrough(on) {
@@ -25,6 +34,7 @@ window.BtcPetHoverActivate = class HoverActivate {
     // main이 applyClickThrough로 기본 ignore 상태를 리셋하므로 여기선 상태만 정리
     this._clearTimer();
     this.active = false;
+    this.held = false;
   }
 
   _overAny(x, y) {
@@ -42,12 +52,13 @@ window.BtcPetHoverActivate = class HoverActivate {
       if (this.active || this.timer) return;      // 이미 깨웠거나 대기 중
       this.timer = setTimeout(() => { this.timer = null; this._activate(); }, this.dwellMs);
     } else {
+      if (this.held) return; // 드래그 중 -> 통과로 되돌리지 않음
       this._clearTimer();
       if (this.active) this._deactivate();
     }
   }
 
-  _leave() { if (!this.clickThrough) return; this._clearTimer(); if (this.active) this._deactivate(); }
+  _leave() { if (!this.clickThrough || this.held) return; this._clearTimer(); if (this.active) this._deactivate(); }
   _clearTimer() { if (this.timer) { clearTimeout(this.timer); this.timer = null; } }
   _activate() { this.active = true; window.btcpet.setInteractive(true); }
   _deactivate() { this.active = false; window.btcpet.setInteractive(false); }

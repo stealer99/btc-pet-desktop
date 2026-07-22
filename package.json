@@ -1,7 +1,7 @@
 {
   "name": "btc-pet-desktop",
   "productName": "BTC Pet",
-  "version": "0.17.28",
+  "version": "0.17.29",
   "description": "BTC Pet",
   "main": "main.js",
   "scripts": {
