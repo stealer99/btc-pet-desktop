@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.30-clickthrough-awake-cue)
+// BTC Pet Desktop - main process (v0.17.31-overlay-visibility-fix)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");
@@ -73,22 +73,43 @@ ipcMain.on("panel-size", (_e, h) => {
 });
 // 펫 창 드래그 (렌더러 마우스 좌표 기반)
 let dragOffset = null;
-let overlayProgramMove = false; // repaintOverlay 넛지에 의한 moved 이벤트 무시용
+// 투명 always-on-top 창은 전체화면 앱·모니터 절전·해상도 변경 등으로
+//   ① 최상위(topmost)가 풀려 다른 창 뒤로 밀리거나
+//   ② 화면에 그려진 픽셀을 잃어 "빈 창"(안 보임)으로 남을 수 있다(그림/좌표는 정상).
+// 비용이 다른 두 함수로 나눠 처리한다.
 
-// 투명 always-on-top 창은 절전 복귀·해상도/배율 변경·전체화면 게임 종료 후
-// DWM이 컴포지팅한 픽셀을 잃어 "빈 창"으로 남을 수 있다(그림/좌표는 정상).
-// 위치 1px 넛지 + 최상위 재선언으로 강제 재컴포지팅한다. 사용자가 수동으로
-// "펫 숨기기→보이기"로 복구하던 동작을 자동화한 것. 넛지는 보이지 않고
-// 포커스도 뺏지 않는다(setPosition은 활성화를 유발하지 않음).
-function repaintOverlay() {
+// ① "뒤로 감" 대응: 최상위만 다시 선언한다. 창을 움직이지도 그리지도 포커스도
+//    건드리지 않아 아주 싸다 → 짧은 주기(20초)로 돌려도 무해. 밀려나도 곧 앞으로 복귀.
+function ensureOverlayOnTop() {
   if (!overlayWin || overlayWin.isDestroyed() || !overlayWin.isVisible()) return;
-  if (dragOffset) return; // 드래그 중이면 건드리지 않음 (좌표 충돌 방지)
-  overlayWin.setAlwaysOnTop(true, "screen-saver"); // 최상위 레벨 재선언
-  const [x, y] = overlayWin.getPosition();
-  overlayProgramMove = true;
-  overlayWin.setPosition(x + 1, y);
-  overlayWin.setPosition(x, y);
-  setTimeout(() => { overlayProgramMove = false; }, 50);
+  overlayWin.setAlwaysOnTop(true, "screen-saver");
+}
+
+// ② "안 보임" 대응: 창을 잠깐 숨겼다 다시 보이게 해 강제로 다시 그리게 한다
+//    (사용자가 수동으로 "펫 숨기기→보이기"로 복구하던 그 방법을 자동화).
+//    showInactive 는 포커스를 뺏지 않아 작업 중인 창을 방해하지 않는다.
+//    다시 보이게 한 뒤 최상위가 풀릴 수 있어 마지막에 재선언한다(순서 필수).
+//    한 프레임 깜빡일 수 있어 "무언가 바뀐" 이벤트에서만 호출한다(상시 주기 호출 금지).
+function recoverOverlay(reason) {
+  if (!overlayWin || overlayWin.isDestroyed()) return;
+  if (dragOffset) return;              // 드래그 중이면 건드리지 않음
+  if (!overlayWin.isVisible()) return; // 사용자가 숨겨둔 상태면 억지로 띄우지 않음
+  overlayWin.hide();
+  overlayWin.showInactive();           // 포커스 없이 다시 표시 → 강제로 다시 그리기
+  ensureOverlayOnTop();                // 표시 후 최상위 재선언 (순서 필수)
+  logOverlayEvent("recover:" + (typeof reason === "string" ? reason : "?"));
+}
+
+// 간헐 증상 추적용 로그: 드물게 오는 복구 트리거만 기록한다(20초 최상위 재선언 등
+// 상시 동작은 기록 안 해 파일이 거의 안 자란다). userData/overlay-events.log — 언제든 지워도 됨.
+// 항상 켜둔다: 증상이 언제 날지 몰라 개발자 모드 게이팅은 오히려 놓치기 쉬움.
+function logOverlayEvent(kind) {
+  try {
+    fs.appendFileSync(
+      path.join(app.getPath("userData"), "overlay-events.log"),
+      `${new Date().toISOString()}\t${kind}\n`, "utf8"
+    );
+  } catch (_) {}
 }
 ipcMain.on("drag-start", (_e, x, y) => {
   if (!overlayWin || overlayWin.isDestroyed()) return;
@@ -124,7 +145,6 @@ function createOverlay() {
   overlayWin.loadFile("overlay.html");
   overlayWin.on("closed", () => { overlayWin = null; dragOffset = null; });
   overlayWin.on("moved", () => {
-    if (overlayProgramMove) return; // 리페인트 넛지에 의한 moved는 무시 (좌표 덮어쓰기 방지)
     const [x, y] = overlayWin.getPosition();
     settings.overlayBounds = { x, y };
     saveSettings();
@@ -297,6 +317,7 @@ function buildMenu() {
         if (item.checked && panelWin && !panelWin.isDestroyed() && !panelWin.isVisible()) togglePanel();
       } },
     { label: "펫 보이기/숨기기", click: () => { if (overlayWin && !overlayWin.isDestroyed()) (overlayWin.isVisible() ? overlayWin.hide() : overlayWin.show()); } },
+    { label: "펫 새로고침 (안 보이거나 뒤에 있을 때)", click: () => recoverOverlay("manual") },
     { label: "클릭 통과 켜기 (펫에 잠깐 올리면 조작 가능)", type: "checkbox", checked: !!settings.clickThrough,
       click: (item) => { settings.clickThrough = item.checked; saveSettings(); applyClickThrough(); broadcast("setting-changed", "clickThrough", item.checked); } },
     { label: "부팅 시 자동 실행", type: "checkbox", checked: app.getLoginItemSettings().openAtLogin,
@@ -455,11 +476,12 @@ app.whenReady().then(() => {
   applyClickThrough();
   if (settings.panelPinned) setTimeout(() => togglePanel(), 900);
 
-  // 투명 펫 창 컴포지팅 소실 복구: 시스템이 알려주는 시점에 강제 리페인트
-  powerMonitor.on("resume", repaintOverlay);        // 절전에서 복귀
-  powerMonitor.on("unlock-screen", repaintOverlay); // 화면 잠금 해제
-  screen.on("display-metrics-changed", repaintOverlay); // 해상도/배율/모니터 변경
-  // 킵얼라이브: 전체화면 게임 등 이벤트가 오지 않는 경우 대비 (조용한 넛지)
-  setInterval(repaintOverlay, 3 * 60 * 1000);
+  // 투명 펫 창 상태 소실 대응 (함수 정의 참고)
+  //  · 뒤로 밀림: 20초마다 최상위 재선언 — 싸고 깜빡임 없음
+  setInterval(ensureOverlayOnTop, 20 * 1000);
+  //  · 안 보임: 시스템이 상태 변화를 알려줄 때만 hide→show 복구 (평상시 깜빡임 0)
+  powerMonitor.on("resume", () => recoverOverlay("resume"));            // 절전에서 복귀
+  powerMonitor.on("unlock-screen", () => recoverOverlay("unlock"));     // 화면 잠금 해제
+  screen.on("display-metrics-changed", () => recoverOverlay("display")); // 해상도/모니터 변경 (전체화면 게임 종료 포함)
 });
 app.on("window-all-closed", (e) => e.preventDefault());

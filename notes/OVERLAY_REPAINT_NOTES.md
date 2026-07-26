@@ -46,3 +46,53 @@
   이 훅에서 **workArea 재클램프**를 추가하면 된다(현재 범위 밖 — 사용자 증상은 좌표 정상이었음).
 - 킵얼라이브 주기(3분)는 상수 하나(`3 * 60 * 1000`)로, 부담되면 늘리거나 제거 가능.
 - 배포 시 버전 증가 필수 — 0.17.25 → 0.17.26. release-notes.md 도 갱신함.
+
+## 후속 버그: 넛지가 topmost를 떨어뜨림 (repaintOverlay 순서 수정)
+
+### 증상
+- 리페인트 도입 후 펫이 **최상단에 안 뜨는** 문제 발생. 시작 직후엔 멀쩡하다가 첫 킵얼라이브
+  (3분)가 돌고 나면 다른 창 뒤로 감.
+
+### 원인
+- Windows에서 `setPosition`(내부적으로 `SetWindowPos`)이 창의 **topmost(항상 위) 플래그를
+  떨어뜨릴 수 있다.** 기존 `repaintOverlay` 는 `setAlwaysOnTop(true)` → `setPosition` 순서라,
+  **최상위를 켜자마자 이동이 도로 꺼버렸다.**
+
+### 수정
+- 순서를 뒤집음: **넛지(setPosition ×2) 먼저 → `setAlwaysOnTop(true, "screen-saver")` 를 맨 마지막**에.
+  이동으로 재컴포지팅은 하되, 마지막에 최상위를 다시 세워 유지되게 함.
+
+### 불변사항
+- **repaintOverlay 안에서 `setAlwaysOnTop` 은 항상 setPosition 뒤에 와야 한다.** 순서를 되돌리면
+  최상단 유지가 다시 깨진다. (같은 이유로 향후 setBounds/이동 코드를 넣을 때도 topmost 재선언은 뒤에.)
+
+## 재설계: 1px 이동(넛지) 폐기 → 증상별 2함수 분리
+
+### 배경
+- 자동복구(0.17.27)가 있는데도 **가끔** "안 보임 / 뒤로 감"이 계속 발생.
+- 원인 재정리:
+  - 1px 이동(넛지)은 **추측한 복구법**이라 "안 보임"을 못 살리는 경우가 있었다. 사용자가 실제로
+    성공을 확인한 건 **"펫 숨기기→보이기"(hide→show)** 뿐.
+  - 복구 트리거가 `절전복귀/잠금해제/해상도변경/3분` 뿐이라, 주범인 "전체화면 앱이 앞에 옴"은
+    **이벤트가 안 와서** 최대 3분 지연 → "가끔"으로 체감.
+- 진단 근거(설정/환경): `displayStyle=pill`, `clickThrough` 없음(꺼짐 → 클릭통과 기능 무관 확정),
+  overlayBounds=(2286,1075)는 **주 모니터**(2560폭) 안 → off-screen 아님. 남는 원인은 투명
+  always-on-top 창의 상태 소실뿐.
+
+### 수정 (main.js)
+- `repaintOverlay()` + `overlayProgramMove` 플래그(및 moved 가드) **전부 제거**. "넛지" 용어도 폐기.
+- **증상별로 비용이 다른 2함수로 분리**:
+  1. `ensureOverlayOnTop()` — `setAlwaysOnTop(true, "screen-saver")` 한 줄만. 창을 움직이지도
+     그리지도 포커스도 안 건드려 무비용. **20초 주기**(`setInterval`)로 상시 → "뒤로 감" 해결.
+  2. `recoverOverlay()` — `hide()` → `showInactive()` → `ensureOverlayOnTop()`. 사용자가 검증한
+     hide→show 복구를 자동화. `showInactive` 로 **포커스 안 뺏음**. 한 프레임 깜빡일 수 있어
+     **이벤트에서만**(resume / unlock-screen / display-metrics-changed) 호출 → 평상시 깜빡임 0.
+     (전체화면 게임 종료는 대개 화면모드 변경으로 display-metrics-changed 가 떠서 여기서 잡힘.)
+
+### 불변사항 / 주의
+- **`recoverOverlay` 는 절대 주기 타이머로 돌리지 않는다.** hide/show 는 깜빡임이 있어 상시 호출하면
+  과잉 처치가 된다. 오직 "상태가 바뀐" 이벤트에서만.
+- `recoverOverlay` 안에서 topmost 재선언은 **show 뒤**에(순서 필수). `!isVisible()` 이면 사용자가
+  숨긴 것이므로 억지로 띄우지 않는다. 드래그 중(`dragOffset`)이면 스킵.
+- 이벤트가 없는 희귀 "안 보임"(예: 화면모드 변경 없는 전체화면 오버레이) 케이스가 실제로 확인되면,
+  그때 `recoverOverlay` 를 **긴 주기(60~90초)** 안전망으로만 추가 검토(처음부터 넣지 않음 — 깜빡임 최소화 우선).
