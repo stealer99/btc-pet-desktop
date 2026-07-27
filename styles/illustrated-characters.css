@@ -100,7 +100,7 @@
   .c-coin2.m-pump .body { background-image: url("../img/coin2_pump.png"); }
   .c-coin2.m-dump .body { background-image: url("../img/coin2_dump.png"); }
 
-  /* ===== 일러스트 캐릭터 20종 ===== */
+  /* ===== 일러스트 캐릭터 21종 ===== */
   [class*="c-il-"] .pet { width: var(--ilsize, 90px); height: var(--ilsize, 90px);
     margin-left: calc((var(--ilsize, 90px) / -2) + var(--ilshift-x, 0px)); }
 
@@ -377,3 +377,52 @@
   @keyframes dg-bob {
     0%,100% { transform: translateY(36px) rotate(-1.5deg); }
     50% { transform: translateY(41px) rotate(1.5deg); } }
+
+  /* ===== 표루피 (pyoluppy): 야광봉 시그널맨 — HANDOFF.md 스펙 =====
+     상태(py-*)·글로우 배치는 pyoluppy-controller.js가 소유. 여기선 이미지 스왑 +
+     본체 keyframe + 글로우 스타일/keyframe만 정의. */
+  .c-il-pyoluppy { --ilsize: 104px; --ilshift-x: 0px; }
+  .c-il-pyoluppy .body { background-image: url("../img/il/pyoluppy_base.png"); } /* idle */
+  .c-il-pyoluppy.py-pump .body,
+  .c-il-pyoluppy.py-pumpStrong .body { background-image: url("../img/il/pyoluppy_pump.png"); }
+  .c-il-pyoluppy.py-dump .body,
+  .c-il-pyoluppy.py-dumpStrong .body { background-image: url("../img/il/pyoluppy_dump.png"); }
+  .c-il-pyoluppy.py-despair .body { background-image: url("../img/il/pyoluppy_despair.png"); }
+  .c-il-pyoluppy.py-sleepy .body { background-image: url("../img/il/pyoluppy_sleepy.png"); }
+
+  /* 본체 애니메이션(.body = 이미지). pop/entrance는 JS가 .pet에 1회 재생 */
+  .c-il-pyoluppy.py-idle .body       { animation: py-sway 2.4s ease-in-out infinite; }
+  .c-il-pyoluppy.py-pump .body       { animation: py-bounce 0.55s ease-in-out infinite; }
+  .c-il-pyoluppy.py-pumpStrong .body { animation: py-bounceBig 0.34s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(74,222,128,0.75)); }
+  .c-il-pyoluppy.py-dump .body       { animation: py-shake 0.32s ease-in-out infinite; }
+  .c-il-pyoluppy.py-dumpStrong .body { animation: py-shakeHard 0.15s linear infinite;
+    filter: drop-shadow(0 0 10px rgba(248,113,113,0.8)); }
+  .c-il-pyoluppy.py-despair .body    { animation: py-droop 3.4s ease-in-out infinite; }
+  .c-il-pyoluppy.py-sleepy .body     { animation: py-doze 3.8s ease-in-out infinite; }
+
+  @keyframes py-sway      { 0%,100% { transform: translateX(-3px); } 50% { transform: translateX(3px); } }
+  @keyframes py-idleTilt  { 0%,100% { transform: rotate(0); } 45% { transform: rotate(-5deg); } }
+  @keyframes py-bounce    { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px) rotate(2deg); } }
+  @keyframes py-bounceBig { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-14px) scale(1.05); } }
+  @keyframes py-shake     { 0% { transform: translateX(-5px) rotate(-2deg); } 50% { transform: translateX(5px) rotate(2deg); } 100% { transform: translateX(-5px) rotate(-2deg); } }
+  @keyframes py-shakeHard { 0% { transform: translateX(-8px); } 50% { transform: translateX(8px); } 100% { transform: translateX(-8px); } }
+  @keyframes py-droop     { 0%,100% { transform: translateY(4px) rotate(-1deg); } 50% { transform: translateY(6px) rotate(1deg); } }
+  @keyframes py-doze      { 0%,100% { transform: rotate(-1.5deg) translateY(0); } 50% { transform: rotate(1.5deg) translateY(2px); } }
+  @keyframes py-pop       { 0% { transform: scale(0.9); } 100% { transform: scale(1); } }
+  @keyframes py-entrance  { 0% { transform: translateY(120px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+
+  /* 봉 발광 레이어 (JS가 위치/색/애니메이션/blur를 인라인 지정) */
+  .c-il-pyoluppy .glow { position: absolute; border-radius: 50%; mix-blend-mode: screen;
+    pointer-events: none; transform: rotate(var(--rot,0deg)); will-change: opacity, transform; }
+  .c-il-pyoluppy .glow.red   { background: radial-gradient(ellipse, rgba(255,80,80,0.95), rgba(255,80,80,0) 70%); }
+  .c-il-pyoluppy .glow.green { background: radial-gradient(ellipse, rgba(90,255,140,0.95), rgba(90,255,140,0) 70%); }
+  @keyframes py-glowPulse     { 0%,100% { opacity: var(--lo,0.35); } 50% { opacity: var(--hi,0.85); } }
+  @keyframes py-glowPulseMid  { 0%,100% { opacity: 0.5;  transform: scale(1) rotate(var(--rot)); }
+                                50%     { opacity: 1;    transform: scale(1.12) rotate(var(--rot)); } }
+  @keyframes py-glowPulseHard { 0%,100% { opacity: 0.55; transform: scale(1) rotate(var(--rot)); }
+                                50%     { opacity: 1;    transform: scale(1.25) rotate(var(--rot)); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .c-il-pyoluppy .body, .c-il-pyoluppy .glow, .c-il-pyoluppy .pet { animation: none !important; }
+  }

@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.31-overlay-visibility-fix)
+// BTC Pet Desktop - main process (v0.17.32-pyoluppy + overlay-visibility-fix)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");
@@ -293,6 +293,8 @@ function buildMenu() {
         click: () => { settings.character = "il-ddeoksang"; saveSettings(); broadcast("setting-changed", "character", "il-ddeoksang"); } },
       { label: "존버 (바위)", type: "radio", checked: (settings.character) === "il-jonber",
         click: () => { settings.character = "il-jonber"; saveSettings(); broadcast("setting-changed", "character", "il-jonber"); } },
+      { label: "표루피 (야광봉 시그널맨)", type: "radio", checked: (settings.character) === "il-pyoluppy",
+        click: () => { settings.character = "il-pyoluppy"; saveSettings(); broadcast("setting-changed", "character", "il-pyoluppy"); } },
     ]},
     { label: "펫 크기", submenu: [
       { label: "작게 (72px)", type: "radio", checked: (settings.petSize || 90) === 72,

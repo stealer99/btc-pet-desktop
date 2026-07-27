@@ -17,9 +17,10 @@ window.BtcPetMoodController = class MoodController {
   }
 
   set(mood, { force = false } = {}) {
+    this.current = mood; // 상태값은 계속 추적 (paused여도 disengage 시 복원에 사용)
+    if (this.paused) return; // 표루피 등 전용 컨트롤러가 className을 소유하는 동안엔 손대지 않음
     const className = this.className(mood);
-    if (!force && this.current === mood && this.wrap.className === className) return;
-    this.current = mood;
+    if (!force && this.wrap.className === className) return;
     this.wrap.className = className;
   }
 
