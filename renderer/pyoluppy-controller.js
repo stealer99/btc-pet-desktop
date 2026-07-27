@@ -6,7 +6,10 @@
 (() => {
   const WINDOW_MS = 60_000, MIN_SAMPLES = 5;
   const BRIDGE_MS = 300, DESPAIR_MS = 3_000, SLEEPY_MS = 30 * 60 * 1000; // sleepy 30분(조정값)
-  const TH = { pump: 0.5, pumpStrong: 2, dump: -0.5, dumpStrong: -2 };
+  // 진입 임계는 앱 감도(cfg.moodPumpPct/DumpPct, 기본 0.12%)를 따른다 — 다른 펫과 동일하게 반응.
+  // HANDOFF의 고정 0.5%/2%는 60초 모멘텀 기준으론 너무 둔감(빅 상승에도 안 깸)해서 폐기.
+  const STRONG_MULT = 3.5; // pumpStrong/dumpStrong = 진입 임계 × 이 배수
+  const WAKE_PCT = 0.05;   // sleepy는 이만큼 작은 변동에도 깸 (HANDOFF: "가격 움직이면 즉시 해제")
 
   // [색, 중심x, 중심y, 폭, 높이, 회전deg] — 256px 원본 좌표 (HANDOFF 실측값)
   const GLOW = {
@@ -31,11 +34,6 @@
   const UP = new Set(["pump", "pumpStrong"]);
   const DOWN = new Set(["dump", "dumpStrong", "despair"]);
   const family = (s) => (UP.has(s) ? "up" : DOWN.has(s) ? "down" : "neutral");
-  const band = (pct) =>
-    pct >= TH.pumpStrong ? "pumpStrong" :
-    pct >= TH.pump ? "pump" :
-    pct <= TH.dumpStrong ? "dumpStrong" :
-    pct <= TH.dump ? "dump" : "idle";
 
   window.BtcPetPyoluppy = class Pyoluppy {
     constructor(wrap, cfg) {
@@ -103,9 +101,24 @@
       this._setState(st, true); // dumpStrong은 3초 뒤 despair로 자동 승격 (테스트 유용)
     }
 
+    // 진입 임계를 앱 감도에서 읽어 다른 펫과 동일한 민감도로 반응
+    _band(pct) {
+      const pumpTh = Number(this.cfg.moodPumpPct) || 0.12;
+      const dumpTh = Number(this.cfg.moodDumpPct) || 0.12;
+      if (pct >= pumpTh * STRONG_MULT) return "pumpStrong";
+      if (pct >= pumpTh) return "pump";
+      if (pct <= -dumpTh * STRONG_MULT) return "dumpStrong";
+      if (pct <= -dumpTh) return "dump";
+      return "idle";
+    }
+
     _applyMomentum(pct) {
-      const raw = band(pct);
-      if (this.state === "sleepy" && raw === "idle") return; // 움직임 없으면 계속 수면
+      const raw = this._band(pct);
+      if (this.state === "sleepy") {
+        if (raw !== "idle") { this._transition(raw); return; }      // 진짜 변동 -> 해당 상태로
+        if (Math.abs(pct) >= WAKE_PCT) { this._setState("idle", true); return; } // 작은 움직임 -> idle로 깸
+        return; // 완전 잠잠 -> 계속 수면
+      }
       let target = raw;
       if (raw === "dumpStrong" && this.state === "despair") target = "despair"; // 조건 유지 중 지속
       this._transition(target);

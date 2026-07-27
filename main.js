@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.32-pyoluppy + overlay-visibility-fix)
+// BTC Pet Desktop - main process (v0.17.33-pyoluppy-sensitivity-fix)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");
