@@ -79,8 +79,9 @@
     onPrice(price) {
       if (!this.active) return;
       const now = Date.now();
+      const win = Number(this.cfg.moodWindowMs) || WINDOW_MS; // 앱 감도 윈도우와 동일
       this.buf.push({ t: now, p: price });
-      while (this.buf.length && now - this.buf[0].t > WINDOW_MS) this.buf.shift();
+      while (this.buf.length && now - this.buf[0].t > win) this.buf.shift();
       if (this._bridging || now < this.holdUntil || this.buf.length < MIN_SAMPLES) return;
       const start = this.buf[0].p;
       if (!(start > 0)) return;
@@ -101,26 +102,36 @@
       this._setState(st, true); // dumpStrong은 3초 뒤 despair로 자동 승격 (테스트 유용)
     }
 
-    // 진입 임계를 앱 감도에서 읽어 다른 펫과 동일한 민감도로 반응
-    _band(pct) {
+    // 앱 감도(enter) + 히스테리시스(exit)로 다른 펫과 동일하게 반응·유지.
+    // 한번 pump/dump에 들면 모멘텀이 exit(기본 0.07%) 밑으로 갈 때까지 유지 -> 반응이 오래 보인다.
+    _targetState(pct) {
       const pumpTh = Number(this.cfg.moodPumpPct) || 0.12;
       const dumpTh = Number(this.cfg.moodDumpPct) || 0.12;
-      if (pct >= pumpTh * STRONG_MULT) return "pumpStrong";
+      const exitCfg = Number(this.cfg.moodExitPct);
+      const exit = Number.isFinite(exitCfg) ? exitCfg : 0.07;
+      const upStrong = pumpTh * STRONG_MULT, downStrong = -dumpTh * STRONG_MULT;
+      const cur = this.state;
+      if (cur === "pump" || cur === "pumpStrong") {            // 상승계 유지 (exit까지)
+        if (pct >= upStrong) return "pumpStrong";
+        if (pct > exit) return "pump";
+      } else if (cur === "dump" || cur === "dumpStrong" || cur === "despair") { // 하락계 유지
+        if (pct <= downStrong) return cur === "despair" ? "despair" : "dumpStrong";
+        if (pct < -exit) return "dump";
+      }
+      if (pct >= upStrong) return "pumpStrong";                // 신규 진입 (enter 임계)
       if (pct >= pumpTh) return "pump";
-      if (pct <= -dumpTh * STRONG_MULT) return "dumpStrong";
+      if (pct <= downStrong) return "dumpStrong";
       if (pct <= -dumpTh) return "dump";
       return "idle";
     }
 
     _applyMomentum(pct) {
-      const raw = this._band(pct);
+      const target = this._targetState(pct);
       if (this.state === "sleepy") {
-        if (raw !== "idle") { this._transition(raw); return; }      // 진짜 변동 -> 해당 상태로
+        if (target !== "idle") { this._transition(target); return; }             // 진짜 변동 -> 해당 상태
         if (Math.abs(pct) >= WAKE_PCT) { this._setState("idle", true); return; } // 작은 움직임 -> idle로 깸
         return; // 완전 잠잠 -> 계속 수면
       }
-      let target = raw;
-      if (raw === "dumpStrong" && this.state === "despair") target = "despair"; // 조건 유지 중 지속
       this._transition(target);
     }
 
