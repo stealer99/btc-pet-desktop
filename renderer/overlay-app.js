@@ -42,10 +42,10 @@
     if(key==="displayStyle"&&["pet","pill"].includes(value)){cfg.displayStyle=value;view.applyStyle(cfg);}
     if(key==="petSize")applyPetSize(value);
     if(key==="clickThrough")hover.setClickThrough(value);
-    if(key==="moodWindowSec"){cfg.moodWindowMs=clampNumber(value,10,600,65)*1000;mood.resetPrices();}
-    if(key==="moodPumpPct"){cfg.moodPumpPct=clampNumber(value,0.01,5,0.12);mood.resetPrices();}
-    if(key==="moodDumpPct"){cfg.moodDumpPct=clampNumber(value,0.01,5,0.12);mood.resetPrices();}
-    if(key==="moodExitPct"){cfg.moodExitPct=clampNumber(value,0,4.99,0.07);mood.resetPrices();}
+    if(key==="moodWindowSec"){cfg.moodWindowMs=clampNumber(value,10,600,65)*1000;mood.resetPrices();if(pyo.active)pyo.resetPrices();}
+    if(key==="moodPumpPct"){cfg.moodPumpPct=clampNumber(value,0.01,5,0.12);mood.resetPrices();if(pyo.active)pyo.resetPrices();}
+    if(key==="moodDumpPct"){cfg.moodDumpPct=clampNumber(value,0.01,5,0.12);mood.resetPrices();if(pyo.active)pyo.resetPrices();}
+    if(key==="moodExitPct"){cfg.moodExitPct=clampNumber(value,0,4.99,0.07);mood.resetPrices();if(pyo.active)pyo.resetPrices();}
   });
   let devDisplayRestoreTimer=null;
   window.btcpet.onPetTest((payload)=>{

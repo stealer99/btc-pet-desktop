@@ -5,7 +5,7 @@
 // 글로우 div를 "소유"하며, 그동안 mood-controller는 paused로 className을 안 건드린다.
 (() => {
   const WINDOW_MS = 65_000, MIN_SAMPLES = 5; // WINDOW_MS는 cfg.moodWindowMs 없을 때만 쓰는 fallback (앱 기본 65초)
-  const BRIDGE_MS = 300, DESPAIR_MS = 3_000, SLEEPY_MS = 30 * 60 * 1000; // sleepy 30분(조정값)
+  const BRIDGE_MS = 300, DESPAIR_MS = 3_000, SLEEPY_MS = 10 * 60 * 1000; // sleepy: 10분 연속 횡보 시(조정값)
   // 진입 임계는 앱 감도(cfg.moodPumpPct/DumpPct, 기본 0.12%)를 따른다 — 다른 펫과 동일하게 반응.
   // HANDOFF의 고정 0.5%/2%는 65초 모멘텀 기준으론 너무 둔감(빅 상승에도 안 깸)해서 폐기.
   const STRONG_MULT = 3.5;       // pumpStrong/dumpStrong = 진입 임계 × 이 배수 (0.12%→0.42%)
@@ -91,6 +91,10 @@
 
     // fxStyle 등 변경 시 현재 상태 재적용
     refresh() { if (this.active) this._setState(this.state, true); }
+
+    // 감도(윈도우/임계) 변경 시 가격 버퍼를 비운다 — 다른 펫(mood.resetPrices)과 동일하게
+    // 새 설정이 과도기 없이 즉시 깨끗하게 적용되도록.
+    resetPrices() { this.buf = []; }
 
     // 개발자 패널 테스트 훅
     test(action) {

@@ -15,7 +15,8 @@ HANDOFF.md 스펙 그대로 이식. 기존 "이미지 3장 스왑 + CSS 모션" 
 - **renderer/pyoluppy-controller.js** (신규): 상태머신 + 글로우 레이어 + dev 테스트 훅.
   - 모멘텀 65초 윈도우 자체 계산(mood와 독립). 임계값 ±0.5%/±2% (HANDOFF).
   - 전환 규칙: 상승계↔하락계 직행 금지 → idle(base) 0.3s 브릿지(`_bridging` 플래그로 보호).
-  - dumpStrong 3s → despair 자동 승격 타이머. idle 30분(조정값 SLEEPY_MS) → sleepy.
+  - dumpStrong 3s → despair 자동 승격 타이머. idle 10분 연속(조정값 SLEEPY_MS) → sleepy.
+    (초기 30분은 실전에서 거의 안 떠서 10분으로 낮춤 — 새벽/주말 조용한 장에 실제로 뜨게)
   - 이미지 스왑 시 pop, pumpStrong 최초 진입 시 entrance(.pet에 1회, JS).
   - 봉 글로우 div 2개(.pet에 append). GLOW 좌표테이블(256px 실측) × scale(=petW/256)로 배치.
     상태별 색/애니(glowPulse/Mid/Hard)/blur/opacity 인라인 지정. dump가 pump보다 강함(의도).
