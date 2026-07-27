@@ -8,8 +8,9 @@
   const BRIDGE_MS = 300, DESPAIR_MS = 3_000, SLEEPY_MS = 30 * 60 * 1000; // sleepy 30분(조정값)
   // 진입 임계는 앱 감도(cfg.moodPumpPct/DumpPct, 기본 0.12%)를 따른다 — 다른 펫과 동일하게 반응.
   // HANDOFF의 고정 0.5%/2%는 60초 모멘텀 기준으론 너무 둔감(빅 상승에도 안 깸)해서 폐기.
-  const STRONG_MULT = 3.5; // pumpStrong/dumpStrong = 진입 임계 × 이 배수
-  const WAKE_PCT = 0.05;   // sleepy는 이만큼 작은 변동에도 깸 (HANDOFF: "가격 움직이면 즉시 해제")
+  const STRONG_MULT = 3.5;       // pumpStrong/dumpStrong = 진입 임계 × 이 배수 (0.12%→0.42%)
+  const STRONG_EXIT_RATIO = 0.7; // strong 유지: 진입값 × 이 비율 밑으로 가야 pump/dump로 강등 (경계 깜빡임 방지)
+  const WAKE_PCT = 0.05;         // sleepy는 이만큼 작은 변동에도 깸 (HANDOFF: "가격 움직이면 즉시 해제")
 
   // [색, 중심x, 중심y, 폭, 높이, 회전deg] — 256px 원본 좌표 (HANDOFF 실측값)
   const GLOW = {
@@ -110,12 +111,23 @@
       const exitCfg = Number(this.cfg.moodExitPct);
       const exit = Number.isFinite(exitCfg) ? exitCfg : 0.07;
       const upStrong = pumpTh * STRONG_MULT, downStrong = -dumpTh * STRONG_MULT;
+      const upStrongExit = upStrong * STRONG_EXIT_RATIO, downStrongExit = downStrong * STRONG_EXIT_RATIO;
       const cur = this.state;
-      if (cur === "pump" || cur === "pumpStrong") {            // 상승계 유지 (exit까지)
+      // strong 상태는 진입값보다 낮은 exit-ratio 밑으로 가야 강등 -> 경계(0.42%) 깜빡임 방지
+      if (cur === "pumpStrong") {
+        if (pct >= upStrongExit) return "pumpStrong";
+        if (pct > exit) return "pump";
+      } else if (cur === "pump") {
         if (pct >= upStrong) return "pumpStrong";
         if (pct > exit) return "pump";
-      } else if (cur === "dump" || cur === "dumpStrong" || cur === "despair") { // 하락계 유지
-        if (pct <= downStrong) return cur === "despair" ? "despair" : "dumpStrong";
+      } else if (cur === "dumpStrong") {
+        if (pct <= downStrongExit) return "dumpStrong";
+        if (pct < -exit) return "dump";
+      } else if (cur === "despair") {
+        if (pct <= downStrongExit) return "despair";           // 조건 유지되는 동안 지속
+        if (pct < -exit) return "dump";
+      } else if (cur === "dump") {
+        if (pct <= downStrong) return "dumpStrong";
         if (pct < -exit) return "dump";
       }
       if (pct >= upStrong) return "pumpStrong";                // 신규 진입 (enter 임계)
@@ -180,8 +192,9 @@
       this._place(this.glowL, g.l, scale, a);
       this._place(this.glowR, g.r, scale, a);
 
-      // 본체 이미지 스왑 시 pop / pumpStrong 최초 진입 시 entrance (한 번)
-      const anim = (this.state === "pumpStrong" && prev !== "pumpStrong")
+      // 이미지 스왑 시 pop. entrance(아래서 점프 등장)는 평온/하락에서 pumpStrong으로
+      // "처음" 튀어오를 때만 1회 — pump<->pumpStrong 재진입엔 재생 안 함(HANDOFF "최초 진입 1회").
+      const anim = (this.state === "pumpStrong" && !UP.has(prev))
         ? "py-entrance 0.5s cubic-bezier(.2,1.4,.4,1)"
         : "py-pop 0.22s ease-out";
       this.petEl.style.animation = "none";

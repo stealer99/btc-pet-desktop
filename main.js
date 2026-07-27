@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.34-pyoluppy-hysteresis)
+// BTC Pet Desktop - main process (v0.17.35-pyoluppy-strong-polish)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");

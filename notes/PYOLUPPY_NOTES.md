@@ -67,3 +67,15 @@ HANDOFF.md 스펙 그대로 이식. 기존 "이미지 3장 스왑 + CSS 모션" 
   상승계/하락계에 있으면 `exit`(cfg.moodExitPct, 기본 0.07%)까지 유지, 그 아래로 가야 idle.
   strong은 진입 임계 × 3.5. 모멘텀 윈도우도 `cfg.moodWindowMs`(앱 감도 윈도우)로 통일.
   → 이제 진입 임계·유지 구간·윈도우 모두 다른 펫과 동일. 사용자 감도 설정도 그대로 반영.
+
+## 후속: 2단계(strong) 경계 다듬기 (v0.17.35)
+
+- 2단계 pumpStrong 진입 = 0.42%(0.12×3.5, 60초). 20배 기준 ~8% 손익 → "긴박" 반응으로 적절, 유지.
+- **① entrance 반복 버그**: pump↔pumpStrong을 오갈 때마다 "아래서 점프 등장(entrance)"이 재생돼
+  0.42% 근처에서 튀어 보임. HANDOFF "최초 진입 1회" 위반. → entrance는 **상승계가 아닌 상태
+  (idle/하락/sleepy)에서 pumpStrong으로 처음 튀어오를 때만** 재생(`!UP.has(prev)`), pump→strong
+  재진입은 pop만.
+- **② strong 경계 히스테리시스**: `STRONG_EXIT_RATIO 0.7` — strong 진입은 0.42%, 강등은
+  0.42%×0.7≈0.29% 밑으로 가야 pump로. 경계 깜빡임(→entrance 반복) 원인 제거.
+- 불변사항: strong 배수 3.5(0.42%)는 사용자 확정(레버리지 체감 기준). exit-ratio 0.7은 깜빡임
+  방지용 튜닝값.
