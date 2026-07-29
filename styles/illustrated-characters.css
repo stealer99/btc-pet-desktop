@@ -399,7 +399,7 @@
   .c-il-pyoluppy.py-dumpStrong .body { animation: py-shakeHard 0.15s linear infinite;
     filter: drop-shadow(0 0 10px rgba(248,113,113,0.8)); }
   .c-il-pyoluppy.py-despair .body    { animation: py-droop 3.4s ease-in-out infinite; }
-  .c-il-pyoluppy.py-sleepy .body     { animation: py-doze 3.8s ease-in-out infinite; }
+  .c-il-pyoluppy.py-sleepy .body     { animation: py-doze 3.2s ease-in-out infinite; transform-origin: 50% 100%; }
 
   @keyframes py-sway      { 0%,100% { transform: translateX(-3px); } 50% { transform: translateX(3px); } }
   @keyframes py-idleTilt  { 0%,100% { transform: rotate(0); } 45% { transform: rotate(-5deg); } }
@@ -408,7 +408,7 @@
   @keyframes py-shake     { 0% { transform: translateX(-5px) rotate(-2deg); } 50% { transform: translateX(5px) rotate(2deg); } 100% { transform: translateX(-5px) rotate(-2deg); } }
   @keyframes py-shakeHard { 0% { transform: translateX(-8px); } 50% { transform: translateX(8px); } 100% { transform: translateX(-8px); } }
   @keyframes py-droop     { 0%,100% { transform: translateY(4px) rotate(-1deg); } 50% { transform: translateY(6px) rotate(1deg); } }
-  @keyframes py-doze      { 0%,100% { transform: rotate(-1.5deg) translateY(0); } 50% { transform: rotate(1.5deg) translateY(2px); } }
+  @keyframes py-doze      { 0%,100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(1.05) scaleX(0.985); } } /* 엎드려 자는 호흡: 부풀 때 가로 스쿼시(0.985) — 볼륨감 (하단 기준) */
   @keyframes py-pop       { 0% { transform: scale(0.9); } 100% { transform: scale(1); } }
   @keyframes py-entrance  { 0% { transform: translateY(120px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
 

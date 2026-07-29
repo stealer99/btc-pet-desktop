@@ -55,7 +55,7 @@ signalman/
 @keyframes shake     { 0% { transform: translateX(-5px) rotate(-2deg); } 50% { transform: translateX(5px) rotate(2deg); } 100% { transform: translateX(-5px) rotate(-2deg); } }
 @keyframes shakeHard { 0% { transform: translateX(-8px); } 50% { transform: translateX(8px); } 100% { transform: translateX(-8px); } }
 @keyframes droop     { 0%,100% { transform: translateY(4px) rotate(-1deg); } 50% { transform: translateY(6px) rotate(1deg); } }
-@keyframes doze      { 0%,100% { transform: rotate(-1.5deg) translateY(0); } 50% { transform: rotate(1.5deg) translateY(2px); } }
+@keyframes doze      { 0%,100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(1.05) scaleX(0.985); } }  /* 엎드려 자기: 하단 기준 호흡, 부풀 때 가로 스쿼시. transform-origin:50% 100% 필수 */
 @keyframes pop       { 0% { transform: scale(.9); } 100% { transform: scale(1); } }
 @keyframes entrance  { 0% { transform: translateY(120px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
 ```
@@ -68,7 +68,7 @@ signalman/
 | dump | shake | 0.32s infinite | |
 | dumpStrong | shakeHard | 0.15s infinite | `drop-shadow(0 0 10px rgba(248,113,113,.8))` |
 | despair | droop | 3.4s infinite | |
-| sleepy | doze | 3.8s infinite | |
+| sleepy | doze | 3.2s infinite | 엎드려 자기 — 하단 기준 호흡+스쿼시 |
 
 `prefers-reduced-motion: reduce`일 때 전부 `animation: none`.
 
@@ -110,7 +110,7 @@ const GLOW = {
   dump:       { l: ['red',   31,  54, 50, 112, -12], r: ['red',   230,  93, 54, 112,  22] },
   dumpStrong: { l: ['red',   31,  54, 50, 112, -12], r: ['red',   230,  93, 54, 112,  22] },
   despair:    { l: ['red',   58, 190, 34,  80, -25], r: ['red',   195, 190, 34,  80,  25] },
-  sleepy:     { l: ['red',   63, 200, 38,  84, -38], r: ['green', 208, 215, 40,  70,  38] },
+  sleepy:     { l: ['red',   90, 218, 115, 24, -4], r: ['green',  79, 231, 108, 18, -4] },  // 엎드려 자기: 바닥에 수평으로 놓인 봉
 };
 ```
 

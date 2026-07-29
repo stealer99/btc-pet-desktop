@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.36-pyoluppy-sensitivity-parity)
+// BTC Pet Desktop - main process (v0.17.37-pyoluppy-sleepy-pose)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");
