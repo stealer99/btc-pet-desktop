@@ -137,6 +137,7 @@ html { background: transparent; }
   .dev-title { display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:700; color:#cbd5e1; margin-bottom:7px; }
   .dev-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; }
   .dev-grid.fx { grid-template-columns:repeat(3,1fr); margin-top:6px; }
+  .dev-note { font-size:9px; color:#6b7385; margin-top:4px; }
   .dev-btn { border:1px solid #364055; background:#232a38; color:#aeb6c8; border-radius:6px; padding:6px 2px; font-size:10px; cursor:pointer; }
   .dev-btn:hover { background:#2d3648; color:#fff; }
   .dev-btn.active { border-color:#3b82f6; color:#fff; background:#243b63; }
@@ -269,7 +270,10 @@ html { background: transparent; }
       <button class="dev-btn mood-test" data-action="pump">Pump</button>
       <button class="dev-btn mood-test" data-action="dump">Dump</button>
       <button class="dev-btn mood-test" data-action="candle">봉 갱신</button>
+      <button class="dev-btn mood-test" data-action="sleepy">Sleepy*</button>
+      <button class="dev-btn mood-test" data-action="despair">Despair*</button>
     </div>
+    <div class="dev-note">* 표루피 전용 상태</div>
     <div class="dev-grid fx">
       <button class="dev-btn fx-test" data-fx="loop">캔들 3개</button>
       <button class="dev-btn fx-test" data-fx="once">단일 캔들</button>

@@ -59,7 +59,7 @@ ipcMain.on("toggle-panel", () => togglePanel());
 ipcMain.on("pet-test", (_e, payload) => {
   const action = typeof payload === "string" ? payload : payload?.action;
   const fxStyle = typeof payload === "object" ? payload?.fxStyle : undefined;
-  if (!["idle", "pump", "dump", "candle"].includes(action)) return;
+  if (!["idle", "pump", "dump", "candle", "sleepy", "despair"].includes(action)) return;
   if (fxStyle !== undefined && !["loop", "once", "v3"].includes(fxStyle)) return;
   if (overlayWin && !overlayWin.isDestroyed()) {
     overlayWin.webContents.send("pet-test", { action, fxStyle });

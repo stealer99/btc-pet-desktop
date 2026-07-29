@@ -93,3 +93,13 @@ HANDOFF.md 스펙 그대로 이식. 기존 "이미지 3장 스왑 + CSS 모션" 
 - HANDOFF.md도 doze keyframe·sleepy 테이블(3.2s)·GLOW sleepy 좌표 동기화.
 - 불변사항: sleepy 트리거(10분 횡보)·다른 상태·GLOW_ANIM(faint pulse)은 변경 없음.
   좌표·스쿼시 값은 256px 실측/사용자 확정 — 임의 조정 금지, 테이블 숫자만 수정.
+
+### 개발자 모드 sleepy/despair 테스트 버튼 (0.17.37 동봉)
+
+- sleepy(10분)·despair(dumpStrong 3초)는 실시간으로 띄우기 어려워 dev 패널에서 확인 불가였음.
+- panel.html mood-test 그리드에 **Sleepy* / Despair*** 버튼 추가(＊=표루피 전용). 핸들러가
+  `data-action` 범용이라 panel.js 수정 불필요.
+- 액션 허용: main.js pet-test 검증 + overlay-app onPetTest 검증에 sleepy/despair 추가,
+  pyo.test map에 sleepy→sleepy / despair→despair (holdUntil 5초로 모멘텀 무시하며 표시).
+- **표루피 전용 가드**: overlay-app에서 pyo.active 아니면 sleepy/despair 무시 — 다른 캐릭터에
+  bogus `m-sleepy` 클래스 안 붙게(candle이 표루피에서 no-op인 것과 대칭).

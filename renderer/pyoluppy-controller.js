@@ -99,7 +99,7 @@
     // 개발자 패널 테스트 훅
     test(action) {
       if (!this.active) return;
-      const map = { idle: "idle", pump: "pumpStrong", dump: "dumpStrong" };
+      const map = { idle: "idle", pump: "pumpStrong", dump: "dumpStrong", sleepy: "sleepy", despair: "despair" };
       const st = map[action];
       if (!st) return; // candle 등은 표루피에서 무시
       this.holdUntil = Date.now() + 5000; // 5초간 모멘텀 무시

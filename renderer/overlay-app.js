@@ -51,7 +51,7 @@
   window.btcpet.onPetTest((payload)=>{
     const action=typeof payload==="string"?payload:payload?.action;
     const fxStyle=typeof payload==="object"?payload?.fxStyle:undefined;
-    if(!["idle","pump","dump","candle"].includes(action))return;
+    if(!["idle","pump","dump","candle","sleepy","despair"].includes(action))return;
     if(["loop","once","v3"].includes(fxStyle))cfg.fxStyle=fxStyle;
 
     // 개발자 테스트는 pill 표시 중에도 오버레이를 잠시 보여 준다.
@@ -66,6 +66,8 @@
       return;
     }
 
+    // 표루피 아닌 캐릭터: sleepy/despair는 표루피 전용이라 여기선 무시
+    if(!["idle","pump","dump","candle"].includes(action))return;
     // 동일 상태 재시험에서도 CSS animation이 처음부터 재생되도록 클래스를 한 프레임 비운다.
     wrap.className=`c-${cfg.character} m-idle`;
     void wrap.offsetWidth;
