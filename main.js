@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.37-pyoluppy-sleepy-pose)
+// BTC Pet Desktop - main process (v0.17.38-panel-kimp-refresh)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");

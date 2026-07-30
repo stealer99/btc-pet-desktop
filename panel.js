@@ -45,7 +45,7 @@ function setPct(id, v) {
   el.className = "v num " + (v >= 0 ? "up" : "down");
 }
 
-(async () => {
+async function loadKimp() {
   try {
     // 환율: 두나무 실시간 고시환율(하나은행 기준) 우선, 실패 시 er-api 폴백
     async function getUsdKrw() {
@@ -99,7 +99,10 @@ function setPct(id, v) {
   } catch (e) {
     $("krw").textContent = "오류";
   }
-})();
+}
+loadKimp();
+setInterval(loadKimp, 30000);                 // 30초마다 업비트 가격/환율 갱신 (기존엔 앱 시작 시 1회뿐 -> 값이 굳음)
+document.addEventListener("visibilitychange", () => { if (!document.hidden) loadKimp(); }); // 패널 다시 열 때 즉시 최신화
 
 
 
