@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.39-parami)
+// BTC Pet Desktop - main process (v0.17.40-parami-size-fix)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");
