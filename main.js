@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.38-panel-kimp-refresh)
+// BTC Pet Desktop - main process (v0.17.39-parami)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");
@@ -295,6 +295,8 @@ function buildMenu() {
         click: () => { settings.character = "il-jonber"; saveSettings(); broadcast("setting-changed", "character", "il-jonber"); } },
       { label: "표루피 (야광봉 시그널맨)", type: "radio", checked: (settings.character) === "il-pyoluppy",
         click: () => { settings.character = "il-pyoluppy"; saveSettings(); broadcast("setting-changed", "character", "il-pyoluppy"); } },
+      { label: "파라미 (파라파라 방파제 소녀)", type: "radio", checked: (settings.character) === "il-parami",
+        click: () => { settings.character = "il-parami"; saveSettings(); broadcast("setting-changed", "character", "il-parami"); } },
     ]},
     { label: "펫 크기", submenu: [
       { label: "작게 (72px)", type: "radio", checked: (settings.petSize || 90) === 72,

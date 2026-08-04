@@ -38,7 +38,7 @@ styles/
   base.css               # 레이아웃: #wrap 180x216, 가격 HUD(bottom:10, z-index:30),
                          #   .pet-stage(bottom:58 기준선, z-index:10, --pet-user-scale)
   legacy-characters.css  # 구 벡터 캐릭터 (CSS 도형, 현재 메뉴 미노출이지만 유지)
-  illustrated-characters.css  # 일러스트 21종 + 캐릭터별 컨셉 모션 (핵심 파일)
+  illustrated-characters.css  # 일러스트 22종 + 캐릭터별 컨셉 모션 (핵심 파일)
   effects.css            # 차트 이펙트: 캔들 3개(loop) / 단일 캔들(once) / 로켓·번개(v3)
 img/il/                  # 캐릭터 이미지 256px PNG (키_base/pump/dump.png)
 ```
@@ -51,7 +51,7 @@ img/il/                  # 캐릭터 이미지 256px PNG (키_base/pump/dump.png
   (getDisplayNearestPoint, 멀티모니터 필수)
 - 중복 실행 방지: requestSingleInstanceLock (좀비 투명 창 = 타 앱 좌클릭 먹통의 원인)
 
-## 캐릭터 시스템 (일러스트 21종)
+## 캐릭터 시스템 (일러스트 22종)
 
 컨테이너에 `c-il-{key} m-{mood}` 클래스 조합. 이미지는 base/pump/dump 3장
 스왑(표정), 움직임은 전부 CSS 모션. **형태 변화(부풀기/불길/녹기)는 그림이 아니라
@@ -79,7 +79,8 @@ img/il/                  # 캐릭터 이미지 256px PNG (키_base/pump/dump.png
 | jonber | 존버(바위, base만) | idle/pump 완전 정지, dump만 il-endure 3초 주기 미세 진동 |
 | maejip | 매집이(민트 세력볼) | pump: 뱉기+금색 입자(il-spit) / dump: il-suck 흡입, **오라 금색 중립** |
 | ddeoksang | 떡상이(아기용) | pump: 승천 부유+금색 / dump: 2단 입수(의도적 HUD 잠김) |
-| pyoluppy | 표루피(야광봉 시그널맨) | **전용 컨트롤러**(pyoluppy-controller.js): 7상태(idle/pump/pumpStrong/dump/dumpStrong/despair/sleepy) + 봉 발광 레이어(글로우 div 2개). engage 시 mood는 paused. HANDOFF.md 참조 |
+| pyoluppy | 표루피(야광봉 시그널맨) | **전용 컨트롤러**(pyoluppy-controller.js): 7상태(idle/pump/pumpStrong/dump/dumpStrong/despair/sleepy) + 봉 발광 레이어(글로우 div 2개). engage 시 mood는 paused. notes/pyoluppy_HANDOFF.md 참조 |
+| parami | 파라미(파라파라 방파제 소녀) | **전용 컨트롤러**(parami-controller.js): 5상태(sleepy 없음). idle=애니 WebP(`<img>` 자동루프), 상태전환=순차 페이드(0.14s 아웃→스왑→인, 즉시 스왑 금지), 하락 keyframe에 scale(1.45) 줌 내장. engage 시 mood paused. notes/parami_HANDOFF.md 참조 |
 
 - 크기: 메뉴 72/90/110 = `--pet-user-scale`(무대 래퍼 스케일),
   캐릭터별 시각 균질화 = `--ilsize`/`--ilshift-x` (개별 보정). **두 변수 혼용 금지**

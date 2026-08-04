@@ -1,5 +1,5 @@
 "use strict";
-// 표루피(pyoluppy) 전용 컨트롤러 — HANDOFF.md 스펙 이식.
+// 표루피(pyoluppy) 전용 컨트롤러 — notes/pyoluppy_HANDOFF.md 스펙 이식.
 // 기존 mood-controller(idle/pump/dump)로는 표현 못 하는 7상태 + 파생 타이머
 // + 봉 발광 레이어를 담당한다. 표루피가 선택됐을 때만 engage()되어 wrap className과
 // 글로우 div를 "소유"하며, 그동안 mood-controller는 paused로 className을 안 건드린다.

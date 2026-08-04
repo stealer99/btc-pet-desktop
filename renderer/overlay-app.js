@@ -5,7 +5,8 @@
   const mood=new window.BtcPetMoodController(wrap,cfg);
   const view=new window.BtcPetPriceView({pill,mood});
   const pyo=new window.BtcPetPyoluppy(wrap,cfg);
-  const socket=new window.BtcPetSocketClient(()=>window.BtcPetSources[cfg.priceSource]||window.BtcPetSources.bitget,(p,c)=>{view.render(p,c);if(pyo.active)pyo.onPrice(p);});
+  const parami=new window.BtcPetParami(wrap,cfg);
+  const socket=new window.BtcPetSocketClient(()=>window.BtcPetSources[cfg.priceSource]||window.BtcPetSources.bitget,(p,c)=>{view.render(p,c);if(pyo.active)pyo.onPrice(p);if(parami.active)parami.onPrice(p);});
   const candle=new window.BtcPetCandleScheduler(cfg,pill,()=>mood.hold("candle",6000));
   new window.BtcPetDragController([wrap,pill]);
   const hover=new window.BtcPetHoverActivate([wrap.querySelector(".pet"),pill]);
@@ -27,25 +28,29 @@
     document.documentElement.style.setProperty("--pet-user-scale",String(safeSize/90));
   };
   applyPetSize(settings.petSize);
-  // 표루피는 전용 컨트롤러가 상태/글로우를 소유한다. engage 시 mood를 일시정지시켜
+  // 표루피·파라미는 전용 컨트롤러가 상태를 소유한다. engage 시 mood를 일시정지시켜
   // className 충돌을 막고, 다른 캐릭터로 바꾸면 disengage 후 mood를 복원한다.
   const applyCharacter=()=>{
-    if(cfg.character==="il-pyoluppy"){mood.paused=true;pyo.engage();}
-    else{pyo.disengage();mood.paused=false;mood.set(mood.current,{force:true});}
+    const isPyo=cfg.character==="il-pyoluppy", isParami=cfg.character==="il-parami";
+    if(!isPyo)pyo.disengage();
+    if(!isParami)parami.disengage();
+    if(isPyo){mood.paused=true;pyo.engage();}
+    else if(isParami){mood.paused=true;parami.engage();}
+    else{mood.paused=false;mood.set(mood.current,{force:true});}
   };
   view.applyStyle(cfg);mood.set("idle",{force:true});applyCharacter();socket.connect();candle.schedule();
   window.btcpet.onSettingChanged((key,value)=>{
     if(key==="priceSource"&&window.BtcPetSources[value]){cfg.priceSource=value;mood.resetPrices();socket.restart();}
     if(key==="candleTf"&&window.BtcPetConfig.TF_MS[value]){cfg.candleTf=value;candle.schedule();}
     if(key==="character"&&typeof value==="string"){cfg.character=value;applyCharacter();}
-    if(key==="fxStyle"&&["loop","once","v3"].includes(value)){cfg.fxStyle=value;if(pyo.active)pyo.refresh();else mood.set(mood.current,{force:true});}
+    if(key==="fxStyle"&&["loop","once","v3"].includes(value)){cfg.fxStyle=value;if(pyo.active)pyo.refresh();else if(parami.active)parami.refresh();else mood.set(mood.current,{force:true});}
     if(key==="displayStyle"&&["pet","pill"].includes(value)){cfg.displayStyle=value;view.applyStyle(cfg);}
     if(key==="petSize")applyPetSize(value);
     if(key==="clickThrough")hover.setClickThrough(value);
-    if(key==="moodWindowSec"){cfg.moodWindowMs=clampNumber(value,10,600,65)*1000;mood.resetPrices();if(pyo.active)pyo.resetPrices();}
-    if(key==="moodPumpPct"){cfg.moodPumpPct=clampNumber(value,0.01,5,0.12);mood.resetPrices();if(pyo.active)pyo.resetPrices();}
-    if(key==="moodDumpPct"){cfg.moodDumpPct=clampNumber(value,0.01,5,0.12);mood.resetPrices();if(pyo.active)pyo.resetPrices();}
-    if(key==="moodExitPct"){cfg.moodExitPct=clampNumber(value,0,4.99,0.07);mood.resetPrices();if(pyo.active)pyo.resetPrices();}
+    if(key==="moodWindowSec"){cfg.moodWindowMs=clampNumber(value,10,600,65)*1000;mood.resetPrices();if(pyo.active)pyo.resetPrices();if(parami.active)parami.resetPrices();}
+    if(key==="moodPumpPct"){cfg.moodPumpPct=clampNumber(value,0.01,5,0.12);mood.resetPrices();if(pyo.active)pyo.resetPrices();if(parami.active)parami.resetPrices();}
+    if(key==="moodDumpPct"){cfg.moodDumpPct=clampNumber(value,0.01,5,0.12);mood.resetPrices();if(pyo.active)pyo.resetPrices();if(parami.active)parami.resetPrices();}
+    if(key==="moodExitPct"){cfg.moodExitPct=clampNumber(value,0,4.99,0.07);mood.resetPrices();if(pyo.active)pyo.resetPrices();if(parami.active)parami.resetPrices();}
   });
   let devDisplayRestoreTimer=null;
   window.btcpet.onPetTest((payload)=>{
@@ -59,14 +64,14 @@
     const wasPill=document.body.classList.contains("style-pill");
     if(wasPill)document.body.classList.remove("style-pill");
 
-    // 표루피는 전용 컨트롤러가 테스트를 처리 (idle/pump/dump -> 고유 상태)
-    if(pyo.active){
-      pyo.test(action);
+    // 표루피·파라미는 전용 컨트롤러가 테스트를 처리 (idle/pump/dump/despair 등 -> 고유 상태)
+    if(pyo.active||parami.active){
+      (pyo.active?pyo:parami).test(action);
       if(wasPill)devDisplayRestoreTimer=setTimeout(()=>document.body.classList.add("style-pill"),action==="candle"?6100:5100);
       return;
     }
 
-    // 표루피 아닌 캐릭터: sleepy/despair는 표루피 전용이라 여기선 무시
+    // 그 외 캐릭터: sleepy/despair는 전용 컨트롤러 전용이라 여기선 무시
     if(!["idle","pump","dump","candle"].includes(action))return;
     // 동일 상태 재시험에서도 CSS animation이 처음부터 재생되도록 클래스를 한 프레임 비운다.
     wrap.className=`c-${cfg.character} m-idle`;
