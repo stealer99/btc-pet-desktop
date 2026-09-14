@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<!-- 산책 모드(작업표시줄 마을) 창: main.js createWalker() 가 작업영역 하단에 모니터 폭만큼 띄운다 -->
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; user-select: none; }
+  #scene { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+  <script src="renderer/config.js"></script>
+  <script src="renderer/sources/bitget.js"></script>
+  <script src="renderer/sources/binance.js"></script>
+  <script src="renderer/sources/hyperliquid.js"></script>
+  <script src="renderer/sources/index.js"></script>
+  <script src="renderer/mood-controller.js"></script>
+  <script src="renderer/candle-scheduler.js"></script>
+  <script src="img/walk/characters.js"></script>
+  <script src="img/town/town.js"></script>
+  <script src="renderer/walk/upbit-feed.js"></script>
+  <script src="renderer/walk/walk-scene.js"></script>
+  <script src="renderer/walk/walk-behavior.js"></script>
+  <script src="renderer/walk/walker-app.js"></script>
+</body>
+</html>

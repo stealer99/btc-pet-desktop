@@ -1,0 +1,124 @@
+{
+  "name": "run",
+  "image": "run.png",
+  "source": "chulgeun_ant_dash_knee_cycle.png",
+  "frames": 8,
+  "frameWidth": 238,
+  "frameHeight": 257,
+  "anchorX": 119,
+  "baselineY": 255,
+  "contentHeight": 251,
+  "headWidth": 140,
+  "scale": 0.60475,
+  "fps": 12,
+  "speed": 90,
+  "ground": "row",
+  "loop": true,
+  "facing": "right",
+  "frameInfo": [
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "sourceBbox": [
+        43,
+        61,
+        365,
+        457
+      ],
+      "sourceHeadWidth": 235.0
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "sourceBbox": [
+        45,
+        49,
+        339,
+        459
+      ],
+      "sourceHeadWidth": 230.0
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "sourceBbox": [
+        27,
+        63,
+        346,
+        457
+      ],
+      "sourceHeadWidth": 233.0
+    },
+    {
+      "cell": [
+        3,
+        0
+      ],
+      "sourceBbox": [
+        24,
+        47,
+        323,
+        459
+      ],
+      "sourceHeadWidth": 230.0
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "sourceBbox": [
+        42,
+        47,
+        365,
+        445
+      ],
+      "sourceHeadWidth": 235.0
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "sourceBbox": [
+        45,
+        36,
+        339,
+        447
+      ],
+      "sourceHeadWidth": 229.0
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "sourceBbox": [
+        27,
+        50,
+        347,
+        445
+      ],
+      "sourceHeadWidth": 234.0
+    },
+    {
+      "cell": [
+        3,
+        1
+      ],
+      "sourceBbox": [
+        24,
+        33,
+        323,
+        447
+      ],
+      "sourceHeadWidth": 230.0
+    }
+  ]
+}

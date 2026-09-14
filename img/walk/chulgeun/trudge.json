@@ -1,0 +1,124 @@
+{
+  "name": "trudge",
+  "image": "trudge.png",
+  "source": "chulgeun_ant_trudge_cycle_v2.png",
+  "frames": 8,
+  "frameWidth": 166,
+  "frameHeight": 251,
+  "anchorX": 83,
+  "baselineY": 249,
+  "contentHeight": 245,
+  "headWidth": 140,
+  "scale": 0.58577,
+  "fps": 7,
+  "speed": 20,
+  "ground": "cell",
+  "loop": true,
+  "facing": "right",
+  "frameInfo": [
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "sourceBbox": [
+        69,
+        53,
+        329,
+        466
+      ],
+      "sourceHeadWidth": 240.0
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "sourceBbox": [
+        66,
+        59,
+        328,
+        466
+      ],
+      "sourceHeadWidth": 239.5
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "sourceBbox": [
+        65,
+        52,
+        318,
+        469
+      ],
+      "sourceHeadWidth": 239.0
+    },
+    {
+      "cell": [
+        3,
+        0
+      ],
+      "sourceBbox": [
+        57,
+        51,
+        312,
+        465
+      ],
+      "sourceHeadWidth": 235.0
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "sourceBbox": [
+        65,
+        42,
+        328,
+        452
+      ],
+      "sourceHeadWidth": 239.0
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "sourceBbox": [
+        68,
+        48,
+        328,
+        452
+      ],
+      "sourceHeadWidth": 239.0
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "sourceBbox": [
+        70,
+        43,
+        318,
+        455
+      ],
+      "sourceHeadWidth": 239.0
+    },
+    {
+      "cell": [
+        3,
+        1
+      ],
+      "sourceBbox": [
+        58,
+        37,
+        312,
+        452
+      ],
+      "sourceHeadWidth": 234.5
+    }
+  ]
+}

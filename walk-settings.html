@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>BTC Pet 마을 설정</title>
+<!-- v2 산책 모드 설정 창: 우클릭 메뉴 "마을 설정…" (main.js openWalkSettings) -->
+<style>
+  :root { --bg: #12151c; --card: #1a1f2a; --line: #2c3444; --text: #e8eaf0; --dim: #7f8aa3; --up: #0ecb81; --down: #f6465d; --accent: #3b82f6; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 14px; background: var(--bg); color: var(--text); font: 12px/1.45 "Segoe UI", "Malgun Gothic", sans-serif; user-select: none; }
+  h1 { font-size: 15px; margin: 0 0 2px; }
+  .sub { color: var(--dim); font-size: 11px; margin: 0 0 12px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
+  h2 { font-size: 12px; margin: 0 0 8px; display: flex; justify-content: space-between; align-items: center; }
+  h2 span { color: var(--up); font-weight: 500; font-size: 11px; }
+  .note { color: var(--dim); font-size: 10.5px; margin: 6px 0 0; }
+  input[type=text], input[type=number], select {
+    background: #232a38; color: var(--text); border: 1px solid #343d50; border-radius: 6px; padding: 5px 8px; font: inherit; outline: none;
+  }
+  input:focus, select:focus { border-color: var(--accent); }
+  .row { display: flex; align-items: center; gap: 6px; }
+  .grow { flex: 1; min-width: 0; }
+  .btn { background: #232a38; color: #cbd5e1; border: 1px solid #343d50; border-radius: 6px; padding: 5px 10px; font: inherit; cursor: pointer; }
+  .btn:hover:not(:disabled) { background: #2d3648; color: #fff; }
+  .btn:disabled { opacity: .35; cursor: default; }
+  .btn.primary { background: #243b63; border-color: var(--accent); color: #fff; }
+  .list-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 5px 0; border-top: 1px solid #232a38; }
+  .list-row:first-child { border-top: 0; }
+  .list-row label { display: flex; align-items: center; gap: 7px; cursor: pointer; }
+  .list-row.off label { color: #6b7385; }
+  .mini { width: 24px; height: 22px; padding: 0; font-size: 10px; }
+  .seg { display: flex; gap: 4px; }
+  .seg button { flex: 1; }
+  .seg button.on { background: #243b63; border-color: var(--accent); color: #fff; }
+  .switch-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+  .empty { color: #6b7385; padding: 4px 0; }
+  .price-now { color: var(--dim); font-size: 10.5px; margin-top: 6px; }
+  .alert-price { font-variant-numeric: tabular-nums; }
+  #devSection[hidden], #charSection[hidden] { display: none; }
+  #devSection { border-color: #35405a; }
+</style>
+</head>
+<body>
+  <h1>🐜 마을 설정</h1>
+  <p class="sub">바꾸면 바로 작업표시줄 마을에 반영돼요.</p>
+
+  <section id="charSection" hidden>
+    <h2>캐릭터 <span id="charStatus"></span></h2>
+    <select id="character" style="width:100%"></select>
+  </section>
+
+  <section>
+    <h2>회사 이름 <span id="nameStatus"></span></h2>
+    <input id="companyName" type="text" maxlength="10" placeholder="(주)개미상사" style="width:100%" />
+    <p class="note">회사 건물 간판에 표시돼요. 비워두면 기본 이름.</p>
+  </section>
+
+  <section>
+    <h2>건물 <span id="townStatus"></span></h2>
+    <div id="townList"></div>
+    <p class="note">체크 해제 = 숨김 · ▲▼ = 왼쪽→오른쪽 순서</p>
+  </section>
+
+  <section>
+    <h2>가격 알림 <span id="alertStatus"></span></h2>
+    <div class="row">
+      <select id="alertMarket">
+        <option value="btc">₿ BTC ($)</option>
+        <option value="usdt">₮ 테더 (₩)</option>
+      </select>
+      <input id="alertPrice" class="grow" type="number" min="0" step="any" placeholder="가격" />
+      <button id="alertAdd" class="btn primary">추가</button>
+    </div>
+    <div class="price-now" id="priceNow">현재가 불러오는 중…</div>
+    <div id="alertList" style="margin-top:6px"></div>
+    <p class="note">가격이 이 선을 지나가면(돌파·이탈) 개미가 거래소로 달려가 알려주고, 알림은 한 번 울린 뒤 지워져요.</p>
+  </section>
+
+  <section>
+    <h2>밤 모드</h2>
+    <div class="seg" id="nightSeg">
+      <button class="btn" data-v="auto">자동 (19시~6시)</button>
+      <button class="btn" data-v="day">항상 낮</button>
+      <button class="btn" data-v="night">항상 밤</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>개미</h2>
+    <div class="switch-row"><span>말풍선 (클릭·급등·급락·혼잣말)</span><input id="bubbles" type="checkbox" /></div>
+    <div class="switch-row"><span>급등·급락 때 거래소로 달려가기</span><input id="dash" type="checkbox" /></div>
+    <p class="note">가격 알림 말풍선은 말풍선을 꺼도 표시돼요.</p>
+  </section>
+
+  <!-- 우클릭 메뉴 "개발자 모드"를 켰을 때만 표시 -->
+  <section id="devSection" hidden>
+    <h2>테스트 <span id="devStatus"></span></h2>
+    <div class="seg" style="flex-wrap:wrap">
+      <button class="btn" data-test="pump">급등</button>
+      <button class="btn" data-test="dump">급락</button>
+      <button class="btn" data-test="idle">평온</button>
+      <button class="btn" data-test="candle">봉 마감</button>
+      <button class="btn" data-test="alert">가격 알림</button>
+    </div>
+    <p class="note">실제 시세를 기다리지 않고 질주·말풍선·전광판 번쩍임을 바로 확인해요.</p>
+  </section>
+
+  <script src="img/walk/characters.js"></script>
+  <script src="img/town/town.js"></script>
+  <script src="walk-settings.js"></script>
+</body>
+</html>

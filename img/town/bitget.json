@@ -1,0 +1,32 @@
+{
+  "name": "bitget",
+  "image": "bitget.png",
+  "nightImage": "bitget_night.png",
+  "source": "exchange_towers.png",
+  "cell": [
+    1,
+    0
+  ],
+  "width": 405,
+  "height": 949,
+  "heightUnits": 4.0,
+  "anchor": "bottom-center",
+  "screen": {
+    "x": 44,
+    "y": 26,
+    "w": 316,
+    "h": 84
+  },
+  "screenFrameColor": [
+    5,
+    205,
+    212
+  ],
+  "screenFramePx": 24,
+  "sign": {
+    "x": 98,
+    "y": 718,
+    "w": 207,
+    "h": 44
+  }
+}

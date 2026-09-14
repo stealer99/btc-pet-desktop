@@ -1,0 +1,12 @@
+{
+  "key": "chulgeun",
+  "name": "출근개미",
+  "description": "넥타이 맨 주황색 불개미 직장인 (2등신, 흰 반팔 셔츠 + 남색 넥타이)",
+  "headWidth": 140,
+  "animations": {
+    "walk":   { "file": "chulgeun_ant_walk_cycle.png",       "cols": 4, "rows": 2, "fps": 10, "speed": 40, "ground": "cell" },
+    "idle":   { "file": "chulgeun_ant_idle_cycle.png",       "cols": 4, "rows": 2, "fps": 6,  "speed": 0,  "ground": "cell", "rowsRepeat": true },
+    "run":    { "file": "chulgeun_ant_dash_knee_cycle.png",  "cols": 4, "rows": 2, "fps": 12, "speed": 90, "ground": "row",  "rowsRepeat": true },
+    "trudge": { "file": "chulgeun_ant_trudge_cycle_v2.png",  "cols": 4, "rows": 2, "fps": 7,  "speed": 20, "ground": "cell" }
+  }
+}

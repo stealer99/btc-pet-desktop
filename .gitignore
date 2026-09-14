@@ -29,3 +29,6 @@ Desktop.ini
 # 에디터
 .vscode/
 .idea/
+# v2 산책 모드 해제 파일 (개인별 발급물, 저장소에 올리지 않음)
+*.btcpet
+__pycache__/

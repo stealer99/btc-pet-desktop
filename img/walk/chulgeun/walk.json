@@ -1,0 +1,124 @@
+{
+  "name": "walk",
+  "image": "walk.png",
+  "source": "chulgeun_ant_walk_cycle.png",
+  "frames": 8,
+  "frameWidth": 166,
+  "frameHeight": 257,
+  "anchorX": 83,
+  "baselineY": 255,
+  "contentHeight": 250,
+  "headWidth": 140,
+  "scale": 0.59385,
+  "fps": 10,
+  "speed": 40,
+  "ground": "cell",
+  "loop": true,
+  "facing": "right",
+  "frameInfo": [
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "sourceBbox": [
+        70,
+        54,
+        326,
+        464
+      ],
+      "sourceHeadWidth": 239.0
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "sourceBbox": [
+        68,
+        64,
+        330,
+        463
+      ],
+      "sourceHeadWidth": 236.5
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "sourceBbox": [
+        69,
+        51,
+        318,
+        466
+      ],
+      "sourceHeadWidth": 238.5
+    },
+    {
+      "cell": [
+        3,
+        0
+      ],
+      "sourceBbox": [
+        66,
+        43,
+        311,
+        463
+      ],
+      "sourceHeadWidth": 233.0
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "sourceBbox": [
+        75,
+        46,
+        326,
+        449
+      ],
+      "sourceHeadWidth": 235.0
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "sourceBbox": [
+        73,
+        55,
+        330,
+        449
+      ],
+      "sourceHeadWidth": 235.0
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "sourceBbox": [
+        72,
+        46,
+        317,
+        451
+      ],
+      "sourceHeadWidth": 238.0
+    },
+    {
+      "cell": [
+        3,
+        1
+      ],
+      "sourceBbox": [
+        72,
+        36,
+        311,
+        450
+      ],
+      "sourceHeadWidth": 233.0
+    }
+  ]
+}

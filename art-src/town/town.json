@@ -1,0 +1,13 @@
+{
+  "order": ["home", "office", "upbit", "bitget"],
+  "sheets": [
+    { "file": "buildings.png",       "cols": 2, "rows": 2, "cells": ["home", "office", null, null] },
+    { "file": "exchange_towers.png", "cols": 2, "rows": 1, "cells": ["upbit", "bitget"] }
+  ],
+  "buildings": {
+    "home":   { "label": "🏠 집",         "units": 2 },
+    "office": { "label": "🏢 회사",       "units": 3, "sign": "{company}" },
+    "upbit":  { "label": "🟦 업비트 타워", "units": 4, "sign": "UPBIT",      "board": "usdt" },
+    "bitget": { "label": "🟩 거래소 타워", "units": 4, "sign": "{exchange}", "board": "btc", "nightMaskFrom": "upbit" }
+  }
+}

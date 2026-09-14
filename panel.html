@@ -154,6 +154,7 @@ html { background: transparent; }
   .settings-section { margin-top:9px; }
   .settings-section:first-of-type { margin-top:0; }
   .settings-caption { font-size:10px; color:#697386; margin:0 2px 5px; }
+  #walkLicense[hidden] { display:none; }
 </style>
 </head>
 <body>
@@ -284,6 +285,8 @@ html { background: transparent; }
 
   <div class="meta"><span id="fxinfo" class="num"></span><span id="ts" class="num"></span></div>
   <div id="appver" class="label" style="margin-top:3px; text-align:right;">desktop</div>
+  <!-- v2 산책 모드: 해제 파일(.btcpet)로 열린 경우 받는 사람 이름 표시 -->
+  <div id="walkLicense" class="label" hidden style="margin-top:2px; text-align:right;"></div>
   <script src="panel.js"></script>
 </body>
 </html>

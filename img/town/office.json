@@ -1,0 +1,23 @@
+{
+  "name": "office",
+  "image": "office.png",
+  "nightImage": "office_night.png",
+  "source": "buildings.png",
+  "cell": [
+    1,
+    0
+  ],
+  "width": 465,
+  "height": 389,
+  "heightUnits": 3.0,
+  "anchor": "bottom-center",
+  "screen": null,
+  "screenFrameColor": null,
+  "screenFramePx": null,
+  "sign": {
+    "x": 130,
+    "y": 176,
+    "w": 204,
+    "h": 42
+  }
+}

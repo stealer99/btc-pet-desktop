@@ -16,7 +16,8 @@
   if(window.BtcPetConfig.TF_MS[settings.candleTf])cfg.candleTf=settings.candleTf;
   if(typeof settings.character==="string")cfg.character=settings.character;
   if(["loop","once","v3"].includes(settings.fxStyle))cfg.fxStyle=settings.fxStyle;
-  if(["pet","pill"].includes(settings.displayStyle))cfg.displayStyle=settings.displayStyle;
+  const savedStyle=settings.displayStyle==="walk"?settings.walkPrevStyle:settings.displayStyle; // 산책 저장 상태면 산책 전 스타일
+  if(["pet","pill"].includes(savedStyle))cfg.displayStyle=savedStyle;
   const clampNumber=(value,min,max,fallback)=>{const n=Number(value);return Number.isFinite(n)?Math.min(max,Math.max(min,n)):fallback;};
   cfg.moodWindowMs=clampNumber(settings.moodWindowSec,10,600,65)*1000;
   cfg.moodPumpPct=clampNumber(settings.moodPumpPct,0.01,5,0.12);

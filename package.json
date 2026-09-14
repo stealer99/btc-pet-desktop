@@ -1,7 +1,7 @@
 {
   "name": "btc-pet-desktop",
   "productName": "BTC Pet",
-  "version": "0.17.40",
+  "version": "0.17.43",
   "description": "BTC Pet",
   "main": "main.js",
   "scripts": {
@@ -37,6 +37,19 @@
         "owner": "stealer99",
         "repo": "btc-pet-desktop",
         "releaseType": "release"
+      }
+    ],
+    "files": [
+      "**/*",
+      "!art-src/**",
+      "!tools/**"
+    ],
+    "fileAssociations": [
+      {
+        "ext": "btcpet",
+        "name": "BTC Pet Unlock",
+        "description": "BTC Pet 산책 모드 해제 파일",
+        "role": "Viewer"
       }
     ]
   },

@@ -41,7 +41,20 @@ styles/
   illustrated-characters.css  # 일러스트 22종 + 캐릭터별 컨셉 모션 (핵심 파일)
   effects.css            # 차트 이펙트: 캔들 3개(loop) / 단일 캔들(once) / 로켓·번개(v3)
 img/il/                  # 캐릭터 이미지 256px PNG (키_base/pump/dump.png)
+walker.html              # v2 산책 모드 창 (작업표시줄 위 투명 띠, 해제된 사용자만 표시 스타일 "walk")
+renderer/walk/           # 산책 모드: walker-app(오케스트레이터) / walk-behavior / walk-scene / upbit-feed
+walk-settings.html/.js   # 산책 모드 설정 창 (우클릭 "마을 설정…": 회사 이름·건물·가격 알림·밤 모드·말풍선·질주)
+img/walk/<key>/           # 산책 캐릭터 스프라이트 시트 + img/walk/characters.js|json (tools/build_assets.py 생성)
+img/town/                # 마을 건물 PNG(+밤) + town.js (tools/build_assets.py 생성)
+tools/                   # 제작 도구 (빌드 제외): build_assets / new_character / new_building / walk-preview — tools/README.md
+art-src/                 # AI 원본 그림 + 레시피 characters/<key>/character.json, town/town.json (빌드 제외)
 ```
+
+### v2 산책 모드 (베타, 0.17.41+)
+- 해제: 개인별 해제 파일(.btcpet)을 펫/패널에 드롭 또는 더블클릭 → 표시 스타일 "작업표시줄 산책 (베타)".
+  발급·키 관리는 저장소 밖에서 한다 (**관련 경로·절차·한계를 저장소 파일이나 주석에 쓰지 말 것**)
+- 산책 모드에서도 **오버레이는 숨김만** (시세 WS·트레이 담당). 시세는 main 이 산책 창으로 중계
+- 상세: notes/V2_WALK_MODE_NOTES.md, 그림 파이프라인: notes/V2_SPRITE_PIPELINE_NOTES.md
 
 ### 표시/설정 체계
 - 표시 스타일: 펫 / 기본형(탁상시계형 필, 봉 마감 시 pillflash)

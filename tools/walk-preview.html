@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walk Preview — BTC Pet v2</title>
+<!--
+  스프라이트 동작 미리보기 (개발 도구, 앱에 포함 안 됨)
+  - tools/sprite_slice.py 가 만든 {dir}/sprites.js 를 로드한다
+  - 기본 dir = ../art-src/chulgeun/out  (다른 폴더: walk-preview.html?dir=../art-src/xxx/out)
+  - file:// 로 열어도 동작하도록 JSON fetch 대신 <script> 매니페스트 + canvas drawImage
+  - 모든 시트는 sprite_slice.py 가 머리 폭 기준으로 같은 배율로 맞춰 둠
+    → 화면 배율은 walk 시트의 contentHeight 하나로 계산해 동작끼리 크기가 같게 보인다
+-->
+<style>
+  :root { --bg: #f4f4f6; --card: #fff; --line: #e2e2e8; --text: #1d1d22; --muted: #6b6b76; --accent: #e8622a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 20px 16px 40px; background: var(--bg); color: var(--text);
+    font: 14px/1.5 system-ui, "Segoe UI", "Malgun Gothic", sans-serif; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  h2 { font-size: 14px; margin: 0 0 10px; }
+  .sub { color: var(--muted); margin: 0 0 16px; font-size: 13px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 20px; }
+  .ctl label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .ctl label b { color: var(--text); font-weight: 600; }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  .seg { display: flex; flex-wrap: wrap; gap: 4px; }
+  .seg button, .btn { border: 1px solid var(--line); background: #fff; color: var(--text); border-radius: 8px;
+    padding: 5px 10px; font: inherit; font-size: 13px; cursor: pointer; }
+  .seg button.on { background: var(--text); color: #fff; border-color: var(--text); }
+  .btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .acts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .acts button { border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 8px 14px; font: inherit;
+    cursor: pointer; text-align: left; line-height: 1.25; }
+  .acts button small { display: block; color: var(--muted); font-size: 11px; }
+  .acts button.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
+  .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .desk { position: relative; height: 220px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); margin-bottom: 14px; }
+  .desk canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .wall { position: absolute; inset: 0; }
+  .taskbar { position: absolute; left: 0; right: 0; bottom: 0; height: 48px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .taskbar i { width: 26px; height: 26px; border-radius: 6px; display: block; }
+  .taskbar .clock { position: absolute; right: 14px; font-size: 12px; text-align: right; line-height: 1.25; }
+  .badge { position: absolute; left: 12px; top: 10px; font-size: 12px; padding: 3px 8px; border-radius: 999px; background: rgba(0,0,0,.45); color: #fff; }
+  .theme-dark .wall { background: radial-gradient(120% 140% at 30% 0%, #2d4a8a 0%, #16213d 55%, #0c1122 100%); }
+  .theme-dark .taskbar { background: rgba(28,28,30,.96); border-top: 1px solid rgba(255,255,255,.08); color: #eee; }
+  .theme-dark .taskbar i { background: rgba(255,255,255,.14); }
+  .theme-light .wall { background: radial-gradient(120% 140% at 30% 0%, #cfe0ff 0%, #a9c3ef 55%, #8eaadf 100%); }
+  .theme-light .taskbar { background: rgba(243,243,243,.97); border-top: 1px solid rgba(0,0,0,.08); color: #222; }
+  .theme-light .taskbar i { background: rgba(0,0,0,.12); }
+  table { border-collapse: collapse; font-size: 13px; width: 100%; }
+  th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; }
+  .tbl { overflow-x: auto; }
+  .sheet { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: start; padding: 10px 0; border-top: 1px solid var(--line); }
+  .sheet:first-of-type { border-top: 0; }
+  .strip { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 4px; }
+  .strip canvas { border: 2px solid transparent; border-radius: 6px; background: #eceef2; flex: none; cursor: pointer; }
+  .strip canvas.cur { border-color: var(--accent); }
+  .strip canvas.off { opacity: .3; }
+  .onion { background: #eceef2; border-radius: 6px; }
+  .hint { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
+  kbd { border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; font-size: 11px; background: #fff; }
+  @media (max-width: 640px) { .sheet { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+  <h1>🐜 출근개미 동작 미리보기</h1>
+  <p class="sub" id="sub">스프라이트 로드 중…</p>
+
+  <div class="card">
+    <div class="acts" id="acts"></div>
+    <div class="desk theme-dark" id="desk">
+      <div class="wall"></div><canvas id="stage"></canvas><div class="badge" id="badge"></div>
+      <div class="taskbar"><i></i><i></i><i></i><i></i><i></i><i></i><div class="clock">오전 9:00<br>2026-09-15</div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl">
+        <label>재생 속도 (이 동작) <b id="fpsV"></b></label>
+        <input type="range" id="fps" min="2" max="24" step="1">
+      </div>
+      <div class="ctl">
+        <label>이동 속도 (이 동작) <b id="speedV"></b></label>
+        <input type="range" id="speed" min="0" max="200" step="2">
+      </div>
+      <div class="ctl">
+        <label>프레임 순서 (이 동작) <b id="orderV"></b></label>
+        <input type="text" id="order" placeholder="예: 1-8 · 1,2,3,4,3,2" style="width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:8px;font:inherit">
+        <div class="seg" style="margin-top:4px">
+          <button data-order="all">전체</button><button data-order="top">윗줄</button><button data-order="ping">윗줄 왕복</button>
+        </div>
+      </div>
+      <div class="ctl">
+        <label>프레임 섞기 (모든 동작) <b id="blendV"></b></label>
+        <input type="range" id="blend" min="0" max="100" step="5" value="0">
+      </div>
+      <div class="ctl">
+        <label>캐릭터 키 (화면 px) <b id="sizeV"></b></label>
+        <input type="range" id="size" min="40" max="160" step="2" value="72">
+      </div>
+      <div class="ctl">
+        <label>작업표시줄</label>
+        <div class="seg" id="theme"><button data-v="dark" class="on">다크</button><button data-v="light">라이트</button></div>
+      </div>
+      <div class="ctl">
+        <label>재생</label>
+        <div class="row">
+          <button class="btn" id="play">⏸ 일시정지</button>
+          <button class="btn" id="prev">◀</button>
+          <button class="btn" id="next">▶</button>
+          <button class="btn" id="demo">자동 시연</button>
+          <button class="btn" id="guides">기준선</button>
+        </div>
+      </div>
+    </div>
+    <div class="controls" id="townCtl" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)" hidden>
+      <div class="ctl">
+        <label>마을</label>
+        <div class="row">
+          <button class="btn on" id="townOn">건물 표시</button>
+          <button class="btn on" id="twoLines">전광판 아랫줄</button>
+        </div>
+      </div>
+      <div class="ctl">
+        <label>건물 크기 <b id="townScaleV"></b></label>
+        <input type="range" id="townScale" min="50" max="130" step="5" value="100">
+      </div>
+      <div class="ctl">
+        <label>전광판 크기 (그림 대비) <b id="boardScaleV"></b></label>
+        <input type="range" id="boardScale" min="100" max="260" step="10" value="150">
+      </div>
+      <div class="ctl">
+        <label>화면 가림 (1080p 기준)</label>
+        <div id="coverage" style="font-size:13px"></div>
+      </div>
+    </div>
+    <p class="hint"><kbd>1</kbd>~<kbd>9</kbd> 동작 전환 · <kbd>Space</kbd> 재생/정지 · <kbd>←</kbd><kbd>→</kbd> 한 프레임씩 ·
+      이동 속도는 캐릭터 키 72px 기준값 (키를 바꾸면 비례해서 빨라지거나 느려짐)</p>
+  </div>
+
+  <div class="card">
+    <h2>동작별 현재 값</h2>
+    <div class="tbl"><table id="tbl"></table></div>
+    <p class="hint">마음에 드는 값이 나오면 이 표를 알려주세요. <button class="btn" id="reset">기본값으로 되돌리기</button></p>
+  </div>
+
+  <div class="card">
+    <h2>프레임 확인</h2>
+    <div id="sheets"></div>
+    <p class="hint">주황 테두리 = 현재 프레임 (클릭하면 그 동작·프레임으로 이동) · 오른쪽 겹쳐보기에서 머리가 흔들리면 정렬 문제</p>
+  </div>
+
+<script>
+"use strict";
+(() => {
+  // 사용: walk-preview.html?char=<캐릭터 key>  (img/walk/characters.js — tools/build_assets.py 결과, 없으면 첫 캐릭터)
+  //       walk-preview.html?dir=<sprite_slice.py --out 폴더>  (레시피 없이 시험 변환한 시트 보기)
+  const params = new URLSearchParams(location.search);
+  let dir = (params.get("dir") || "").replace(/\/$/, "");
+  const $ = (id) => document.getElementById(id);
+
+  // 알려진 동작의 표시 이름·순서 (그 외 이름도 뒤에 그대로 표시)
+  const LABELS = {
+    walk: ["걷기", "평온"], idle: ["서있기", "멈춤"], run: ["달리기", "급등"],    trudge: ["터덜터덜", "급락"],
+    sit: ["앉기", "휴식"], sleep: ["잠", "조용할 때"],
+  };
+  const DEMO = [["walk", 6], ["idle", 3], ["run", 5], ["idle", 2], ["trudge", 6]];
+
+  // 마을(건물)은 선택: tools/town_slice.py 결과가 없으면 조용히 생략
+  const townDir = (params.get("town") || "../img/town").replace(/\/$/, "");
+  const town = { ready: false, buildings: {} };
+  const ts = document.createElement("script");
+  ts.src = `${townDir}/town.js?t=${Date.now()}`;
+  ts.onload = () => {
+    for (const [name, meta] of Object.entries(window.BTCPET_TOWN || {})) {
+      const img = new Image();
+      img.src = `${townDir}/${meta.image}?t=${Date.now()}`;
+      town.buildings[name] = { meta, img };
+    }
+    town.ready = Object.keys(town.buildings).length > 0;
+    document.getElementById("townCtl").hidden = !town.ready;
+  };
+  document.head.appendChild(ts);
+
+  const s = document.createElement("script");
+  if (dir) {
+    s.src = `${dir}/sprites.js?t=${Date.now()}`;
+    s.onload = () => boot(window.BTCPET_SPRITES || {});
+    s.onerror = () => { $("sub").textContent = `${dir}/sprites.js 를 찾을 수 없어요. sprite_slice.py 를 먼저 실행하세요.`; };
+  } else {
+    s.src = `../img/walk/characters.js?t=${Date.now()}`;
+    s.onload = () => {
+      const chars = window.BTCPET_CHARACTERS || {};
+      const c = chars[params.get("char")] || Object.values(chars)[0];
+      if (!c) { $("sub").textContent = "캐릭터가 없어요. python tools/build_assets.py 를 먼저 실행하세요."; return; }
+      dir = `../${c.dir}`;
+      document.querySelector("h1").textContent = `🐜 ${c.name} 동작 미리보기`;
+      boot(c.animations);
+    };
+    s.onerror = () => { $("sub").textContent = "img/walk/characters.js 가 없어요. python tools/build_assets.py 를 먼저 실행하세요."; };
+  }
+  document.head.appendChild(s);
+
+  function boot(manifest) {
+    const known = Object.keys(LABELS).filter((n) => manifest[n]);
+    const names = [...known, ...Object.keys(manifest).filter((n) => !LABELS[n])];
+    if (!names.length) { $("sub").textContent = "스프라이트가 없어요."; return; }
+    $("sub").textContent = `${dir} · ${names.length}개 동작`;
+
+    const refHeight = (manifest.walk || manifest[names[0]]).contentHeight;
+    const sprites = {};
+    const defaults = {};
+    names.forEach((n) => {
+      const img = new Image();
+      img.src = `${dir}/${manifest[n].image}?t=${Date.now()}`;
+      img.onload = () => renderSheets();
+      sprites[n] = { meta: manifest[n], img, thumbs: [], onion: null };
+      defaults[n] = { fps: manifest[n].fps || 10, speed: manifest[n].speed || 0,
+        order: [...Array(manifest[n].frames).keys()] };
+    });
+    const tune = JSON.parse(JSON.stringify(defaults));
+
+    // ---- 마을: 배치(화면 폭 비율), 간판 글자, 가짜 시세 ----
+    const TOWN_LAYOUT = [["home", 0.10], ["office", 0.33], ["upbit", 0.64], ["bitget", 0.86]];
+    const SIGN_TEXT = { office: "(주)개미상사", upbit: "UPBIT", bitget: "BITGET" };
+    const fake = { btc: 64210, btcPct: 0.82, usdt: 1392, kimp: 1.24, btcDir: 0, usdtDir: 0 };
+    setInterval(() => {
+      const db = Math.round((Math.random() - 0.48) * 60), du = Math.round((Math.random() - 0.5) * 2);
+      fake.btc += db; fake.btcPct = +(fake.btcPct + db / 640).toFixed(2); fake.btcDir = Math.sign(db);
+      fake.usdt += du; fake.kimp = +(fake.kimp + du * 0.07).toFixed(2); fake.usdtDir = Math.sign(du);
+    }, 1200);
+
+    function fitText(ctx, text, maxW, px, weight) {
+      ctx.font = `${weight} ${px}px "Segoe UI", "Malgun Gothic", sans-serif`;
+      const w = ctx.measureText(text).width;
+      if (w > maxW) { px = Math.max(4, px * maxW / w); ctx.font = `${weight} ${px}px "Segoe UI", "Malgun Gothic", sans-serif`; }
+      return px;
+    }
+    function drawTown(ctx, cw, groundY, dpr) {
+      if (!town.ready || !state.townOn) return;
+      for (const [name, fx] of TOWN_LAYOUT) {
+        const b = town.buildings[name];
+        if (!b || !b.img.complete) continue;
+        const { meta, img } = b;
+        const h = meta.heightUnits * state.size * state.townScale * dpr;
+        const k = h / meta.height;
+        const w = meta.width * k;
+        const left = fx * cw * dpr - w / 2, top = groundY - h;
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(img, left, top, w, h);
+        const rect = (r) => r && { x: left + r.x * k, y: top + r.y * k, w: r.w * k, h: r.h * k };
+        const sign = rect(meta.sign);
+        if (sign && SIGN_TEXT[name]) {
+          fitText(ctx, SIGN_TEXT[name], sign.w * 0.86, sign.h * 0.62, 700);
+          ctx.fillStyle = "#1f2a44"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillText(SIGN_TEXT[name], sign.x + sign.w / 2, sign.y + sign.h / 2 + sign.h * 0.04);
+        }
+        // 전광판: 그림의 전광판 자리에 더 큰 전광판을 코드로 덮어 그린다 (테두리 색·두께는 그림에서 측정한 값)
+        let scr = rect(meta.screen);
+        const box = boardBox(meta, k);
+        if (scr && box) {
+          const [fr, fg, fb] = meta.screenFrameColor;
+          const bx = left + box.x, by = top + box.y;
+          ctx.lineJoin = "round";
+          ctx.beginPath(); ctx.roundRect(bx, by, box.w, box.h, box.t * 0.9);
+          ctx.fillStyle = `rgb(${fr},${fg},${fb})`; ctx.fill();
+          ctx.lineWidth = Math.max(1, box.t * 0.3); ctx.strokeStyle = "#141c24"; ctx.stroke();
+          scr = { x: bx + box.t, y: by + box.t, w: box.w - box.t * 2, h: box.h - box.t * 2 };
+          ctx.beginPath(); ctx.roundRect(scr.x, scr.y, scr.w, scr.h, box.t * 0.35);
+          ctx.fillStyle = "#383635"; ctx.fill();
+          ctx.lineWidth = Math.max(1, box.t * 0.22); ctx.stroke();
+        }
+        if (scr) {
+          const up = "#6dffa8", down = "#ff7373", flat = "#f4f4f4";
+          const lines = name === "upbit"
+            ? [[`₮ ₩${fake.usdt.toLocaleString("ko-KR")}`, fake.usdtDir > 0 ? up : fake.usdtDir < 0 ? down : flat],
+               [`김프 ${fake.kimp >= 0 ? "+" : ""}${fake.kimp.toFixed(2)}%`, "#ffd36b"]]
+            : [[`₿ $${fake.btc.toLocaleString("en-US")}`, fake.btcDir > 0 ? up : fake.btcDir < 0 ? down : flat],
+               [`${fake.btcPct >= 0 ? "▲ +" : "▼ "}${fake.btcPct.toFixed(2)}%`, fake.btcPct >= 0 ? up : down]];
+          ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          if (state.twoLines) {
+            fitText(ctx, lines[0][0], scr.w * 0.9, scr.h * 0.46, 700);
+            ctx.fillStyle = lines[0][1]; ctx.fillText(lines[0][0], scr.x + scr.w / 2, scr.y + scr.h * 0.36);
+            fitText(ctx, lines[1][0], scr.w * 0.9, scr.h * 0.32, 600);
+            ctx.fillStyle = lines[1][1]; ctx.fillText(lines[1][0], scr.x + scr.w / 2, scr.y + scr.h * 0.76);
+          } else {
+            fitText(ctx, lines[0][0], scr.w * 0.9, scr.h * 0.66, 700);
+            ctx.fillStyle = lines[0][1]; ctx.fillText(lines[0][0], scr.x + scr.w / 2, scr.y + scr.h * 0.54);
+          }
+        }
+      }
+    }
+    // 코드 전광판 사각형 (건물 이미지 좌상단 기준, 화면 px). k = 이미지 px → 화면 px 배율
+    // 그림 전광판의 가운데·바닥(다리가 붙는 곳)은 유지하고 위·양옆으로만 키운다
+    function boardBox(meta, k) {
+      if (!meta.screen || !meta.screenFrameColor) return null;
+      const s = meta.screen, t = (meta.screenFramePx || 20) * k, bs = state.boardScale;
+      const innerW = s.w * k * bs, innerH = s.h * k * bs;
+      const w = innerW + t * 2, h = innerH + t * 2;
+      const cx = (s.x + s.w / 2) * k, bottom = (s.y + s.h) * k + t;
+      return { x: cx - w / 2, y: bottom - h, w, h, t };
+    }
+    function townHeightPx() {
+      if (!town.ready || !state.townOn) return 0;
+      return Math.max(...Object.values(town.buildings).map(({ meta }) => {
+        const h = meta.heightUnits * state.size * state.townScale;
+        const box = boardBox(meta, h / meta.height);
+        return h + (box ? Math.max(0, -box.y) : 0);                // 전광판이 건물 위로 튀어나온 만큼 포함
+      }));
+    }
+
+    const state = { act: names.includes("walk") ? "walk" : names[0], clock: 0, playing: true, size: 72, blend: 0,
+      townOn: true, townScale: 1, twoLines: true, boardScale: 1.5,
+      theme: "dark", guides: false, demo: false, demoIdx: 0, demoLeft: 0, x: 160, dir: 1 };
+
+    // ---- 동작 버튼 ----
+    names.forEach((n, i) => {
+      const b = document.createElement("button");
+      b.dataset.act = n;
+      const [ko, hint] = LABELS[n] || [n, ""];
+      b.innerHTML = `${i + 1}. ${ko}<small>${n}${hint ? " · " + hint : ""}</small>`;
+      b.onclick = () => { stopDemo(); setAct(n); };
+      $("acts").appendChild(b);
+    });
+
+    function setAct(n) {
+      state.act = n;
+      state.clock = 0;
+      document.querySelectorAll("#acts button").forEach((b) => b.classList.toggle("on", b.dataset.act === n));
+      syncSliders();
+      renderTable();
+    }
+
+    function syncSliders() {
+      $("fps").value = tune[state.act].fps;
+      $("speed").value = tune[state.act].speed;
+      $("fpsV").textContent = `${tune[state.act].fps} fps`;
+      $("speedV").textContent = tune[state.act].speed ? `${tune[state.act].speed} px/s` : "제자리";
+      $("order").value = orderText(tune[state.act].order);
+      $("orderV").textContent = `${tune[state.act].order.length}칸`;
+      $("order").style.borderColor = "";
+    }
+
+    // 프레임 순서: 화면 표기는 1부터, 내부는 0부터. "1-4" 범위와 "1,2,3" 나열 지원
+    const orderText = (order) => order.map((i) => i + 1).join(",");
+    function parseOrder(text, frames) {
+      const out = [];
+      for (const tok of text.split(",").map((t) => t.trim()).filter(Boolean)) {
+        const m = tok.match(/^(\d+)(?:\s*-\s*(\d+))?$/);
+        if (!m) return null;
+        const a = Number(m[1]), b = m[2] ? Number(m[2]) : a;
+        if (a < 1 || b < 1 || a > frames || b > frames) return null;
+        const stepDir = a <= b ? 1 : -1;
+        for (let i = a; stepDir > 0 ? i <= b : i >= b; i += stepDir) out.push(i - 1);
+      }
+      return out.length ? out : null;
+    }
+
+    function renderTable() {
+      const rows = names.map((n) => {
+        const d = defaults[n], t = tune[n];
+        const mark = (a, b) => (a !== b ? ` <span style="color:var(--accent)">(기본 ${b})</span>` : "");
+        const ot = orderText(t.order), od = orderText(d.order);
+        return `<tr${n === state.act ? ' style="background:#fff4ee"' : ""}><td>${(LABELS[n] || [n])[0]} <span style="color:var(--muted)">${n}</span></td>
+          <td>${t.fps} fps${mark(t.fps, d.fps)}</td><td>${t.speed ? t.speed + " px/s" : "제자리"}${mark(t.speed, d.speed)}</td>
+          <td>${ot === od ? "전체" : `<span style="color:var(--accent)">${ot}</span>`}</td>
+          <td>${manifest[n].source}</td></tr>`;
+      }).join("");
+      $("tbl").innerHTML = `<tr><th>동작</th><th>재생 속도</th><th>이동 속도 (72px 기준)</th><th>프레임 순서</th><th>시트</th></tr>${rows}`;
+    }
+
+    // ---- 그리기 ----
+    function drawFrame(ctx, sp, f, dx, dy, k, flip) {
+      const { meta, img } = sp;
+      ctx.save();
+      ctx.translate(dx, dy);
+      if (flip) ctx.scale(-1, 1);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(img, f * meta.frameWidth, 0, meta.frameWidth, meta.frameHeight,
+        -meta.anchorX * k, -meta.baselineY * k, meta.frameWidth * k, meta.frameHeight * k);
+      ctx.restore();
+    }
+    function guides(ctx, ax, by, w, h, dpr) {
+      ctx.save();
+      ctx.lineWidth = dpr;
+      ctx.strokeStyle = "rgba(0,170,80,.85)";
+      ctx.beginPath(); ctx.moveTo(ax, 0); ctx.lineTo(ax, h); ctx.stroke();
+      ctx.strokeStyle = "rgba(230,40,40,.85)";
+      ctx.beginPath(); ctx.moveTo(0, by); ctx.lineTo(w, by); ctx.stroke();
+      ctx.restore();
+    }
+    const frameOf = (n) => { const o = tune[n].order; return o[Math.floor(state.clock * tune[n].fps) % o.length]; };
+
+    function renderSheets() {
+      if (!names.every((n) => sprites[n].img.complete)) return;
+      const box = $("sheets");
+      box.innerHTML = "";
+      const dpr = devicePixelRatio;
+      names.forEach((n) => {
+        const sp = sprites[n], { meta } = sp;
+        const wrap = document.createElement("div");
+        wrap.className = "sheet";
+        wrap.innerHTML = `<div><b>${(LABELS[n] || [n])[0]}</b> <span class="hint">${n} · ${meta.source}</span><div class="strip"></div></div><div></div>`;
+        const strip = wrap.querySelector(".strip");
+        const tk = 0.38;
+        sp.thumbs = [];
+        for (let f = 0; f < meta.frames; f++) {
+          const c = document.createElement("canvas");
+          c.width = Math.round(meta.frameWidth * tk * dpr); c.height = Math.round(meta.frameHeight * tk * dpr);
+          c.style.width = `${meta.frameWidth * tk}px`; c.style.height = `${meta.frameHeight * tk}px`;
+          c.title = `${n} 프레임 ${f + 1}`;
+          c.onclick = () => {
+            stopDemo(); setAct(n); setPlaying(false);
+            const idx = Math.max(0, tune[n].order.indexOf(f));
+            state.clock = (idx + 0.5) / tune[n].fps;
+          };
+          const k = c.width / meta.frameWidth;
+          drawFrame(c.getContext("2d"), sp, f, meta.anchorX * k, meta.baselineY * k, k, false);
+          strip.appendChild(c);
+          sp.thumbs.push(c);
+        }
+        const o = document.createElement("canvas");
+        o.className = "onion";
+        const ok = 0.5;
+        o.width = Math.round(meta.frameWidth * ok * dpr); o.height = Math.round(meta.frameHeight * ok * dpr);
+        o.style.width = `${meta.frameWidth * ok}px`; o.style.height = `${meta.frameHeight * ok}px`;
+        const octx = o.getContext("2d"), kk = o.width / meta.frameWidth;
+        octx.globalAlpha = 1 / meta.frames + 0.04;
+        for (let f = 0; f < meta.frames; f++) drawFrame(octx, sp, f, meta.anchorX * kk, meta.baselineY * kk, kk, false);
+        octx.globalAlpha = 1;
+        guides(octx, meta.anchorX * kk, meta.baselineY * kk, o.width, o.height, dpr);
+        wrap.lastElementChild.appendChild(o);
+        box.appendChild(wrap);
+      });
+    }
+
+    let last = performance.now();
+    function tick(now) {
+      const dt = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      if (state.playing) {
+        state.clock += dt;
+        if (state.demo) {
+          state.demoLeft -= dt;
+          if (state.demoLeft <= 0) {
+            state.demoIdx = (state.demoIdx + 1) % DEMO.length;
+            startDemoStep();
+          }
+        }
+      }
+      const canvas = $("stage"), dpr = devicePixelRatio;
+      // 가장 높은 건물 + 작업표시줄 + 여유가 들어가게 무대 높이 자동 조절
+      const tallest = townHeightPx();
+      const deskH = Math.max(220, Math.ceil(tallest + 48 + 36));
+      if ($("desk").style.height !== `${deskH}px`) $("desk").style.height = `${deskH}px`;
+      if (town.ready) {
+        $("coverage").textContent = tallest
+          ? `가장 높은 건물 ${Math.round(tallest)}px · 작업영역(1032px)의 ${Math.round(tallest / 1032 * 100)}%`
+          : "건물 숨김";
+      }
+      const cw = canvas.clientWidth, chh = canvas.clientHeight;
+      if (canvas.width !== Math.round(cw * dpr) || canvas.height !== Math.round(chh * dpr)) {
+        canvas.width = Math.round(cw * dpr); canvas.height = Math.round(chh * dpr);
+      }
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawTown(ctx, cw, (chh - 48) * dpr, dpr);
+      const sp = sprites[state.act];
+      if (sp && sp.img.complete) {
+        const view = state.size / refHeight;                    // 시트 px → 화면 CSS px
+        const half = (sp.meta.frameWidth / 2) * view;
+        if (state.playing) {
+          const speed = tune[state.act].speed * (state.size / 72);
+          state.x += state.dir * speed * dt;
+          if (state.x > cw - half - 8) { state.x = cw - half - 8; state.dir = -1; }
+          if (state.x < half + 8) { state.x = half + 8; state.dir = 1; }
+        }
+        const f = frameOf(state.act);
+        const groundY = (chh - 48) * dpr;
+        // 프레임 섞기: 한 프레임 시간의 끝부분(blend 비율)에서 다음 프레임으로 교차.
+        // 앞 절반은 현재 프레임 위에 다음 프레임을 서서히 올리고, 뒤 절반은 다음 프레임 위의 현재 프레임을
+        // 서서히 지운다 → 몸통(겹치는 부분)은 계속 불투명, 다른 부분(다리)만 잠깐 겹쳐 보인다
+        const order = tune[state.act].order;
+        const pos = state.clock * tune[state.act].fps;
+        const frac = pos - Math.floor(pos);
+        const mix = state.blend / 100;
+        const draw = (fr, alpha) => { ctx.globalAlpha = alpha; drawFrame(ctx, sp, fr, state.x * dpr, groundY, view * dpr, state.dir < 0); };
+        if (mix > 0 && frac > 1 - mix) {
+          const a = (frac - (1 - mix)) / mix;
+          const next = order[(Math.floor(pos) + 1) % order.length];
+          if (a < 0.5) { draw(f, 1); draw(next, a * 2); }
+          else { draw(next, 1); draw(f, (1 - a) * 2); }
+          ctx.globalAlpha = 1;
+        } else {
+          draw(f, 1);
+        }
+        if (state.guides) guides(ctx, state.x * dpr, groundY, canvas.width, canvas.height, dpr);
+        names.forEach((n) => sprites[n].thumbs.forEach((c, i) => {
+          c.classList.toggle("cur", n === state.act && i === f);
+          c.classList.toggle("off", !tune[n].order.includes(i));
+        }));
+        const [ko] = LABELS[state.act] || [state.act];
+        $("badge").textContent = `${state.demo ? "자동 시연 · " : ""}${ko} · 프레임 ${f + 1}/${sp.meta.frames}`;
+      }
+      requestAnimationFrame(tick);
+    }
+
+    // ---- 자동 시연 ----
+    function startDemoStep() {
+      let [n, sec] = DEMO[state.demoIdx];
+      if (!manifest[n]) { state.demoIdx = (state.demoIdx + 1) % DEMO.length; [n, sec] = DEMO[state.demoIdx]; }
+      state.demoLeft = sec;
+      if (manifest[n]) setAct(n);
+    }
+    function stopDemo() { state.demo = false; $("demo").classList.remove("on"); }
+    $("demo").onclick = () => {
+      state.demo = !state.demo;
+      $("demo").classList.toggle("on", state.demo);
+      if (state.demo) { setPlaying(true); state.demoIdx = 0; startDemoStep(); }
+    };
+
+    // ---- 컨트롤 ----
+    $("fps").oninput = () => { tune[state.act].fps = Number($("fps").value); syncSliders(); renderTable(); };
+    $("speed").oninput = () => { tune[state.act].speed = Number($("speed").value); syncSliders(); renderTable(); };
+    $("order").oninput = () => {
+      const parsed = parseOrder($("order").value, manifest[state.act].frames);
+      $("order").style.borderColor = parsed ? "" : "#d33";
+      if (!parsed) return;
+      tune[state.act].order = parsed;
+      $("orderV").textContent = `${parsed.length}칸`;
+      renderTable();
+    };
+    document.querySelectorAll("[data-order]").forEach((b) => b.onclick = () => {
+      const frames = manifest[state.act].frames, half = Math.ceil(frames / 2);
+      const top = [...Array(half).keys()];
+      tune[state.act].order = b.dataset.order === "all" ? [...Array(frames).keys()]
+        : b.dataset.order === "top" ? top
+        : [...top, ...top.slice(1, -1).reverse()];               // 1,2,3,4,3,2
+      syncSliders(); renderTable();
+    });
+    const updSize = () => { state.size = Number($("size").value); $("sizeV").textContent = `${state.size}px`; };
+    $("size").oninput = updSize; updSize();
+    $("townOn").onclick = () => { state.townOn = !state.townOn; $("townOn").classList.toggle("on", state.townOn); };
+    $("twoLines").onclick = () => { state.twoLines = !state.twoLines; $("twoLines").classList.toggle("on", state.twoLines); };
+    const updTown = () => { state.townScale = Number($("townScale").value) / 100; $("townScaleV").textContent = `${$("townScale").value}%`; };
+    $("townScale").oninput = updTown; updTown();
+    const updBoard = () => { state.boardScale = Number($("boardScale").value) / 100; $("boardScaleV").textContent = `${$("boardScale").value}%`; };
+    $("boardScale").oninput = updBoard; updBoard();
+    const updBlend = () => { state.blend = Number($("blend").value); $("blendV").textContent = state.blend ? `${state.blend}%` : "끔"; };
+    $("blend").oninput = updBlend; updBlend();
+    $("theme").querySelectorAll("button").forEach((b) => b.onclick = () => {
+      $("theme").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+      $("desk").className = `desk theme-${b.dataset.v}`;
+    });
+    function setPlaying(on) { state.playing = on; $("play").textContent = on ? "⏸ 일시정지" : "▶ 재생"; }
+    function step(d) {
+      setPlaying(false); stopDemo();
+      const fps = tune[state.act].fps;
+      state.clock = Math.max(0, (Math.floor(state.clock * fps) + d + 0.5) / fps);
+    }
+    $("play").onclick = () => setPlaying(!state.playing);
+    $("prev").onclick = () => step(-1);
+    $("next").onclick = () => step(1);
+    $("guides").onclick = () => { state.guides = !state.guides; $("guides").classList.toggle("on", state.guides); };
+    $("reset").onclick = () => { names.forEach((n) => { tune[n] = { ...defaults[n], order: [...defaults[n].order] }; }); syncSliders(); renderTable(); };
+    addEventListener("keydown", (e) => {
+      if (e.target.tagName === "INPUT") return;
+      if (e.code === "Space") { e.preventDefault(); setPlaying(!state.playing); }
+      if (e.code === "ArrowLeft") step(-1);
+      if (e.code === "ArrowRight") step(1);
+      const num = Number(e.key);
+      if (num >= 1 && num <= names.length) { stopDemo(); setAct(names[num - 1]); }
+    });
+
+    setAct(state.act);
+    requestAnimationFrame(tick);
+  }
+})();
+</script>
+</body>
+</html>

@@ -7,6 +7,16 @@ if (window.btcpet.getVersion) {
     .catch(() => {});
 }
 
+// ---- v2 산책 모드: 해제 파일로 열렸으면 받는 사람 이름을 작게 표시 ----
+function showWalkLicense(name, exp) {
+  const el = $("walkLicense");
+  el.hidden = !name;
+  el.textContent = name ? `🐜 산책 모드 · ${name}님${exp ? ` · ${exp}까지` : ""}` : "";
+  setTimeout(fitPanel, 0);
+}
+window.btcpet.getSettings().then((s) => showWalkLicense(s.walkLicenseName, s.walkLicenseExp));
+window.btcpet.onSettingChanged((key, value) => { if (key === "walkLicense") showWalkLicense(value?.name, value?.exp); });
+
 function render(price, changePct, ts) {
   $("price").textContent = "$" + price.toLocaleString("en-US", { maximumFractionDigits: 0 });
   const up = changePct >= 0;
