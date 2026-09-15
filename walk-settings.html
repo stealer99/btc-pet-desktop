@@ -14,10 +14,11 @@
   h2 { font-size: 12px; margin: 0 0 8px; display: flex; justify-content: space-between; align-items: center; }
   h2 span { color: var(--up); font-weight: 500; font-size: 11px; }
   .note { color: var(--dim); font-size: 10.5px; margin: 6px 0 0; }
-  input[type=text], input[type=number], select {
+  input[type=text], input[type=number], select, textarea {
     background: #232a38; color: var(--text); border: 1px solid #343d50; border-radius: 6px; padding: 5px 8px; font: inherit; outline: none;
   }
-  input:focus, select:focus { border-color: var(--accent); }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  textarea { user-select: text; line-height: 1.5; }
   .row { display: flex; align-items: center; gap: 6px; }
   .grow { flex: 1; min-width: 0; }
   .btn { background: #232a38; color: #cbd5e1; border: 1px solid #343d50; border-radius: 6px; padding: 5px 10px; font: inherit; cursor: pointer; }
@@ -36,7 +37,7 @@
   .empty { color: #6b7385; padding: 4px 0; }
   .price-now { color: var(--dim); font-size: 10.5px; margin-top: 6px; }
   .alert-price { font-variant-numeric: tabular-nums; }
-  #devSection[hidden], #charSection[hidden] { display: none; }
+  #devSection[hidden], #charSection[hidden], #neonSection[hidden] { display: none; }
   #devSection { border-color: #35405a; }
 </style>
 </head>
@@ -53,6 +54,25 @@
     <h2>회사 이름 <span id="nameStatus"></span></h2>
     <input id="companyName" type="text" maxlength="10" placeholder="(주)개미상사" style="width:100%" />
     <p class="note">회사 건물 간판에 표시돼요. 비워두면 기본 이름.</p>
+  </section>
+
+  <!-- 네온 전광판(board: neon) 건물이 있을 때만 표시 -->
+  <section id="neonSection" hidden>
+    <h2>네온 전광판 <span id="neonStatus"></span></h2>
+    <textarea id="neonTexts" rows="4" placeholder="HODL&#10;TO THE MOON&#10;오늘도 존버" style="width:100%;resize:vertical"></textarea>
+    <p class="note">한 줄에 문구 하나 (최대 10줄 · 줄마다 24자). 차례로 바뀌고, 긴 문구는 흘러가요. 비워두면 기본 문구.</p>
+    <div style="margin-top:10px">테두리 전구</div>
+    <div class="seg" id="lampSeg" style="margin-top:4px">
+      <button class="btn" data-v="blink">깜빡임</button>
+      <button class="btn" data-v="on">켜두기</button>
+      <button class="btn" data-v="off">끄기</button>
+    </div>
+    <div style="margin-top:10px">전광판 알림</div>
+    <div class="switch-row"><span>넷봉 마감 (4시간마다 · 1분)</span><input id="neonCandle4h" type="checkbox" /></div>
+    <div class="switch-row"><span>일봉 마감 (오전 9시 · 1분)</span><input id="neonCandle1d" type="checkbox" /></div>
+    <div class="switch-row"><span>가격 알림 도달 (30초)</span><input id="neonPrice" type="checkbox" /></div>
+    <div class="switch-row"><span>급등·급락 (20초)</span><input id="neonMood" type="checkbox" /></div>
+    <p class="note">알림이 뜨는 동안은 문구 대신 알림을 보여주고, 전구가 계속 번쩍여요 (전구 끄기면 꺼진 채).</p>
   </section>
 
   <section>

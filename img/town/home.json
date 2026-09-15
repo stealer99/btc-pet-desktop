@@ -14,5 +14,6 @@
   "screen": null,
   "screenFrameColor": null,
   "screenFramePx": null,
-  "sign": null
+  "sign": null,
+  "lamps": null
 }

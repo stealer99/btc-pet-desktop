@@ -27,6 +27,13 @@ import shutil
 import sys
 from pathlib import Path
 
+# 윈도우 콘솔(cp949)에서 이모지·특수기호를 못 찍어 멈추지 않게: 못 찍는 글자만 ? 로 바꾼다 (한글은 그대로)
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(errors="replace")
+    except (AttributeError, ValueError):
+        pass
+
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -38,7 +45,7 @@ ART = ROOT / "art-src"
 IMG = ROOT / "img"
 REQUIRED_ANIMS = ["walk", "idle", "run", "trudge"]   # 앱(walk-behavior.js)이 쓰는 동작
 MOVING_ANIMS = {"walk", "run", "trudge"}
-BOARD_TYPES = {"btc", "usdt"}
+BOARD_TYPES = {"btc", "usdt", "neon"}
 
 
 class Report:
@@ -171,6 +178,7 @@ def build_town(rep):
         shutil.rmtree(out)
     units = {k: float(v["units"]) for k, v in buildings.items()}
     mask_from = {k: v["nightMaskFrom"] for k, v in buildings.items() if v.get("nightMaskFrom")}
+    lamps = {k for k, v in buildings.items() if v.get("nightLamps")}
     masks = {}
     metas = {}
     # 창문 위치를 빌려 주는 건물이 먼저 처리되도록, 빌리는 건물이 있는 시트를 뒤로
@@ -187,7 +195,7 @@ def build_town(rep):
             continue
         try:
             results = slice_buildings(src, sheet["cols"], sheet["rows"], names, units, out, night=True,
-                                      mask_from=mask_from, masks=masks, manifest=False)
+                                      mask_from=mask_from, masks=masks, manifest=False, lamps=lamps)
         except ValueError as e:
             rep.error("건물", f"{sheet['file']}: {e}")
             continue

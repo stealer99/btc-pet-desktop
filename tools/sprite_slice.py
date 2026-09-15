@@ -27,12 +27,20 @@ sprite_slice.py — AI가 격자로 뽑은 스프라이트 시트(단색 마젠�
 """
 import argparse
 import json
+import sys
 import math
 from collections import deque
 from pathlib import Path
 
 import numpy as np
 from PIL import Image
+
+# 윈도우 콘솔(cp949)에서 이모지·특수기호를 못 찍어 멈추지 않게: 못 찍는 글자만 ? 로 바꾼다 (한글은 그대로)
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(errors="replace")
+    except (AttributeError, ValueError):
+        pass
 
 KEY_LO = 25    # m 이 이 값 이하 → 완전 불투명
 KEY_HI = 225   # m 이 이 값 이상 → 완전 투명

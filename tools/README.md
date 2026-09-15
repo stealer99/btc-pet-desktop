@@ -20,16 +20,20 @@ python tools/new_building.py binance "🟨 바이낸스 타워" "a modern tower 
 2. `python tools/build_assets.py --town`
 3. 앱: 마을 설정 창 건물 목록에 자동으로 나타남 (체크·순서 조정)
 
+> 저장소에는 레시피가 쓰는 **확정 원본만** 올린다. 버린 시안은 로컬에 두고 `.gitignore` 에 추가 (`*.prompt.txt`·`art-src/buildings/` 는 이미 제외)
+
 ## 레시피
 | 파일 | 내용 |
 |---|---|
 | `art-src/characters/<key>/character.json` | 동작별 `file` · `cols`/`rows` · `fps` · `speed`(키 72px 기준 px/s) · `ground`(cell/row) · `rowsRepeat` |
-| `art-src/town/town.json` | `sheets`(파일·격자·칸별 건물) · `buildings`(label·units·sign·board·nightMaskFrom·noWindows) · `order` |
+| `art-src/town/town.json` | `sheets`(파일·격자·칸별 건물) · `buildings`(label·units·sign·board·nightLamps·nightMaskFrom·noWindows) · `order` |
 
 - `ground: "row"` — 두 발이 다 뜨는 프레임이 있는 동작(달리기). 줄마다 가장 낮은 발을 땅으로
 - `rowsRepeat: true` — 윗줄을 아랫줄에 일부러 반복한 시트(서있기·무릎 달리기). "윗줄·아랫줄 같음" 경고를 끔
 - `sign` — 고정 글자 또는 `{company}`(회사 이름 설정) · `{exchange}`(시세 거래소 이름)
 - `board` — `btc`(BTC 가격 전광판) · `usdt`(테더 원화 가격 전광판). 급등·급락·가격 알림 때 개미가 이 건물로 달려감
+  · `neon`(마을 설정 "네온 전광판" 문구를 네온 글자로, 은은한 깜빡임·긴 문구는 흐름). btc/usdt 와 달리 **그림 전광판 크기 그대로** 쓰므로 그림에서 크게 그린다
+- `nightLamps` — 밤 버전에서 노란 전구(극장 간판식 테두리 전구 등)를 켜 둔다. `--board neon` 이면 자동으로 켜짐
 - `nightMaskFrom` — 벽이 창문 색과 같아 밤 불빛이 벽까지 켜질 때, 같은 크기·모양 건물의 창문 위치를 빌림
 
 ## 품질 검사 경고 (build_assets.py)

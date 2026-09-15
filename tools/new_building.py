@@ -7,7 +7,7 @@ new_building.py — 산책 모드 마을에 새 건물 준비: 레시피(town.js
 옵션
   --units   건물 높이 = 캐릭터 키의 배수 (집 2 · 회사 3 · 거래소 타워 4)
   --sign    간판 글자. 고정 글자 또는 {company}(마을 설정의 회사 이름) / {exchange}(시세 거래소 이름)
-  --board   옥상 전광판: btc(BTC 가격) / usdt(테더 원화 가격)
+  --board   옥상 전광판: btc(BTC 가격) / usdt(테더 원화 가격) / neon(마을 설정에서 쓴 문구를 네온 글자로, 그림 전광판을 크게 그려야 함)
   --no-windows  창문 없는 건물 (밤 모드 "창문 못 찾음" 경고 끄기)
 
 만들어지는 것
@@ -22,8 +22,30 @@ import sys
 from pathlib import Path
 from string import Template
 
+# 윈도우 콘솔(cp949)에서 이모지·특수기호를 못 찍어 멈추지 않게: 못 찍는 글자만 ? 로 바꾼다 (한글은 그대로)
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(errors="replace")
+    except (AttributeError, ValueError):
+        pass
+
 ROOT = Path(__file__).resolve().parent.parent
 TOWN = ROOT / "art-src" / "town"
+
+
+# 전광판 그림 지시. 화면은 반드시 "어두운 회색 빈 화면" (town_slice.py 가 이 색으로 자리를 찾음)
+#  btc/usdt: 그림 전광판이 작아도 앱이 크게 덮어 그린다 / neon: 그림 크기 그대로 쓰므로 그림에서부터 크게
+_SMALL_BOARD = ("BILLBOARD: on the roof, a wide BLANK dark gray billboard screen (about 3:1 width:height) with a thick "
+                "frame, supported by short legs.")
+BOARD_RULES = {
+    "btc": _SMALL_BOARD,
+    "usdt": _SMALL_BOARD,
+    "neon": ("BILLBOARD: the main feature. On the roof, a HUGE BLANK dark gray billboard screen, about 2.5:1 width:height, "
+             "as wide as the whole building and about as tall as one floor of the building. Thick frame in near-black navy, "
+             "decorated with a row of small round warm-yellow light bulbs evenly spaced all around the frame (theater "
+             "marquee style). Supported by sturdy short legs. The screen itself must be ONE flat, even dark gray area "
+             "(no reflections, no grid, no lights, no pictures)."),
+}
 
 
 def main():
@@ -33,7 +55,7 @@ def main():
     ap.add_argument("description", help="외형 설명 — 영어 권장")
     ap.add_argument("--units", type=float, default=2.5)
     ap.add_argument("--sign", default=None)
-    ap.add_argument("--board", choices=["btc", "usdt"], default=None)
+    ap.add_argument("--board", choices=["btc", "usdt", "neon"], default=None)
     ap.add_argument("--no-windows", action="store_true")
     ap.add_argument("--force", action="store_true", help="이미 등록된 건물이면 설정·프롬프트를 덮어쓴다")
     args = ap.parse_args()
@@ -50,6 +72,8 @@ def main():
         conf["sign"] = args.sign
     if args.board:
         conf["board"] = args.board
+    if args.board == "neon":
+        conf["nightLamps"] = True               # 네온 프롬프트는 전광판 테두리에 전구를 그리게 하므로 밤에도 켠다
     if args.no_windows:
         conf["noWindows"] = True
     recipe.setdefault("buildings", {})[args.key] = conf
@@ -68,8 +92,7 @@ def main():
         "units": f"{args.units:g}",
         "sign_rule": ("SIGN: above the door, a BLANK light cream sign plate (a wide horizontal rectangle, completely empty)."
                       if args.sign else "SIGN: no sign plate."),
-        "board_rule": ("BILLBOARD: on the roof, a wide BLANK dark gray billboard screen (about 3:1 width:height) with a thick "
-                       "frame, supported by short legs." if args.board else "BILLBOARD: none."),
+        "board_rule": BOARD_RULES.get(args.board, "BILLBOARD: none."),
     }
     template = (Path(__file__).resolve().parent / "prompts" / "building.md").read_text(encoding="utf-8")
     (TOWN / "prompts").mkdir(parents=True, exist_ok=True)

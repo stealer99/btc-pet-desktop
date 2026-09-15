@@ -28,17 +28,21 @@
   // ---- 말풍선 ----
   // 무드가 바뀔 때·거래소 도착·봉 마감·개미 클릭·가끔 혼잣말·가격 알림 때 개미 머리 위에 잠깐 띄운다.
   // 개미가 다른 모니터 창에 가 있으면 main 을 거쳐 그 창에 띄운다(walk-say)
-  const LINES = {
-    pump: ["가즈아!!", "떡상이다!", "퇴사각?!", "매수 가즈아!"],
-    dump: ["물렸다…", "존버…", "출근해야지…", "손절각…"],
-    calm: ["휴…", "평화롭다", "횡보 중…"],
-    arrivePump: ["전광판 보러 왔다!", "불장이다!!"],
-    arriveDump: ["아… 전광판 보기 싫다", "내 코인…"],
-    click: ["출근 중…", "월급날 언제냐", "오늘도 존버", "코인 확인 중…", "점심 뭐 먹지"],
-    night: ["야근 중…", "졸리다…", "새벽 코인…"],
-    candle: ["봉 마감!", "새 봉이다!"],
-  };
+  // 대사는 walk-lines.js (공통 / 시간대별 / 상황별). 파일이 없어도 멈추지 않게 최소 기본값
+  const LINE_SET = window.BTCPET_WALK_LINES || {};
+  const COMMON_LINES = LINE_SET.common?.length ? LINE_SET.common : ["오늘도 존버"];
+  const LINES = { pump: ["가즈아!!"], dump: ["존버…"], calm: ["휴…"], arrivePump: ["불장이다!!"], arriveDump: ["내 코인…"], candle: ["봉 마감!"], ...LINE_SET.events };
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  // 개미 클릭·혼잣말: 지금 시간대 대사 60% / 공통 40%. 토·일은 weekend 시간대 (없으면 평일 time)
+  const timeLines = (d = new Date()) => {
+    const hour = d.getHours(), day = d.getDay();
+    const slots = (day === 0 || day === 6) && LINE_SET.weekend?.length ? LINE_SET.weekend : LINE_SET.time || [];
+    return slots.find((slot) => hour >= slot.from && hour < slot.to && (!slot.days || slot.days.includes(day)))?.lines || [];
+  };
+  const chatLine = () => {
+    const now = timeLines();
+    return pick(now.length && Math.random() < 0.6 ? now : COMMON_LINES);
+  };
   let bubble = null;                        // { text, start, until }
   const say = (text, ms = 3200) => {
     const now = performance.now();
@@ -67,7 +71,15 @@
   let bubblesOn = true;                     // 개미 말풍선 (가격 알림 말풍선은 끄지 않음)
   let dashOn = true;                        // 급등·급락 때 거래소로 질주
   let alerts = [];                          // 가격 알림 [{id, market: "btc"|"usdt", price}]
+  // 네온 전광판에 띄울 알림 종류 (설정 walkNeonAlerts): 넷봉 마감 / 일봉 마감(KST 9시) / 가격 알림 / 급등·급락
+  const NEON_ALERT_DEFAULT = { candle4h: true, candle1d: true, price: true, mood: true };
+  let neonAlertsOn = { ...NEON_ALERT_DEFAULT };
   const applySetting = (key, value) => {
+    if (key === "walkNeonLamps") scene.lampMode = ["blink", "on", "off"].includes(value) ? value : "blink";
+    if (key === "walkNeonAlerts") {
+      const v = value && typeof value === "object" ? value : {};
+      neonAlertsOn = Object.fromEntries(Object.keys(NEON_ALERT_DEFAULT).map((k) => [k, v[k] !== false]));
+    }
     if (key === "priceSource" && window.BtcPetSources[value]) {
       cfg.priceSource = value;
       scene.exchangeName = SIGN_BY_SOURCE[value] || "BITGET";      // 간판 {exchange}: 전광판 가격과 간판 거래소를 일치시킨다
@@ -79,6 +91,11 @@
     if (key === "walkCompanyName") {
       const name = typeof value === "string" ? value.trim().slice(0, 10) : "";
       scene.companyName = name || "(주)개미상사";
+    }
+    if (key === "walkNeonTexts") {
+      const list = (Array.isArray(value) ? value : [])
+        .filter((s) => typeof s === "string").map((s) => s.trim().slice(0, 24)).filter(Boolean).slice(0, 10);
+      scene.neonTexts = list.length ? list : [...window.BtcPetWalkScene.NEON_DEFAULT];
     }
     if (key === "walkTownOrder" || key === "walkTownHidden") {
       if (key === "walkTownOrder") townOrderSetting = Array.isArray(value) ? value : [];
@@ -113,7 +130,7 @@
   });
 
   const settings = await window.btcpet.getSettings();
-  ["priceSource", "candleTf", "walkCharacter", "walkTownSide", "walkTownPos", "walkRange", "walkCompanyName", "walkTownOrder", "walkTownHidden", "walkNight", "walkBubbles", "walkDash", "walkAlerts", "moodWindowSec", "moodPumpPct", "moodDumpPct", "moodExitPct"].forEach((k) => {
+  ["priceSource", "candleTf", "walkCharacter", "walkTownSide", "walkTownPos", "walkRange", "walkCompanyName", "walkNeonTexts", "walkNeonLamps", "walkNeonAlerts", "walkTownOrder", "walkTownHidden", "walkNight", "walkBubbles", "walkDash", "walkAlerts", "moodWindowSec", "moodPumpPct", "moodDumpPct", "moodExitPct"].forEach((k) => {
     if (settings[k] !== undefined) applySetting(k, settings[k]);
   });
   candle.schedule();
@@ -138,9 +155,31 @@
     behavior.setGoal(gx, (Math.abs(gx - behavior.x) / runSpeed) * 1000 + DASH_STAY_MS);
     return true;
   };
+  // ---- 네온 전광판 알림 ----
+  const NEON_UP = "#7dff6b", NEON_DOWN = "#ff5a5a", NEON_TIME = "#ffe45c";
+  const usd = (v) => `$${Math.round(v).toLocaleString("en-US")}`;
+  const neonAlert = (kind, text, color, ms) => { if (neonAlertsOn[kind]) scene.showNeonAlert(text, color, ms); };
+  // 넷봉(4시간봉) 마감 = UTC 0·4·8·12·16·20시 = KST 09·13·17·21·01·05시. KST 09시는 일봉 마감과 겹친다.
+  // 5초마다 확인해서 경계를 막 지났을 때(1분 이내)만 띄운다 (절전에서 깨어난 뒤 늦게 울리지 않게)
+  const H4 = 4 * 3600 * 1000;
+  let last4h = Math.floor(Date.now() / H4);
+  const checkCandleClose = () => {
+    const idx = Math.floor(Date.now() / H4);
+    if (idx === last4h) return;
+    last4h = idx;
+    if (Date.now() - idx * H4 > 60000) return;
+    const kstHour = (new Date(idx * H4).getUTCHours() + 9) % 24;
+    const hh = `${String(kstHour).padStart(2, "0")}:00`;
+    const daily = kstHour === 9;
+    if (daily && neonAlertsOn.candle1d) scene.showNeonAlert(neonAlertsOn.candle4h ? `일봉·넷봉 마감 ${hh}` : `일봉 마감 ${hh}`, NEON_TIME, 60000);
+    else neonAlert("candle4h", `넷봉 마감 ${hh}`, NEON_TIME, 60000);
+  };
+  setInterval(checkCandleClose, 5000);
+
   let dashMood = null;                      // 도착 말풍선 고르기용 (pump/dump)
   const onMoodEvent = (m) => {
     if (m === "pump" || m === "dump") {
+      if (prices.btc) neonAlert("mood", `BTC ${m === "pump" ? "급등 ▲" : "급락 ▼"} ${usd(prices.btc)}`, m === "pump" ? NEON_UP : NEON_DOWN, 20000);
       if (bubblesOn && role.hasAnt) say(pick(LINES[m]));
       dashMood = m;
       dashTo([...scene.boardBuildings("btc"), ...scene.boardBuildings("usdt")]);   // BTC 전광판 건물 우선, 없으면 테더
@@ -165,6 +204,7 @@
       const up = price >= a.price;
       const label = market === "btc" ? `₿ $${a.price.toLocaleString("en-US")}` : `₮ ₩${a.price.toLocaleString("ko-KR")}`;
       sayWhereAnt(`🔔 ${label} ${up ? "돌파!" : "이탈…"}`, 6000);
+      neonAlert("price", `${market === "btc" ? "BTC" : "테더"} ${label.slice(2)} ${up ? "돌파" : "이탈"}`, up ? NEON_UP : NEON_DOWN, 30000);
       flashUntil = performance.now() + 6000;
       dashMood = up ? "pump" : "dump";
       const btc = scene.boardBuildings("btc"), usdt = scene.boardBuildings("usdt");
@@ -215,10 +255,12 @@
       if (!role.home) return;
       flashUntil = performance.now() + 6000;
       if (bubblesOn) sayWhereAnt(pick(LINES.candle));
+      neonAlert("candle4h", "넷봉 마감 (테스트)", NEON_TIME, 15000);
     } else if (action === "alert") {        // 가격 알림 흉내: 현재가를 천 달러 단위로 반올림한 가격 돌파
       if (!role.home) return;
       const level = prices.btc ? Math.round(prices.btc / 1000) * 1000 : 70000;
       sayWhereAnt(`🔔 ₿ $${level.toLocaleString("en-US")} 돌파! (테스트)`, 6000);
+      neonAlert("price", `BTC ${usd(level)} 돌파 (테스트)`, NEON_UP, 15000);
       flashUntil = performance.now() + 6000;
       dashMood = "pump";
       dashTo([...scene.boardBuildings("btc"), ...scene.boardBuildings("usdt")]);
@@ -291,8 +333,7 @@
   window.addEventListener("mouseup", (e) => {
     if (e.button !== 0) return;
     if (antDown && Math.abs(e.screenX - antDown.x) + Math.abs(e.screenY - antDown.y) <= 5) {
-      const lines = scene.night ? [...LINES.click, ...LINES.night] : LINES.click;
-      say(prices.btc && Math.random() < 0.3 ? `지금 ₿ $${Math.round(prices.btc).toLocaleString("en-US")}` : pick(lines));
+      say(prices.btc && Math.random() < 0.3 ? `지금 ₿ $${Math.round(prices.btc).toLocaleString("en-US")}` : chatLine());
     }
     antDown = null;
     finishDrag();
@@ -350,7 +391,7 @@
       // 가끔 혼잣말 (1.5~4분마다, 말풍선이 없고 마우스를 올려두지 않았을 때)
       if (now > nextChatterAt) {
         nextChatterAt = now + (90 + Math.random() * 150) * 1000;
-        if (bubblesOn && !bubble && !hovered) say(pick(scene.night ? LINES.night : LINES.click));
+        if (bubblesOn && !bubble && !hovered) say(chatLine());
       }
       if (behavior.leaving) {
         window.btcpet.walkAntLeave?.({ side: behavior.leaving, action: behavior.action });

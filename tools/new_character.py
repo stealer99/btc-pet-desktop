@@ -19,6 +19,13 @@ import sys
 from pathlib import Path
 from string import Template
 
+# 윈도우 콘솔(cp949)에서 이모지·특수기호를 못 찍어 멈추지 않게: 못 찍는 글자만 ? 로 바꾼다 (한글은 그대로)
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(errors="replace")
+    except (AttributeError, ValueError):
+        pass
+
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATES = Path(__file__).resolve().parent / "prompts" / "character"
 STEPS = ["00_concepts", "01_turnaround", "02_walk", "03_idle", "04_run", "05_trudge"]

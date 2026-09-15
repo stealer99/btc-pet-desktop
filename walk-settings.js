@@ -1,6 +1,6 @@
 "use strict";
 // 산책 설정 창 (walk-settings.html). 모든 값은 setSetting 으로 저장 → main 이 산책 창에 setting-changed 로 전달
-//   walkCompanyName / walkTownOrder / walkTownHidden / walkAlerts / walkNight / walkBubbles / walkDash
+//   walkCompanyName / walkNeonTexts / walkNeonLamps / walkNeonAlerts / walkTownOrder / walkTownHidden / walkAlerts / walkNight / walkBubbles / walkDash
 const $ = (id) => document.getElementById(id);
 // 건물 이름표·기본 순서는 img/town/town.js (tools/build_assets.py 가 레시피 art-src/town/town.json 으로 생성)
 const TOWN_BUILDINGS = Object.fromEntries(
@@ -136,6 +136,36 @@ $("companyName").addEventListener("input", () => {
   }, 400);
 });
 
+// ---- 네온 전광판 문구 (board: neon 건물이 있을 때만, 입력 멈추고 0.6초 뒤 저장) ----
+$("neonSection").hidden = !Object.values(window.BTCPET_TOWN || {}).some((b) => b && b.board === "neon");
+const neonList = (text) => text.split(/\r?\n/).map((s) => s.trim().slice(0, 24)).filter(Boolean).slice(0, 10);
+let neonTimer = null;
+$("neonTexts").addEventListener("input", () => {
+  clearTimeout(neonTimer);
+  neonTimer = setTimeout(() => {
+    const list = neonList($("neonTexts").value);
+    window.btcpet.setSetting("walkNeonTexts", list);
+    flash("neonStatus", list.length ? `${list.length}개 저장됨` : "기본 문구");
+  }, 600);
+});
+function renderLamps(v) {
+  document.querySelectorAll("#lampSeg button").forEach((b) => b.classList.toggle("on", b.dataset.v === v));
+}
+document.querySelectorAll("#lampSeg button").forEach((b) => b.addEventListener("click", () => {
+  window.btcpet.setSetting("walkNeonLamps", b.dataset.v);
+  renderLamps(b.dataset.v);
+  flash("neonStatus", `전구 ${b.textContent}`);
+}));
+const NEON_ALERT_INPUTS = { candle4h: "neonCandle4h", candle1d: "neonCandle1d", price: "neonPrice", mood: "neonMood" };
+let neonAlerts = {};
+for (const [k, id] of Object.entries(NEON_ALERT_INPUTS)) {
+  $(id).addEventListener("change", (e) => {
+    neonAlerts = { ...neonAlerts, [k]: e.target.checked };
+    window.btcpet.setSetting("walkNeonAlerts", neonAlerts);
+    flash("neonStatus", e.target.checked ? "알림 켬" : "알림 끔");
+  });
+}
+
 // ---- 초기값 + 다른 곳(가격 알림이 울려 지워짐 등)에서 바뀐 값 반영 ----
 // ---- 캐릭터 (2명 이상일 때만 섹션 표시) ----
 function renderCharacters(current) {
@@ -153,6 +183,11 @@ $("character").addEventListener("change", (e) => {
 window.btcpet.getSettings().then((s) => {
   renderCharacters(s.walkCharacter);
   $("companyName").value = typeof s.walkCompanyName === "string" ? s.walkCompanyName : "";
+  $("neonTexts").value = Array.isArray(s.walkNeonTexts) ? s.walkNeonTexts.filter((x) => typeof x === "string").join("\n") : "";
+  renderLamps(["blink", "on", "off"].includes(s.walkNeonLamps) ? s.walkNeonLamps : "blink");
+  const na = s.walkNeonAlerts && typeof s.walkNeonAlerts === "object" ? s.walkNeonAlerts : {};
+  neonAlerts = Object.fromEntries(Object.keys(NEON_ALERT_INPUTS).map((k) => [k, na[k] !== false]));
+  for (const [k, id] of Object.entries(NEON_ALERT_INPUTS)) $(id).checked = neonAlerts[k];
   townOrder = normalizeOrder(s.walkTownOrder);
   townHidden = Array.isArray(s.walkTownHidden) ? s.walkTownHidden.filter((id) => TOWN_BUILDINGS[id]) : [];
   alerts = Array.isArray(s.walkAlerts) ? s.walkAlerts : [];

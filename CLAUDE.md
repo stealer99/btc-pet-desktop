@@ -43,6 +43,7 @@ styles/
 img/il/                  # 캐릭터 이미지 256px PNG (키_base/pump/dump.png)
 walker.html              # v2 산책 모드 창 (작업표시줄 위 투명 띠, 해제된 사용자만 표시 스타일 "walk")
 renderer/walk/           # 산책 모드: walker-app(오케스트레이터) / walk-behavior / walk-scene / upbit-feed
+                         #   walk-lines.js = 개미 대사 (공통 / 시간대별 / 상황별) — 대사 수정은 이 파일만
 walk-settings.html/.js   # 산책 모드 설정 창 (우클릭 "마을 설정…": 회사 이름·건물·가격 알림·밤 모드·말풍선·질주)
 img/walk/<key>/           # 산책 캐릭터 스프라이트 시트 + img/walk/characters.js|json (tools/build_assets.py 생성)
 img/town/                # 마을 건물 PNG(+밤) + town.js (tools/build_assets.py 생성)

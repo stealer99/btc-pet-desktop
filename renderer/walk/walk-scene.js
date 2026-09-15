@@ -17,6 +17,11 @@ window.BtcPetWalkScene = class WalkScene {
   static get TOWN_ORDER() { return window.BTCPET_TOWN_ORDER || Object.keys(window.BTCPET_TOWN || {}); }
   static TOWN_MARGIN = 12;                      // 화면 왼쪽 끝 여백
   static TOWN_GAP = 14;                         // 건물(전광판 포함) 사이 간격
+  // 네온 전광판(board: neon): 마을 설정 문구를 차례로 보여 준다. 문구마다 색이 바뀜
+  static NEON_DEFAULT = ["HODL", "TO THE MOON", "오늘도 존버"];
+  static NEON_COLORS = ["#ff4fd8", "#3ef2ff", "#ffe45c", "#7dff6b", "#ff8a3d"];
+  static NEON_HOLD_MS = 6000;                   // 전광판 안에 들어가는 문구를 보여 주는 시간
+  static NEON_SCROLL_PX = 38;                   // 긴 문구가 흐르는 속도 (CSS px/초)
 
   constructor(canvas, { character, town, townDir }) {
     this.canvas = canvas;
@@ -33,6 +38,9 @@ window.BtcPetWalkScene = class WalkScene {
     this.night = false;                       // 밤 모드: 창문에 불 켜진 건물 그림 (tools/town_slice.py --night)
     this.companyName = "(주)개미상사";     // 간판 {company} (마을 설정의 회사 이름)
     this.exchangeName = "BITGET";             // 간판 {exchange} (시세 거래소)
+    this.neonTexts = [...WalkScene.NEON_DEFAULT]; // 네온 전광판 문구 (설정 walkNeonTexts)
+    this.neonAlert = null;                    // 네온 전광판 알림 { text, color, start, until } — 있는 동안 문구 대신 표시
+    this.lampMode = "blink";                  // 전구 조명: blink(돌아가며 깜빡) / on(켜두기) / off(끄기) (설정 walkNeonLamps)
     this.townSide = "left";                   // 마을 위치 프리셋 (설정 walkTownSide: 왼쪽/오른쪽 끝)
     this.townPos = null;                      // 끌어서 옮긴 위치 = 마을 중심 / 전체 폭 비율 (설정 walkTownPos). 있으면 프리셋보다 우선
     this.townOrder = [...WalkScene.TOWN_ORDER]; // 보이는 건물, 왼쪽→오른쪽 (설정 walkTownOrder·walkTownHidden)
@@ -163,8 +171,10 @@ window.BtcPetWalkScene = class WalkScene {
     const w = meta.width * k;
     let board = null;
     if (meta.screen && meta.screenFrameColor) {
-      const scr = meta.screen, bs = WalkScene.BOARD_SCALE;
-      const t = (meta.screenFramePx || 20) * k * (bs / 1.5);          // 테두리도 전광판 크기에 비례
+      // 네온 전광판은 그림에서부터 크게 그리므로 그림 크기 그대로 덮는다 (테두리도 그림 두께)
+      const neon = meta.board === "neon";
+      const scr = meta.screen, bs = neon ? 1 : WalkScene.BOARD_SCALE;
+      const t = (meta.screenFramePx || 20) * k * (neon ? 1 : bs / 1.5); // 테두리도 전광판 크기에 비례
       const bw = scr.w * k * bs + t * 2, bh = scr.h * k * bs + t * 2;
       const x = (scr.x + scr.w / 2) * k - bw / 2;
       const y = (scr.y + scr.h) * k + t - bh;                         // 그림 전광판 바닥(다리 붙는 곳) 유지, 위·양옆으로 확장
@@ -268,21 +278,126 @@ window.BtcPetWalkScene = class WalkScene {
     if (board) {
       const { t } = board, bw = board.w, bh = board.h;
       const bx = left + board.x, by = top + board.y;
-      const dim = night ? 0.55 : 1;           // 전광판 테두리도 밤 건물 톤에 맞춰 어둡게 (화면 글자는 그대로 밝게)
-      const [r, g, bl] = meta.screenFrameColor.map((v) => Math.round(v * dim));
+      const neon = meta.board === "neon";
       ctx.lineJoin = "round";
-      ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, t * 0.9);
-      ctx.fillStyle = `rgb(${r},${g},${bl})`; ctx.fill();
-      ctx.lineWidth = Math.max(1, t * 0.3); ctx.strokeStyle = "#141c24"; ctx.stroke();
+      ctx.strokeStyle = "#141c24";
+      if (!neon) {                            // 네온 전광판은 그림 크기 그대로라 테두리(전구 장식 등)는 그림을 살리고 화면만 칠한다
+        const dim = night ? 0.55 : 1;         // 전광판 테두리도 밤 건물 톤에 맞춰 어둡게 (화면 글자는 그대로 밝게)
+        const [r, g, bl] = meta.screenFrameColor.map((v) => Math.round(v * dim));
+        ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, t * 0.9);
+        ctx.fillStyle = `rgb(${r},${g},${bl})`; ctx.fill();
+        ctx.lineWidth = Math.max(1, t * 0.3); ctx.stroke();
+      }
       const inner = { x: bx + t, y: by + t, w: bw - t * 2, h: bh - t * 2 };
       ctx.beginPath(); ctx.roundRect(inner.x, inner.y, inner.w, inner.h, t * 0.35);
-      ctx.fillStyle = flash ? "#4a4632" : "#383635"; ctx.fill();
+      ctx.fillStyle = neon ? "#0f0c16" : flash ? "#4a4632" : "#383635"; ctx.fill();
       ctx.lineWidth = Math.max(1, t * 0.22); ctx.stroke();
-      const [line1, line2] = this.boardLines(meta.board, prices);
-      const cx2 = inner.x + inner.w / 2;
-      this.text(line1[0], cx2, inner.y + inner.h * 0.36, inner.w * 0.9, inner.h * 0.46, 700, line1[1]);
-      this.text(line2[0], cx2, inner.y + inner.h * 0.76, inner.w * 0.9, inner.h * 0.32, 600, line2[1]);
+      if (neon) {
+        this.drawNeon(inner, t * 0.35);
+      } else {
+        const [line1, line2] = this.boardLines(meta.board, prices);
+        const cx2 = inner.x + inner.w / 2;
+        this.text(line1[0], cx2, inner.y + inner.h * 0.36, inner.w * 0.9, inner.h * 0.46, 700, line1[1]);
+        this.text(line2[0], cx2, inner.y + inner.h * 0.76, inner.w * 0.9, inner.h * 0.32, 600, line2[1]);
+      }
     }
+    if (meta.lamps?.length) this.drawLamps(meta, left, top, k, night);
+  }
+
+  // 네온 전광판 알림 (넷봉 마감·가격 알림 등). ms 동안 문구 대신 보여 주고 전구는 계속 번쩍인다
+  showNeonAlert(text, color = "#ffe45c", ms = 30000) {
+    const now = performance.now();
+    this.neonAlert = { text: String(text).slice(0, 40), color, start: now, until: now + ms };
+  }
+  activeNeonAlert(now = performance.now()) {
+    if (this.neonAlert && now >= this.neonAlert.until) this.neonAlert = null;
+    return this.neonAlert;
+  }
+
+  // 전구 조명 (메타 lamps = 그림 속 전구 [x, y, 반지름], town_slice.py nightLamps). lampMode:
+  //  blink: 극장 간판처럼 3개 중 2개가 켜진 채 한 칸씩 돌고, LAMP_BURST_MS 마다 전체가 세 번 번쩍 / on: 모두 켜둠 / off: 모두 끔
+  //  네온 알림이 떠 있으면 전체가 계속 번쩍인다 (끄기면 알림 때도 꺼 둠)
+  // 순서는 전광판(없으면 건물) 중심 기준 각도 → 테두리를 따라 시계 방향으로 돈다
+  static LAMP_STEP_MS = 240;
+  static LAMP_BURST_MS = 10000;
+  drawLamps(meta, left, top, k, night) {
+    const { ctx } = this;
+    if (!meta._lampOrder) {
+      const c = meta.screen ? [meta.screen.x + meta.screen.w / 2, meta.screen.y + meta.screen.h / 2] : [meta.width / 2, meta.height / 2];
+      meta._lampOrder = meta.lamps.map(([x, y, r]) => ({ x, y, r, a: Math.atan2(y - c[1], x - c[0]) })).sort((p, q) => p.a - q.a);
+    }
+    const now = performance.now();
+    const alert = meta.board === "neon" && this.activeNeonAlert(now);
+    const burst = alert ? now - alert.start : now % WalkScene.LAMP_BURST_MS;
+    const bursting = this.lampMode !== "off" && (alert || (this.lampMode === "blink" && burst < 1200));
+    const step = Math.floor(now / WalkScene.LAMP_STEP_MS);
+    ctx.save();
+    meta._lampOrder.forEach(({ x, y, r }, i) => {
+      const on = bursting ? Math.floor(burst / 200) % 2 === 0
+        : this.lampMode === "on" ? true : this.lampMode === "off" ? false : (i + step) % 3 !== 0;
+      const cx = left + x * k, cy = top + y * k, rr = Math.max(1, r * k);
+      if (!on) {
+        ctx.fillStyle = night ? "#3a3120" : "#8a7536";                   // 꺼진 전구
+        ctx.beginPath(); ctx.arc(cx, cy, rr * 1.05, 0, Math.PI * 2); ctx.fill();
+        return;
+      }
+      const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, rr * 3.4);
+      glow.addColorStop(0, night ? "rgba(255,220,110,0.75)" : "rgba(255,225,120,0.55)");
+      glow.addColorStop(1, "rgba(255,210,90,0)");
+      ctx.fillStyle = glow;
+      ctx.beginPath(); ctx.arc(cx, cy, rr * 3.4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#fff5b8";                                         // 켜진 전구
+      ctx.beginPath(); ctx.arc(cx, cy, rr * 1.05, 0, Math.PI * 2); ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  // 네온 전광판 한 프레임. 문구는 차례로 (들어가면 NEON_HOLD_MS 동안, 넘치면 한 번 흘러 지나가는 동안).
+  // 글자는 흔들림 없이 켜 두고(깜빡임은 테두리 전구 drawLamps 가 담당), 문구가 바뀔 때만 살짝 켜지는 느낌
+  // 시간은 performance.now() 라 창이 여러 개여도 같은 박자
+  drawNeon(inner, radius) {
+    const { ctx } = this;
+    const alert = this.activeNeonAlert();
+    const texts = alert ? [alert.text] : this.neonTexts.length ? this.neonTexts : WalkScene.NEON_DEFAULT;
+    const px = inner.h * 0.58;
+    const font = (size) => `800 ${size}px "Segoe UI", "Malgun Gothic", sans-serif`;
+    ctx.save();
+    ctx.font = font(px);
+    // 조금 넘치는 문구는 글자를 68% 까지 줄여 한 화면에 넣고, 그래도 넘치면 원래 크기로 흘린다
+    const spans = texts.map((s) => {
+      const w = ctx.measureText(s).width;
+      const scale = Math.min(1, (inner.w * 0.88) / w);
+      const fits = scale >= 0.68;
+      return { s, w, fits, size: fits ? px * scale : px, ms: fits ? WalkScene.NEON_HOLD_MS : ((inner.w + w) / WalkScene.NEON_SCROLL_PX) * 1000 };
+    });
+    const total = spans.reduce((a, b) => a + b.ms, 0);
+    const now = performance.now();
+    let at = (alert ? now - alert.start : now) % total, i = 0;   // 알림은 뜬 순간부터 (길면 반복해서 흐름)
+    while (at >= spans[i].ms) { at -= spans[i].ms; i++; }
+    const { s, w, fits, size } = spans[i];
+    ctx.font = font(size);
+    const color = alert ? alert.color : WalkScene.NEON_COLORS[i % WalkScene.NEON_COLORS.length];
+
+    const glow = 0.95;
+    const fadeIn = fits && (!alert || now - alert.start < 220) ? Math.min(1, at / 220) : 1;   // 문구가 바뀔 때 켜지는 느낌
+
+    ctx.beginPath(); ctx.roundRect(inner.x, inner.y, inner.w, inner.h, radius); ctx.clip();
+    const x = fits ? inner.x + inner.w / 2 : inner.x + inner.w + w / 2 - (at / 1000) * WalkScene.NEON_SCROLL_PX;
+    const y = inner.y + inner.h * 0.54;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.globalAlpha = glow * fadeIn;
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = inner.h * 0.45;
+    ctx.fillText(s, x, y);                   // 바깥 번짐
+    ctx.shadowBlur = inner.h * 0.18;
+    ctx.fillText(s, x, y);                   // 안쪽 번짐
+    ctx.shadowBlur = 0;
+    const [r, g, b] = [1, 3, 5].map((o) => Math.round(parseInt(color.slice(o, o + 2), 16) * 0.4 + 255 * 0.6));
+    ctx.fillStyle = `rgb(${r},${g},${b})`;   // 네온관 가운데는 흰빛에 가깝게
+    ctx.fillText(s, x, y);
+    ctx.restore();
   }
 
   boardLines(board, p) {

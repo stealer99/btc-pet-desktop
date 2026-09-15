@@ -32,3 +32,12 @@ Desktop.ini
 # v2 산책 모드 해제 파일 (개인별 발급물, 저장소에 올리지 않음)
 *.btcpet
 __pycache__/
+
+# 그림 시안: 저장소에는 레시피가 쓰는 확정 원본만 (버린 시안·AI 도구가 남기는 프롬프트 기록은 로컬 보관)
+*.prompt.txt
+art-src/buildings/
+art-src/characters/chulgeun/chulgeun_ant_dash_cycle.png
+art-src/characters/chulgeun/chulgeun_ant_dash_cycle_v2.png
+art-src/characters/chulgeun/chulgeun_ant_run_cycle_v2.png
+art-src/characters/chulgeun/chulgeun_ant_run_cycle_v3.png
+art-src/characters/chulgeun/chulgeun_ant_walk_cycle2.png
