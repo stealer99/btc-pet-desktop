@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.43-walk-beta)
+// BTC Pet Desktop - main process (v0.17.44-walk-beta)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");
@@ -637,10 +637,13 @@ ipcMain.on("set-interactive", (_e, on) => {
 });
 
 function buildMenu() {
+  // 지금 표시 중인 모드에 쓰이는 항목만 보여 준다 (walk / pet / pill)
+  const mode = isWalkMode() ? "walk" : baseStyle();
+  const walk = mode === "walk", overlayShown = !walk, petShown = mode === "pet";
   return Menu.buildFromTemplate([
     { label: "패널 열기/닫기", click: togglePanel },
     { label: "거래소에서 열기", click: () => shell.openExternal(EXCHANGE_URLS[settings.priceSource] || EXCHANGE_URLS.bitget) },
-    { label: "패널 항상 표시", type: "checkbox", checked: !!settings.panelPinned,
+    ...(overlayShown ? [{ label: "패널 항상 표시", type: "checkbox", checked: !!settings.panelPinned,
       click: (item) => {
         settings.panelPinned = item.checked; saveSettings();
         if (item.checked) { if (!panelWin || panelWin.isDestroyed() || !panelWin.isVisible()) togglePanel(); }
@@ -650,7 +653,7 @@ function buildMenu() {
         settings.panelFollow = item.checked; saveSettings();
         if (item.checked && panelWin && !panelWin.isDestroyed() && panelWin.isVisible()) anchorPanel();
       } },
-    { label: "패널 위치 초기화 (펫 옆으로)", click: () => { delete settings.panelPos; saveSettings(); } },
+    { label: "패널 위치 초기화 (펫 옆으로)", click: () => { delete settings.panelPos; saveSettings(); } }] : []),
     { label: "표시 스타일", submenu: [
       { label: "펫", type: "radio", checked: !isWalkMode() && baseStyle() === "pet",
         click: () => setDisplayStyle("pet") },
@@ -660,10 +663,10 @@ function buildMenu() {
       ...(isWalkUnlocked() ? [{ label: "작업표시줄 산책 (베타)", type: "radio", checked: isWalkMode(),
         click: () => setDisplayStyle("walk") }] : []),
     ]},
-    ...(isWalkUnlocked() ? [{ label: "마을 설정… (이름·건물·가격 알림·밤 모드)", click: openWalkSettings },
+    ...(walk ? [{ label: "마을 설정… (이름·건물·가격 알림·밤 모드)", click: openWalkSettings },
     ...walkCharacterMenu(),
     { label: "마을 위치", submenu: [
-      { label: "끌어서 옮기기…", enabled: isWalkMode() && !!walkerWin && !walkerWin.isDestroyed(),
+      { label: "끌어서 옮기기…", enabled: !!walkerWin && !walkerWin.isDestroyed(),
         click: () => { if (walkerWin && !walkerWin.isDestroyed()) walkerWin.webContents.send("walk-move-mode"); } },
       { type: "separator" },
       { label: "왼쪽 끝으로", click: () => setWalkTownSide("left") },
@@ -676,7 +679,7 @@ function buildMenu() {
     ]},
     ...walkDisplayMenu(),
     { label: "마을을 다른 창 위에 표시", type: "checkbox", checked: walkOnTop(), click: (item) => setWalkOnTop(item.checked) }] : []),
-    { label: "캐릭터", submenu: [
+    ...(petShown ? [{ label: "캐릭터", submenu: [
       { label: "원금이 (동전)", type: "radio", checked: (settings.character || "il-wongeum") === "il-wongeum",
         click: () => { settings.character = "il-wongeum"; saveSettings(); broadcast("setting-changed", "character", "il-wongeum"); } },
       { label: "유동이 (슬라임)", type: "radio", checked: (settings.character) === "il-yudong",
@@ -737,7 +740,7 @@ function buildMenu() {
         click: () => { settings.fxStyle = "once"; saveSettings(); broadcast("setting-changed", "fxStyle", "once"); } },
       { label: "긴박 모드 (로켓/번개)", type: "radio", checked: settings.fxStyle === "v3",
         click: () => { settings.fxStyle = "v3"; saveSettings(); broadcast("setting-changed", "fxStyle", "v3"); } },
-    ]},
+    ]}] : []),
     { label: "개발자 모드", type: "checkbox", checked: !!settings.developerMode,
       click: (item) => {
         settings.developerMode = item.checked; saveSettings();
@@ -747,7 +750,7 @@ function buildMenu() {
         if (isWalkMode()) openWalkSettings();
         else if (panelWin && !panelWin.isDestroyed() && !panelWin.isVisible()) togglePanel();
       } },
-    { label: "펫 보이기/숨기기", click: () => {
+    { label: walk ? "개미·마을 보이기/숨기기" : "펫 보이기/숨기기", click: () => {
       if (isWalkMode()) {                                              // 산책 모드면 모든 산책 창(모니터별)을 함께
         const show = !(walkerWin && !walkerWin.isDestroyed() && walkerWin.isVisible());
         for (const w of allWalkerWins()) show ? w.showInactive() : w.hide();
@@ -756,9 +759,9 @@ function buildMenu() {
         overlayWin.isVisible() ? overlayWin.hide() : overlayWin.show();
       }
     } },
-    { label: "펫 새로고침 (안 보이거나 뒤에 있을 때)", click: () => recoverOverlay("manual") },
-    { label: "클릭 통과 켜기 (펫에 잠깐 올리면 조작 가능)", type: "checkbox", checked: !!settings.clickThrough,
-      click: (item) => { settings.clickThrough = item.checked; saveSettings(); applyClickThrough(); broadcast("setting-changed", "clickThrough", item.checked); } },
+    { label: `${walk ? "개미·마을" : "펫"} 새로고침 (안 보이거나 뒤에 있을 때)`, click: () => recoverOverlay("manual") },
+    ...(overlayShown ? [{ label: "클릭 통과 켜기 (펫에 잠깐 올리면 조작 가능)", type: "checkbox", checked: !!settings.clickThrough,
+      click: (item) => { settings.clickThrough = item.checked; saveSettings(); applyClickThrough(); broadcast("setting-changed", "clickThrough", item.checked); } }] : []),
     { label: "부팅 시 자동 실행", type: "checkbox", checked: app.getLoginItemSettings().openAtLogin,
       click: (item) => app.setLoginItemSettings({ openAtLogin: item.checked }) },
     { type: "separator" },
