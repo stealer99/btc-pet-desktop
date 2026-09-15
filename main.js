@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.44-walk-beta)
+// BTC Pet Desktop - main process (v0.17.45-walk-beta)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");
@@ -550,7 +550,7 @@ function createPanel() {
     if (!app.isQuitting) { e.preventDefault(); panelWin.hide(); }
   });
   panelWin.on("blur", () => { // 고정 시엔 유지
-    if (settings.panelPinned) return;
+    if (panelPinnedNow()) return;
     panelWin.hide();
     panelBlurHiddenAt = Date.now();
   });
@@ -635,6 +635,9 @@ ipcMain.on("set-interactive", (_e, on) => {
   if (!overlayWin || overlayWin.isDestroyed() || !settings.clickThrough) return;
   overlayWin.setIgnoreMouseEvents(!on, { forward: true });
 });
+
+// "패널 항상 표시"는 펫·기본형 설정. 산책 모드는 패널을 쓰지 않고 메뉴에도 없으므로 무시한다(저장값은 유지)
+function panelPinnedNow() { return !!settings.panelPinned && !isWalkMode(); }
 
 function buildMenu() {
   // 지금 표시 중인 모드에 쓰이는 항목만 보여 준다 (walk / pet / pill)
@@ -929,7 +932,7 @@ app.whenReady().then(() => {
   applyClickThrough();
   applyDisplayStyle();                     // 저장된 표시 스타일이 산책(해제됨)이면 산책 창으로 시작
   openLicenseFromArgv(process.argv);       // .btcpet 파일 더블클릭으로 앱이 새로 켜진 경우
-  if (settings.panelPinned) setTimeout(() => togglePanel(), 900);
+  if (panelPinnedNow()) setTimeout(() => togglePanel(), 900);
   setInterval(recheckWalkLicense, 10 * 60 * 1000);
 
   // 투명 펫 창 상태 소실 대응 (함수 정의 참고)
