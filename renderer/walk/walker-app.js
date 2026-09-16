@@ -249,8 +249,15 @@
   // ---- 개발자 테스트 (패널 개발자 모드 버튼) ----
   window.btcpet.onPetTest((payload) => {
     const action = typeof payload === "string" ? payload : payload?.action;
-    if (action === "pump" || action === "dump") onMoodEvent(action);   // 질주·말풍선까지 확인할 수 있게
+    // 급락은 질주가 끝난 뒤 터덜터덜까지 보이게 한다 (테스트는 실제 무드를 바꾸지 않아 그냥 두면 걷기로 돌아감)
+    if (action === "dump") {
+      onMoodEvent("dump");
+      const wait = behavior.goal ? Math.max(0, behavior.goal.until - performance.now()) : 0;
+      setTimeout(() => behavior.force("trudge", 15000), wait);
+    }
+    else if (action === "pump") onMoodEvent("pump");                   // 질주·말풍선까지 확인할 수 있게
     else if (action === "idle") { onMoodEvent("idle"); behavior.force("idle", 5000); }
+    else if (action === "walk" || action === "trudge") behavior.force(action, 12000);   // 동작만 바로 확인
     else if (action === "candle") {         // 전광판·말풍선은 마을 창에서만 (창이 여러 개면 중복 방지)
       if (!role.home) return;
       flashUntil = performance.now() + 6000;
@@ -343,6 +350,22 @@
     if (move.on) { finishDrag(); return; }    // 끄는 중 창 밖으로 나가면 그 자리에서 고정
     setInteractive(false);
   });
+  // 클릭 통과 창은 커서가 밖으로 나가도 mouseleave 가 안 올 때가 있다 (마지막 위치가 마을 위면 계속 반투명).
+  // 그래서 실제 커서 위치를 주기적으로 확인해 맞춘다. 옮기기 모드에선 마우스 이벤트가 정상이라 건드리지 않는다
+  let cursorBusy = false;
+  setInterval(async () => {
+    if (move.on || cursorBusy || document.hidden) return;
+    cursorBusy = true;
+    try {
+      const p = await window.btcpet.walkCursor?.();
+      if (p) {
+        mouse.inside = p.inside;
+        if (p.inside) { mouse.x = p.x; mouse.y = p.y; }
+        setInteractive(p.inside && inAnt(p.x, p.y));
+      }
+    } catch (_) { /* 창이 닫히는 중 */ }
+    cursorBusy = false;
+  }, 150);
   window.addEventListener("contextmenu", (e) => {
     if (!inAnt(e.clientX, e.clientY)) return;
     e.preventDefault();

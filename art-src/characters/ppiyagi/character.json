@@ -1,0 +1,66 @@
+{
+  "key": "ppiyagi",
+  "name": "삐약이",
+  "description": "a simple hand-drawn white duckling: a big round head sitting on a pear-shaped white body like a snowman, two tiny black dot eyes far apart, a flat wide pale-yellow beak, two short stubby wing-arms, two big pale-yellow duck feet, two tiny hair strands on top",
+  "headWidth": 140,
+  "animations": {
+    "walk": {
+      "file": "ppiyagi_waddle_steps_v2.png",
+      "cols": 4,
+      "rows": 1,
+      "fps": 8,
+      "speed": 28,
+      "ground": "cell",
+      "lean": [
+        2,
+        0,
+        -2,
+        0
+      ],
+      "shift": [
+        2,
+        0,
+        -2,
+        0
+      ]
+    },
+    "idle": {
+      "file": "ppiyagi_idle_cycle.png",
+      "cols": 4,
+      "rows": 1,
+      "fps": 5,
+      "speed": 0,
+      "ground": "cell",
+      "order": [
+        1,
+        2,
+        1,
+        4,
+        1,
+        2,
+        1,
+        4,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "run": {
+      "file": "ppiyagi_run_cycle.png",
+      "cols": 4,
+      "rows": 1,
+      "fps": 12,
+      "speed": 90,
+      "ground": "row"
+    },
+    "trudge": {
+      "file": "ppiyagi_trudge_cycle.png",
+      "cols": 4,
+      "rows": 1,
+      "fps": 6,
+      "speed": 18,
+      "ground": "cell"
+    }
+  }
+}

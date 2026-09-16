@@ -206,7 +206,7 @@ window.btcpet.onSettingChanged((key, value) => {
 // ---- 테스트 (개발자 모드일 때만 표시) ----
 // main 의 pet-test 로 모든 산책 창에 보내면 walker-app.js 가 급등·급락·봉 마감·가격 알림을 흉내 낸다
 window.btcpet.getSettings().then((s) => { $("devSection").hidden = !s.developerMode; });
-const TEST_LABELS = { pump: "급등", dump: "급락", idle: "평온", candle: "봉 마감", alert: "가격 알림" };
+const TEST_LABELS = { pump: "급등", dump: "급락", idle: "평온", candle: "봉 마감", alert: "가격 알림", walk: "걷기", trudge: "터덜터덜" };
 document.querySelectorAll("[data-test]").forEach((b) => b.addEventListener("click", () => {
   window.btcpet.triggerPetTest(b.dataset.test);
   flash("devStatus", `${TEST_LABELS[b.dataset.test]} 테스트`);

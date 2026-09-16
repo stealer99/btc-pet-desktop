@@ -133,7 +133,19 @@ def resize_rgba(img, size):
     return img.convert("RGBa").resize(size, Image.LANCZOS).convert("RGBA")
 
 
-def slice_sheet(src, cols, rows, name, out, head_width=140, fps=10, speed=0, ground="cell", once=False, write_manifest=True):
+def head_offset(img, anchor_x):
+    """머리(맨 위 60px 띠) 무게중심이 발바닥 중앙(anchorX)에서 얼마나 벗어났는지 px. + 면 오른쪽.
+    기울기 확인용 — 발 모양에 휘둘리지 않게 머리만 본다 (발로 재면 값이 엉킨다)."""
+    a = np.asarray(img).astype(np.float64)[..., 3] / 255 > 0.5
+    ys, xs = np.nonzero(a)
+    if not len(ys):
+        return 0.0
+    band = a[ys.min():ys.min() + 60]
+    return float(np.nonzero(band)[1].mean() - anchor_x)
+
+
+def slice_sheet(src, cols, rows, name, out, head_width=140, fps=10, speed=0, ground="cell", once=False,
+                write_manifest=True, lean=None, shift=None, order=None):
     """격자 시트 1장 → {name}.png/.json. 반환: (meta, report) — report 는 품질 검사용 측정값."""
     src, out = Path(src), Path(out)
     out.mkdir(parents=True, exist_ok=True)
@@ -172,6 +184,16 @@ def slice_sheet(src, cols, rows, name, out, head_width=140, fps=10, speed=0, gro
             for i in row_cells:
                 i["baseline"] = g
 
+    # 레시피 order: 칸을 재생 순서대로 늘어놓는다 (1부터 센 칸 번호).
+    # 예) 눈 깜빡임이 3번 칸이면 [1,2,1,4,1,2,3,4] → 한 주기에 한 번만 깜빡인다
+    if order:
+        picked = []
+        for n in order:
+            if not 1 <= int(n) <= len(cells):
+                raise ValueError(f"order 의 칸 번호 {n} 이(가) 범위를 벗어났어요 (칸 {len(cells)}개)")
+            picked.append(cells[int(n) - 1])
+        cells = picked
+
     scale = head_width / float(np.median([i["headWidth"] for _, i in cells]))
 
     # 모든 프레임을 담을 공통 프레임 크기 (anchorX 가 가로 중앙 → 좌우 반전해도 머리 위치 불변)
@@ -179,6 +201,8 @@ def slice_sheet(src, cols, rows, name, out, head_width=140, fps=10, speed=0, gro
     above = max(i["baseline"] - i["bbox"][1] + 1 for _, i in cells) * scale
     frame_w = 2 * math.ceil(half_w + PAD_SIDE)
     frame_h = math.ceil(above) + PAD_TOP + PAD_BOTTOM
+    if lean or shift:                                   # 기울이거나 옆으로 밀면 옆으로 더 필요
+        frame_w += 2 * math.ceil(frame_h * 0.3)
     anchor_x = frame_w // 2
     baseline_y = frame_h - PAD_BOTTOM  # 발바닥이 닿는 y (이 행 바로 위까지 그려짐)
 
@@ -192,6 +216,16 @@ def slice_sheet(src, cols, rows, name, out, head_width=140, fps=10, speed=0, gro
         # 빈 프레임에 한 장만 올리므로 마스크 없는 paste 가 정확 (음수 오프셋은 자동으로 잘림)
         frame = Image.new("RGBA", (frame_w, frame_h), (0, 0, 0, 0))
         frame.paste(scaled, (dx, dy))
+        # 레시피 lean/shift: 프레임별로 발바닥 중앙을 축으로 기울이고(도, + 면 오른쪽) 무게 이동만큼 옆으로 민다.
+        # AI 는 좌우 대칭을 잘 못 맞춰서(한쪽만 크게 기울임) 부족한 쪽을 여기서 채운다. 1도 ≈ 머리 2.5px
+        if lean:
+            deg = float(lean[idx % len(lean)])
+            if deg:
+                frame = frame.rotate(-deg, resample=Image.BICUBIC, center=(anchor_x, baseline_y))
+        if shift:
+            moved = Image.new("RGBA", (frame_w, frame_h), (0, 0, 0, 0))
+            moved.paste(frame, (round(float(shift[idx % len(shift)])), 0))
+            frame = moved
         sheet.paste(frame, (idx * frame_w, 0))
         frame_info.append({
             "cell": info["cell"],

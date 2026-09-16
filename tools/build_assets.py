@@ -123,7 +123,8 @@ def build_character(rep, folder):
             meta, q = slice_sheet(src, conf.get("cols", 4), conf.get("rows", 2), anim, out,
                                   head_width=recipe.get("headWidth", 140), fps=conf.get("fps", 10),
                                   speed=conf.get("speed", 0), ground=conf.get("ground", "cell"),
-                                  once=conf.get("once", False), write_manifest=False)
+                                  once=conf.get("once", False), write_manifest=False,
+                                  lean=conf.get("lean"), shift=conf.get("shift"), order=conf.get("order"))
         except ValueError as e:
             rep.error(where, f"{anim}: {e}")
             continue

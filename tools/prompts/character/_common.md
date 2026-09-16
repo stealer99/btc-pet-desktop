@@ -16,6 +16,8 @@ LAYOUT: a single landscape image with a grid of 8 equal cells,
 - The character is the SAME SIZE in every cell and horizontally centered.
 - One shared GROUND LINE at the same height in every cell.
 - Leave clear empty space between characters. No grid lines, no borders.
+- The BOTTOM ROW must NOT repeat the top row. Every one of the 8 cells is a
+  different pose; cells 5-8 continue the motion from cells 1-4.
 
 BACKGROUND: solid flat magenta (#FF00FF), no gradient, no shadow,
 no floor, no text, no labels, no frame numbers, no checkerboard.

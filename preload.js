@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld("btcpet", {
   onPetTest: (cb) => ipcRenderer.on("pet-test", (_e, payload) => cb(payload)),
   // v2 산책 모드
   walkSetInteractive: (on) => ipcRenderer.send("walk-interactive", on),
+  walkCursor: () => ipcRenderer.invoke("walk-cursor"),   // 창 기준 커서 위치 (mouseleave 를 못 받는 경우 대비)
   onWalkMoveMode: (cb) => ipcRenderer.on("walk-move-mode", () => cb()),
   onWalkRole: (cb) => ipcRenderer.on("walk-role", (_e, role) => cb(role)),
   walkAntLeave: (info) => ipcRenderer.send("walk-ant-leave", info),

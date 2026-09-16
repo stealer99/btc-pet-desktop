@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.46-walk-beta)
+// BTC Pet Desktop - main process (v0.17.49-walk-beta)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");
@@ -167,6 +167,15 @@ ipcMain.handle("unlock-license-text", (_e, text) => {
   if (typeof text !== "string" || text.length > LICENSE_MAX_BYTES) return false;
   return applyLicenseText(text);
 });
+// 산책 창 기준 커서 위치. 클릭 통과 창은 커서가 창 밖으로 나갈 때 mouseleave 가 오지 않는 경우가 있어
+// (마지막 위치가 마을 위면 계속 반투명) 렌더러가 주기적으로 실제 커서 위치를 물어본다
+ipcMain.handle("walk-cursor", (e) => {
+  const win = allWalkerWins().find((w) => w.webContents === e.sender);
+  if (!win) return null;
+  const p = screen.getCursorScreenPoint();
+  const b = win.getBounds();
+  return { x: p.x - b.x, y: p.y - b.y, inside: p.x >= b.x && p.x < b.x + b.width && p.y >= b.y && p.y < b.y + b.height };
+});
 // 산책 창: 개미 위에 커서가 있을 때만 마우스를 받는다 (띠 전체가 클릭을 먹지 않게)
 ipcMain.on("walk-interactive", (e, on) => {
   const win = allWalkerWins().find((w) => w.webContents === e.sender);
@@ -183,7 +192,8 @@ ipcMain.on("toggle-panel", () => togglePanel());
 ipcMain.on("pet-test", (_e, payload) => {
   const action = typeof payload === "string" ? payload : payload?.action;
   const fxStyle = typeof payload === "object" ? payload?.fxStyle : undefined;
-  if (!["idle", "pump", "dump", "candle", "sleepy", "despair", "alert"].includes(action)) return;   // alert: 산책 모드 가격 알림 테스트 (펫 창은 무시)
+  // alert·walk·trudge: 산책 모드 전용 테스트 (펫 창은 무시)
+  if (!["idle", "pump", "dump", "candle", "sleepy", "despair", "alert", "walk", "trudge"].includes(action)) return;
   if (fxStyle !== undefined && !["loop", "once", "v3"].includes(fxStyle)) return;
   if (overlayWin && !overlayWin.isDestroyed()) {
     overlayWin.webContents.send("pet-test", { action, fxStyle });
@@ -205,6 +215,29 @@ let dragOffset = null;
 
 // ① "뒤로 감" 대응: 최상위만 다시 선언한다. 창을 움직이지도 그리지도 포커스도
 //    건드리지 않아 아주 싸다 → 짧은 주기(20초)로 돌려도 무해. 밀려나도 곧 앞으로 복귀.
+let walkHiddenByUser = false;        // 메뉴 "개미·마을 보이기/숨기기"로 직접 숨겼는지 (자동 복구 제외)
+// 산책 창이 사라져 있으면(창 상태 소실) 다시 보이게 한다. 직접 숨긴 경우·창이 없는 경우는 그대로 둔다
+function ensureWalkerVisible() {
+  if (!isWalkMode() || walkHiddenByUser) return;
+  const gone = allWalkerWins().filter((w) => !w.isVisible());
+  if (!gone.length) return;
+  for (const w of gone) w.showInactive();
+  ensureOverlayOnTop();
+  logOverlayEvent("walker-revive");
+}
+
+// 최상위 다시 걸기.
+//  기본(부드러움): moveTop 만 — z순서만 올려서 깜빡임이 없다. 상시 주기 호출은 반드시 이쪽.
+//  hard: 껐다 켜기 — 값은 최상위인데 실제로는 뒤로 밀린 경우에 필요하지만 한 번 깜빡인다.
+//        "항상 위가 풀렸다"는 알림을 받았을 때처럼 드물게만 쓴다
+function reassertOnTop(win, level, hard = false) {
+  if (!win || win.isDestroyed() || !win.isVisible()) return;
+  if (hard) {
+    win.setAlwaysOnTop(false);
+    win.setAlwaysOnTop(true, level);
+  }
+  win.moveTop();
+}
 function ensureOverlayOnTop() {
   if (overlayWin && !overlayWin.isDestroyed() && overlayWin.isVisible()) overlayWin.setAlwaysOnTop(true, "screen-saver");
   // 산책 창은 "floating" 단계: 일반 창보다는 위, 작업표시줄(시작 메뉴·알림 등 작업표시줄 쪽 창)보다는 아래.
@@ -385,6 +418,11 @@ function createWalkerWindow(bounds) {
   win.once("ready-to-show", () => {
     if (!win.isDestroyed()) { win.showInactive(); ensureOverlayOnTop(); }
   });
+  // 캡처 오버레이(Win+Shift+S)·전체화면 앱 등이 뜨고 사라질 때 윈도우가 "항상 위"를 풀어버린다 → 바로 다시 건다
+  win.on("always-on-top-changed", (_e, isOnTop) => {
+    if (isOnTop || !walkOnTop() || win.isDestroyed()) return;
+    setTimeout(() => { if (walkOnTop()) reassertOnTop(win, "floating", true); }, 150);
+  });
   return win;
 }
 
@@ -496,6 +534,7 @@ function setWalkOnTop(on) {
 // 표시 스타일 반영: 산책 모드면 산책 창을 띄우고 오버레이는 숨긴다(오버레이 WS·트레이는 계속 동작)
 function applyDisplayStyle() {
   if (isWalkMode()) {
+    walkHiddenByUser = false;              // 표시 스타일을 다시 고르면 숨김 상태는 푼다
     if (!walkerWin || walkerWin.isDestroyed()) createWalker();
     layoutWalker();
     if (overlayWin && !overlayWin.isDestroyed() && overlayWin.isVisible()) overlayWin.hide();
@@ -756,6 +795,7 @@ function buildMenu() {
     { label: walk ? "개미·마을 보이기/숨기기" : "펫 보이기/숨기기", click: () => {
       if (isWalkMode()) {                                              // 산책 모드면 모든 산책 창(모니터별)을 함께
         const show = !(walkerWin && !walkerWin.isDestroyed() && walkerWin.isVisible());
+        walkHiddenByUser = !show;                                      // 직접 숨긴 건 자동 복구 대상에서 제외
         for (const w of allWalkerWins()) show ? w.showInactive() : w.hide();
         if (show) ensureOverlayOnTop();
       } else if (overlayWin && !overlayWin.isDestroyed()) {
@@ -938,6 +978,9 @@ app.whenReady().then(() => {
   // 투명 펫 창 상태 소실 대응 (함수 정의 참고)
   //  · 뒤로 밀림: 20초마다 최상위 재선언 — 싸고 깜빡임 없음
   setInterval(ensureOverlayOnTop, 20 * 1000);
+  setInterval(ensureWalkerVisible, 20 * 1000);   // 산책 창이 통째로 사라진 경우 복구 (숨긴 창은 제외)
+  // 주기적으로 z순서를 올리는 처리는 두지 않는다 — 투명 창이라 moveTop 만으로도 눈에 띄게 깜빡인다(사용자 확인).
+  // 뒤로 밀림 대응은 "항상 위가 풀렸다" 알림(always-on-top-changed)과 절전 복귀·해상도 변경 때만.
   //  · 안 보임: 시스템이 상태 변화를 알려줄 때만 hide→show 복구 (평상시 깜빡임 0)
   powerMonitor.on("resume", () => recoverOverlay("resume"));            // 절전에서 복귀
   powerMonitor.on("unlock-screen", () => recoverOverlay("unlock"));     // 화면 잠금 해제

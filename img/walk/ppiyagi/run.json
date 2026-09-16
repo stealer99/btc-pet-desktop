@@ -1,0 +1,72 @@
+{
+  "name": "run",
+  "image": "run.png",
+  "source": "ppiyagi_run_cycle.png",
+  "frames": 4,
+  "frameWidth": 238,
+  "frameHeight": 212,
+  "anchorX": 119,
+  "baselineY": 210,
+  "contentHeight": 206,
+  "headWidth": 140,
+  "scale": 0.41605,
+  "fps": 12,
+  "speed": 90,
+  "ground": "row",
+  "loop": true,
+  "facing": "right",
+  "frameInfo": [
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "sourceBbox": [
+        44,
+        124,
+        474,
+        606
+      ],
+      "sourceHeadWidth": 337.0
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "sourceBbox": [
+        91,
+        115,
+        474,
+        608
+      ],
+      "sourceHeadWidth": 336.0
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "sourceBbox": [
+        47,
+        123,
+        494,
+        606
+      ],
+      "sourceHeadWidth": 340.0
+    },
+    {
+      "cell": [
+        3,
+        0
+      ],
+      "sourceBbox": [
+        101,
+        114,
+        481,
+        608
+      ],
+      "sourceHeadWidth": 334.0
+    }
+  ]
+}

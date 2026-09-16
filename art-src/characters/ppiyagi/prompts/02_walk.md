@@ -1,10 +1,38 @@
 # 2. 걷기 (평온할 때 산책)
 
-**첨부**: `${key}_turnaround.png` (가능하면 2번 3/4면만 잘라서)
-**저장**: `art-src/characters/$key/${key}_walk.png` → 레시피 `walk`
+**첨부**: `ppiyagi_turnaround.png` (가능하면 2번 3/4면만 잘라서)
+**저장**: `art-src/characters/ppiyagi/ppiyagi_walk.png` → 레시피 `walk`
 
 ```text
-$common
+Create a sprite sheet of the attached mascot "삐약이".
+Keep the design EXACTLY the same as the 3/4 view facing RIGHT in the attached
+turnaround: same chibi proportions, same head size, same face, same colors,
+same outfit, same short limbs.
+Same art style: dark charcoal outline (#3a3a3a) of medium thickness, drawn with
+slightly wobbly hand-drawn strokes. NO shading, NO gradients, flat plain white
+fill. Keep the silly, dopey look: blank stare, nothing perfectly symmetrical.
+
+FIXED PARTS (identical in EVERY frame — never reshape, merge, bend, add or remove them):
+- a big round head sitting on the body like a snowman, with the head outline visible where it overlaps the body
+- exactly two tiny black dot eyes, far apart and slightly uneven in height
+- exactly ONE flat wide pale-yellow beak
+- two big pale-yellow duck feet
+- two tiny hair strands on top of the head
+- no ears, no tail, no clothes
+Only the body pose, arms, legs and facial expression may change.
+
+VIEW: 3/4 view facing RIGHT in every frame. In place (no travel).
+
+LAYOUT: a single landscape image with a grid of 8 equal cells,
+4 columns x 2 rows, read left-to-right, top row first.
+- The character is the SAME SIZE in every cell and horizontally centered.
+- One shared GROUND LINE at the same height in every cell.
+- Leave clear empty space between characters. No grid lines, no borders.
+- The BOTTOM ROW must NOT repeat the top row. Every one of the 8 cells is a
+  different pose; cells 5-8 continue the motion from cells 1-4.
+
+BACKGROUND: solid flat magenta (#FF00FF), no gradient, no shadow,
+no floor, no text, no labels, no frame numbers, no checkerboard.
 
 ANIMATION: WALK, a smooth looping walk cycle.
 

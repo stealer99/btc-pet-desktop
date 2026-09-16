@@ -1,0 +1,176 @@
+{
+  "name": "idle",
+  "image": "idle.png",
+  "source": "ppiyagi_idle_cycle.png",
+  "frames": 12,
+  "frameWidth": 154,
+  "frameHeight": 228,
+  "anchorX": 77,
+  "baselineY": 226,
+  "contentHeight": 221,
+  "headWidth": 140,
+  "scale": 0.39548,
+  "fps": 5,
+  "speed": 0,
+  "ground": "cell",
+  "loop": true,
+  "facing": "right",
+  "frameInfo": [
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "sourceBbox": [
+        90,
+        119,
+        455,
+        656
+      ],
+      "sourceHeadWidth": 356.0
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "sourceBbox": [
+        91,
+        97,
+        453,
+        656
+      ],
+      "sourceHeadWidth": 353.0
+    },
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "sourceBbox": [
+        90,
+        119,
+        455,
+        656
+      ],
+      "sourceHeadWidth": 356.0
+    },
+    {
+      "cell": [
+        3,
+        0
+      ],
+      "sourceBbox": [
+        88,
+        126,
+        451,
+        656
+      ],
+      "sourceHeadWidth": 354.0
+    },
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "sourceBbox": [
+        90,
+        119,
+        455,
+        656
+      ],
+      "sourceHeadWidth": 356.0
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "sourceBbox": [
+        91,
+        97,
+        453,
+        656
+      ],
+      "sourceHeadWidth": 353.0
+    },
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "sourceBbox": [
+        90,
+        119,
+        455,
+        656
+      ],
+      "sourceHeadWidth": 356.0
+    },
+    {
+      "cell": [
+        3,
+        0
+      ],
+      "sourceBbox": [
+        88,
+        126,
+        451,
+        656
+      ],
+      "sourceHeadWidth": 354.0
+    },
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "sourceBbox": [
+        90,
+        119,
+        455,
+        656
+      ],
+      "sourceHeadWidth": 356.0
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "sourceBbox": [
+        91,
+        97,
+        453,
+        656
+      ],
+      "sourceHeadWidth": 353.0
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "sourceBbox": [
+        89,
+        119,
+        452,
+        656
+      ],
+      "sourceHeadWidth": 354.0
+    },
+    {
+      "cell": [
+        3,
+        0
+      ],
+      "sourceBbox": [
+        88,
+        126,
+        451,
+        656
+      ],
+      "sourceHeadWidth": 354.0
+    }
+  ]
+}

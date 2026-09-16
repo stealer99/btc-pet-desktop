@@ -44,10 +44,14 @@ window.BtcPetWalkBehavior = class WalkBehavior {
     this.phaseUntil = 0;
   }
 
+  // 개발자 테스트: 지정 시간 동안 이 동작만. 진행 중이던 질주(goal)·리듬을 끊고 바로 바뀐다
   force(action, ms) {
     if (!this.sprites[action]) return;
     this.forced = action;
     this.forcedUntil = performance.now() + ms;
+    this.goal = null;
+    this.phaseUntil = 0;
+    this.setAction(action);
   }
 
   setAction(action) {
