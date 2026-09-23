@@ -1,4 +1,4 @@
-// BTC Pet Desktop - main process (v0.17.49-walk-beta)
+// BTC Pet Desktop - main process (v0.17.50-walk-beta)
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell, dialog, powerMonitor } = require("electron");
 const path = require("path");
 const fs = require("fs");
@@ -230,19 +230,46 @@ function ensureWalkerVisible() {
 //  기본(부드러움): moveTop 만 — z순서만 올려서 깜빡임이 없다. 상시 주기 호출은 반드시 이쪽.
 //  hard: 껐다 켜기 — 값은 최상위인데 실제로는 뒤로 밀린 경우에 필요하지만 한 번 깜빡인다.
 //        "항상 위가 풀렸다"는 알림을 받았을 때처럼 드물게만 쓴다
+// 전체화면 앱(게임·영상 플레이어)은 최상위를 계속 빼앗는다. 그때마다 다시 걸면 끝없이 싸우며 깜빡이므로
+// 짧은 시간에 여러 번 밀리면 한동안 포기한다 (다른 모니터에 있어도 윈도우는 최상위를 내린다)
+// 한 번 밀리면 한 번 되걸어 보고(깜빡임 1회), 곧바로 또 밀리면 전체화면으로 보고 3분 쉰다
+const ON_TOP_GIVE_UP = 2;              // 이 횟수 이상 밀리면
+const ON_TOP_WINDOW_MS = 15 * 1000;    //   이 시간 안에
+const ON_TOP_PAUSE_MS = 3 * 60 * 1000; // 이만큼 쉰다
+const onTopFights = new WeakMap();     // 창 → { hits: [시각], pausedUntil }
+// 전체화면 앱에 자리를 내주는 중인지 (이 동안은 주기 재선언도 건너뛴다 — 다시 싸움이 붙어 깜빡인다)
+function onTopPaused(win) {
+  const state = onTopFights.get(win);
+  return !!state && Date.now() < state.pausedUntil;
+}
 function reassertOnTop(win, level, hard = false) {
   if (!win || win.isDestroyed() || !win.isVisible()) return;
   if (hard) {
+    const now = Date.now();
+    const state = onTopFights.get(win) || { hits: [], pausedUntil: 0 };
+    if (now < state.pausedUntil) return;                       // 쉬는 중: 전체화면 앱에 자리를 내준다
+    state.hits = state.hits.filter((t) => now - t < ON_TOP_WINDOW_MS);
+    state.hits.push(now);
+    if (state.hits.length >= ON_TOP_GIVE_UP) {
+      state.pausedUntil = now + ON_TOP_PAUSE_MS;
+      state.hits = [];
+      onTopFights.set(win, state);
+      logOverlayEvent("ontop-giveup");
+      return;
+    }
+    onTopFights.set(win, state);
     win.setAlwaysOnTop(false);
     win.setAlwaysOnTop(true, level);
   }
   win.moveTop();
 }
 function ensureOverlayOnTop() {
-  if (overlayWin && !overlayWin.isDestroyed() && overlayWin.isVisible()) overlayWin.setAlwaysOnTop(true, "screen-saver");
+  if (overlayWin && !overlayWin.isDestroyed() && overlayWin.isVisible() && !onTopPaused(overlayWin)) {
+    overlayWin.setAlwaysOnTop(true, "screen-saver");
+  }
   // 산책 창은 "floating" 단계: 일반 창보다는 위, 작업표시줄(시작 메뉴·알림 등 작업표시줄 쪽 창)보다는 아래.
   // "다른 창 위에 표시"를 끈 경우엔 최상위를 다시 걸지 않는다
-  if (walkOnTop()) for (const w of allWalkerWins()) if (w.isVisible()) w.setAlwaysOnTop(true, "floating");
+  if (walkOnTop()) for (const w of allWalkerWins()) if (w.isVisible() && !onTopPaused(w)) w.setAlwaysOnTop(true, "floating");
 }
 
 // ② "안 보임" 대응: 창을 잠깐 숨겼다 다시 보이게 해 강제로 다시 그리게 한다
